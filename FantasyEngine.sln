@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyEngine", "FantasyEngine\FantasyEngine\FantasyEngine.csproj", "{0F580116-DBB9-4D53-9D27-B120F183658D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyEngineContent", "FantasyEngine\FantasyEngineContent\FantasyEngineContent.contentproj", "{70568924-64AB-4857-BB5D-9A2EDFAE8B66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyEngineData", "FantasyEngine\FantasyEngineData\FantasyEngineData.csproj", "{4C3BB6F4-B8EC-4CA6-BF33-BAE546823200}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://maxime-pc:8080/tfs/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = FantasyEngine\\FantasyEngine\\FantasyEngine.csproj
+		SccProjectName1 = FantasyEngine/FantasyEngine
+		SccLocalPath1 = FantasyEngine\\FantasyEngine
+		SccProjectUniqueName2 = FantasyEngine\\FantasyEngineContent\\FantasyEngineContent.contentproj
+		SccProjectName2 = FantasyEngine/FantasyEngineContent
+		SccLocalPath2 = FantasyEngine\\FantasyEngineContent
+		SccProjectUniqueName3 = FantasyEngine\\FantasyEngineData\\FantasyEngineData.csproj
+		SccProjectName3 = FantasyEngine/FantasyEngineData
+		SccLocalPath3 = FantasyEngine\\FantasyEngineData
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F580116-DBB9-4D53-9D27-B120F183658D}.Debug|x86.ActiveCfg = Debug|x86
+		{0F580116-DBB9-4D53-9D27-B120F183658D}.Debug|x86.Build.0 = Debug|x86
+		{0F580116-DBB9-4D53-9D27-B120F183658D}.Release|x86.ActiveCfg = Release|x86
+		{0F580116-DBB9-4D53-9D27-B120F183658D}.Release|x86.Build.0 = Release|x86
+		{70568924-64AB-4857-BB5D-9A2EDFAE8B66}.Debug|x86.ActiveCfg = Debug|x86
+		{70568924-64AB-4857-BB5D-9A2EDFAE8B66}.Release|x86.ActiveCfg = Release|x86
+		{4C3BB6F4-B8EC-4CA6-BF33-BAE546823200}.Debug|x86.ActiveCfg = Debug|x86
+		{4C3BB6F4-B8EC-4CA6-BF33-BAE546823200}.Debug|x86.Build.0 = Debug|x86
+		{4C3BB6F4-B8EC-4CA6-BF33-BAE546823200}.Release|x86.ActiveCfg = Release|x86
+		{4C3BB6F4-B8EC-4CA6-BF33-BAE546823200}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+	<Asset Type="FantasyEngineData.BaseJob">
+		<JobName>Onionkid</JobName>
+		<MaxHp>50</MaxHp>
+		<MaxMp>10</MaxMp>
+		<Strenght>255</Strenght>
+		<Vitality>5</Vitality>
+		<Accuracy>255</Accuracy>
+		<Agility>5</Agility>
+		<Intelligence>5</Intelligence>
+		<Wisdom>5</Wisdom>
+		<BattleSprite>
+			<SpriteName>onionkid_battle</SpriteName>
+			<IsTiled>true</IsTiled>
+			<TileWidth>56</TileWidth>
+			<TileHeight>56</TileHeight>
+		</BattleSprite>
+	</Asset>
+	<!--//  Name      , Lvl,   Hp,   Mp, Str, Def, Acc, Agi, Mag, MDf, Battle Sprite
+	Job("Onionkid",   1,   10,    5, 255,   5, 255, 255, 255,   5, new BattleSprite(onionkid_battle, true, 56, 56))
+	//Job("Onionkid",   1,   10,    5,   5,   5,   5,   5,   5,   5, new BattleSprite(onionkid_battle, true, 56, 56))-->
+</XnaContent>

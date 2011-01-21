@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+	<Asset Type="FantasyEngineData.Monster">
+		<JobName>Goblin</JobName>
+		<MaxHp>10</MaxHp>
+		<MaxMp>0</MaxMp>
+		<Strenght>5</Strenght>
+		<Vitality>3</Vitality>
+		<Accuracy>2</Accuracy>
+		<Agility>1</Agility>
+		<Intelligence>2</Intelligence>
+		<Wisdom>2</Wisdom>
+		<BattleSprite>
+			<SpriteName>goblin</SpriteName>
+			<IsTiled>false</IsTiled>
+		</BattleSprite>
+		<StrenghtPlus>1.3</StrenghtPlus>
+		<Drop>
+			<Drops>
+				<DropRule>
+					<LevelMaximum>1</LevelMaximum>
+					<Gold>4</Gold>
+					<Treasure>
+						<Item>
+							<Name>Potion</Name>
+						</Item>
+					</Treasure>
+				</DropRule>
+				<DropRule>
+					<Gold>8</Gold>
+					<Treasure>
+						<Item>
+							<Name>Potion</Name>
+						</Item>
+						<Item>
+							<Name>Antidote</Name>
+						</Item>
+					</Treasure>
+				</DropRule>
+			</Drops>
+		</Drop>
+	</Asset>
+</XnaContent>
