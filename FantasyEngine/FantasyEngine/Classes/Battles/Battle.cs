@@ -9,7 +9,7 @@ using FantasyEngineData;
 
 namespace FantasyEngine.Classes.Battles
 {
-    struct BattleAction
+    public struct BattleAction
     {
         public enum eKind
         {
@@ -198,7 +198,7 @@ namespace FantasyEngine.Classes.Battles
                             if (actor != null && !actor.IsDead)
                             {
                                 int oldLevel = actor.Level;
-                                actor.Exp += 2 * _Exp / nbActor;
+                                actor.Exp += _Exp / nbActor;
                                 if (actor.Level != oldLevel)
                                     Scene.AddSubScene(new FantasyEngine.Classes.Menus.LevelUpScene(Game, actor));
                                 Player.GamePlayer.Gold += _Gold / nbActor;
@@ -243,7 +243,7 @@ namespace FantasyEngine.Classes.Battles
             SetBattlerPositions();
 
             // Start party command phase
-            StartPhase2();
+            StartPhase3();
         }
 
         /// <summary>
@@ -304,6 +304,7 @@ namespace FantasyEngine.Classes.Battles
 
                 //Keep lowest
                 _OrderBattle.Add(tempCTB[0]);
+                tempCTB[0].battler.Counter = tempCTB[0].counter;
             }
 
             setActiveBattler();
@@ -360,7 +361,24 @@ namespace FantasyEngine.Classes.Battles
 
             _BattleTurn++;
 
-            SetupCommandWindow();
+            foreach (Battler actor in _Actors)
+            {
+                if (getActiveBattler() == actor)
+                {
+                    SetupCommandWindow();
+                    return;
+                }
+            }
+
+            foreach (Battler enemy in _Enemies)
+            {
+                if (getActiveBattler() == enemy)
+                {
+                    _CurrentAction = enemy.AIChooseAction(Game, _Enemies, _Actors);
+                    StartPhase4();
+                    return;
+                }
+            }
         }
 
         private void SetupCommandWindow()
@@ -593,7 +611,58 @@ namespace FantasyEngine.Classes.Battles
 
         private void CalculateCTB()
         {
-            throw new NotImplementedException();
+            // Remove active counter on all other counters.
+            int counterLastTurn = _OrderBattle[0].counter;
+            for (int i = 0; i < _OrderBattle.Count; i++)
+            {
+                CTBTurn turn = _OrderBattle[i];
+                turn.counter -= counterLastTurn;
+                _OrderBattle[i] = turn;
+            }
+
+            // Calculate the last CTBTurn to replace the one that will go out.
+
+            //1-Calcul les NCV et ajoute le plus petit
+            List<CTBTurn> tempCTB = new List<CTBTurn>(Player.MAX_ACTOR + MAX_ENEMY);
+
+            //Get NCVs
+            for (int i = 0; i < Player.MAX_ACTOR; i++)
+            {
+                if (_Actors[i] == null)
+                    continue;
+
+                _Actors[i].Counter -= counterLastTurn;
+                CTBTurn turn = new CTBTurn();
+                turn.battler = _Actors[i];
+                turn.rank = 3;
+                turn.counter = turn.battler.Counter + turn.battler.getCounterValue(turn.rank);
+                turn.tickSpeed = turn.battler.getTickSpeed();
+                tempCTB.Add(turn);
+            }
+
+            for (int i = 0; i < MAX_ENEMY; i++)
+            {
+                if (_Enemies[i] == null)
+                    continue;
+
+                _Enemies[i].Counter -= counterLastTurn;
+                CTBTurn turn = new CTBTurn();
+                turn.battler = _Enemies[i];
+                turn.rank = 3;
+                turn.counter = turn.battler.Counter + turn.battler.getCounterValue(turn.rank);
+                turn.tickSpeed = turn.battler.getTickSpeed();
+                tempCTB.Add(turn);
+            }
+
+            //Sort NCVs
+            tempCTB.Sort();
+
+            //Keep lowest
+            _OrderBattle.Add(tempCTB[0]);
+            tempCTB[0].battler.Counter = tempCTB[0].counter;
+
+            _OrderBattle.RemoveAt(0);
+            setActiveBattler();
         }
 
         public Battler[] _Actors = new Battler[Player.MAX_ACTOR];
@@ -784,6 +853,10 @@ namespace FantasyEngine.Classes.Battles
                         {
                             _TargetBattler[i].GiveDamage();
                         }
+
+                    // Change the active battler for the next one.
+                    CalculateCTB();
+
                     StartPhase3();
                 }
             } // if (_Phase == 4 && _Phase4Step == 5)
@@ -1025,7 +1098,7 @@ namespace FantasyEngine.Classes.Battles
                                     }
                                     return;
                             }
-                        } //if(mpPlayerCommand.mActive)
+                        } // if (_PlayerCommand.Enabled)
                         else if (_Target != null)
                         {
                             _CurrentAction.target = _Target;

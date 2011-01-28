@@ -7,6 +7,11 @@ namespace FantasyEngineData
     public class Monster : BaseJob, ICloneable
     {
         public float StrenghtPlus { get; set; }
+        public float VitalityPlus { get; set; }
+        public float AccuracyPlus { get; set; }
+        public float AgilityPlus { get; set; }
+        public float IntelligencePlus { get; set; }
+        public float WisdomPlus { get; set; }
 
         // Dans Drop, il y a des règles plus souples pour donner
         // le Gold et les Treasures en fonction de plusieurs paramètres du

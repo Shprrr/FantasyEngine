@@ -247,5 +247,91 @@ namespace FantasyEngine.Classes.Battles
             return (int)(((CurrentJob.BaseJob.MaxHp / 4) + (CurrentJob.BaseJob.MaxMp / 2)
                 + Strenght + Vitality + Accuracy + Agility + Intelligence + Wisdom + Math.Pow(Level, 2)) / 6);
         }
+
+        /// <summary>
+        /// Decide what action the AI will take.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="actors">AI party</param>
+        /// <param name="enemies">Enemies to the AI</param>
+        /// <returns></returns>
+        public BattleAction AIChooseAction(Game game, Battler[] actors, Battler[] enemies)
+        {
+            BattleAction action = new BattleAction(game);
+            List<int> indexTargetPotential = new List<int>();
+
+            //TODO: Si aucun skill appris, attack obligatoirement physique.
+            action.kind = BattleAction.eKind.ATTACK;
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                if (enemies[i] != null)
+                    indexTargetPotential.Add(i);
+            }
+            action.target = new Cursor(game, enemies, actors, eTargetType.SINGLE_PARTY,
+                indexTargetPotential[new Random().Next(indexTargetPotential.Count)]);
+            return action;
+
+            /*
+             * Si l'attack physique est meilleur que l'attack magic et
+             *  que le target n'est pas résistant à l'attack,
+             * Kind = Attack
+             * Target = targetRandomParmisCeuxPossible
+            */
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                if (enemies[i] == null)
+                    continue;
+
+                //// Calculer le potentiel de dommage.
+                //int baseDamage = getBaseDamage(eDamageOption.RIGHT) - enemy.getDefenseDamage();
+                //int hitPourc = getHitPourc(eDamageOption.RIGHT) - enemy.getEvadePourc();
+                //int multi = getAttackMultiplier() - enemy.getDefenseMultiplier();
+
+                //// Réquilibrer les valeurs out of range.
+                //if (baseDamage < 1)
+                //    baseDamage = 1;
+
+                //if (hitPourc < 0)
+                //    hitPourc = 0;
+
+                //if (multi < 0)
+                //    multi = 0;
+
+                //// ???
+
+                //TODO: Si Weapon équipé main gauche.
+                int attPhysic = getBaseDamage(eDamageOption.RIGHT) - enemies[i].getDefenseDamage();
+                int attMagic = 0;
+
+                if (attPhysic > attMagic)
+                {
+                    action.kind = BattleAction.eKind.ATTACK;
+                    indexTargetPotential.Add(i);
+                }
+            }
+
+            if (action.kind == BattleAction.eKind.ATTACK)
+            {
+                action.target = new Cursor(game, enemies, actors, eTargetType.SINGLE_PARTY,
+                    indexTargetPotential[new Random().Next(indexTargetPotential.Count)]);
+                return action;
+            }
+
+            /*
+             * Si on n'attaque pas physique, regarder la possibilité d'utiliser les skills appris.
+             * Kind = Magic
+             * Target = targetRandomParmisCeuxPossible
+             * skillId = SkillIdChoisi
+            */
+            //TODO: Parcourir les skills appris.
+
+            /*
+             * S'il n'y pas de skill utile,
+             * Kind = Guard
+            */
+            action.kind = BattleAction.eKind.GUARD;
+
+            return action;
+        }
     }
 }

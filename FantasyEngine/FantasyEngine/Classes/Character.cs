@@ -143,7 +143,8 @@ namespace FantasyEngine.Classes
         /// <returns></returns>
         public int getBaseDamage(eDamageOption damageOption)
         {
-            return (Strenght / 4) + (Level / 4) + 0/*weapon.Damage*/;
+            // 1 barehanded
+            return (Strenght / 4) + (Level / 4) + 1/*weapon.Damage*/;
         }
 
         /// <summary>
@@ -153,7 +154,8 @@ namespace FantasyEngine.Classes
         /// <returns></returns>
         public int getHitPourc(eDamageOption damageOption)
         {
-            return (Accuracy / 4) + (Level / 4) + 0/*weapon.HitPourc*/;
+            // 80% barehanded
+            return (Accuracy / 4) + (Level / 4) + 80/*weapon.HitPourc*/;
         }
 
         /// <summary>
