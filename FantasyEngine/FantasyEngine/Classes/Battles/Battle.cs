@@ -90,6 +90,7 @@ namespace FantasyEngine.Classes.Battles
 
         private readonly string[] playerCommands = { "Attack", "Magic", "Item", "Guard", "Run" };
         private readonly string[] partyCommand = { "Fight", "Escape" };
+        private const string MISS = "MISS";
 
         #region Fields
         private Texture2D _BattleBack;
@@ -199,6 +200,9 @@ namespace FantasyEngine.Classes.Battles
                             {
                                 int oldLevel = actor.Level;
                                 actor.Exp += _Exp / nbActor;
+#if DEBUG
+                                actor.Exp += 40;
+#endif
                                 if (actor.Level != oldLevel)
                                     Scene.AddSubScene(new FantasyEngine.Classes.Menus.LevelUpScene(Game, actor));
                                 Player.GamePlayer.Gold += _Gold / nbActor;
@@ -831,7 +835,10 @@ namespace FantasyEngine.Classes.Battles
                         for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
                             if (_TargetBattler[i] != null)
                             {
-                                spriteBatch.DrawString(GameMain.font, _TargetBattler[i].damageRH.ToString(),
+                                string damage = _TargetBattler[i].multiplierRH == 0 ? MISS :
+                                    _TargetBattler[i].multiplierRH + " hit" + (_TargetBattler[i].multiplierRH > 1 ? "s" : "") +
+                                    Environment.NewLine + _TargetBattler[i].damageRH;
+                                spriteBatch.DrawString(GameMain.font, damage,
                                     new Vector2(_TargetBattler[i].BattlerPosition.X,
                                         _TargetBattler[i].BattlerPosition.Y - 12),
                                     new Color(0xFF, 0x80, 0x80, 0xFF));
@@ -878,8 +885,6 @@ namespace FantasyEngine.Classes.Battles
                     DrawResultWindow(gameTime);
                 }
             }
-
-            //GRRLIB_Printf(DEADZONE_WIDTH, 152, pFontNormal, clrNormal, 1, "Phase:%i   Turn:%i %s", mPhase, mBattleTurn, getActiveBattler()->getName());
         }
 
         private void DrawStatusWindow(GameTime gameTime)

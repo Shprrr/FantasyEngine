@@ -9,11 +9,9 @@ namespace FantasyEngine.Classes.Battles
 {
     public class Battler : Character
     {
-        public const string MISS = "MISS";
-
+        static Random rand = new Random();
         private void CalculateDamage(Battler pAttacker, eDamageOption damageOption, ref int multiplier, ref int damage)
         {
-            Random rand = new Random();
             //Calculate min and max base damage
             int baseMinDmg = pAttacker.getBaseDamage(damageOption);
 
@@ -204,7 +202,7 @@ namespace FantasyEngine.Classes.Battles
             int minICV = 3 * TS;
             int maxICV = 30 * TS / 9;
 
-            Counter = new Random().Next(minICV, maxICV + 1);
+            Counter = rand.Next(minICV, maxICV + 1);
         }
 
         public int getCounterValue(int rank)
@@ -245,7 +243,7 @@ namespace FantasyEngine.Classes.Battles
         public int ExpToGive()
         {
             return (int)(((CurrentJob.BaseJob.MaxHp / 4) + (CurrentJob.BaseJob.MaxMp / 2)
-                + Strenght + Vitality + Accuracy + Agility + Intelligence + Wisdom + Math.Pow(Level, 2)) / 6);
+                + Strength + Vitality + Accuracy + Agility + Intelligence + Wisdom + Math.Pow(Level, 2)) / 6);
         }
 
         /// <summary>
@@ -268,7 +266,7 @@ namespace FantasyEngine.Classes.Battles
                     indexTargetPotential.Add(i);
             }
             action.target = new Cursor(game, enemies, actors, eTargetType.SINGLE_PARTY,
-                indexTargetPotential[new Random().Next(indexTargetPotential.Count)]);
+                indexTargetPotential[rand.Next(indexTargetPotential.Count)]);
             return action;
 
             /*
@@ -313,7 +311,7 @@ namespace FantasyEngine.Classes.Battles
             if (action.kind == BattleAction.eKind.ATTACK)
             {
                 action.target = new Cursor(game, enemies, actors, eTargetType.SINGLE_PARTY,
-                    indexTargetPotential[new Random().Next(indexTargetPotential.Count)]);
+                    indexTargetPotential[rand.Next(indexTargetPotential.Count)]);
                 return action;
             }
 

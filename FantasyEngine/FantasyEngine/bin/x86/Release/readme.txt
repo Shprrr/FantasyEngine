@@ -4,10 +4,12 @@ Arrows       : Move cursor and the character.
 Enter        : Accept.
 Backspace    : Cancel/Return.
 Page Up/Down : Scroll the CTB Window.
+Esc          : Main menu.
+C            : Character Screen.
+F9           : Mute the music.
 
 Special debug commands
 B            : Debug button to call a battle.
-Esc          : Force quit.
+<            : Force quit.
 F12          : Show the FPS.
-F9           : Mute the music.
 P            : Show position on the map.

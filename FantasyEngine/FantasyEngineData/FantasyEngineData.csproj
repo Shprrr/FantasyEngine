@@ -98,7 +98,9 @@
   <ItemGroup>
     <Compile Include="BaseJob.cs" />
     <Compile Include="BattleSprite.cs" />
+    <Compile Include="Character.cs" />
     <Compile Include="Drop.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="Monster.cs" />

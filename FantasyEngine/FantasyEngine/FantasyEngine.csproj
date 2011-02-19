@@ -119,10 +119,10 @@
     <Compile Include="Classes\Battles\Battle.cs" />
     <Compile Include="Classes\Battles\Battler.cs" />
     <Compile Include="Classes\Battles\Cursor.cs" />
-    <Compile Include="Classes\Character.cs" />
     <Compile Include="Classes\Command.cs" />
     <Compile Include="Classes\Input.cs" />
     <Compile Include="Classes\MapObject.cs" />
+    <Compile Include="Classes\Menus\CharacterScene.cs" />
     <Compile Include="Classes\Menus\LevelUpScene.cs" />
     <Compile Include="Classes\Player.cs" />
     <Compile Include="Classes\Scene.cs" />

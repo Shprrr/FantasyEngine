@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FantasyEngineData;
 
-namespace FantasyEngine.Classes
+namespace FantasyEngineData
 {
-    public class Character
+    public class Character : ICloneable
     {
         public const int NAME_LENGTH = 32;
         public const int MAX_JOB = 4;
@@ -59,6 +58,9 @@ namespace FantasyEngine.Classes
             set { if (CurrentJob != null) CurrentJob.TotalExp = value; }
         }
 
+        /// <summary>
+        /// Amount of experience for the current level of the current job.
+        /// </summary>
         public int Exp
         {
             get { return CurrentJob != null ? CurrentJob.Exp : 0; }
@@ -87,10 +89,10 @@ namespace FantasyEngine.Classes
             get { return CurrentJob != null ? CurrentJob.MaxMp : 0; }
         }
 
-        public int Strenght
+        public int Strength
         {
-            get { return CurrentJob != null ? CurrentJob.Strenght : 0; }
-            set { if (CurrentJob != null) CurrentJob.Strenght = value; }
+            get { return CurrentJob != null ? CurrentJob.Strength : 0; }
+            set { if (CurrentJob != null) CurrentJob.Strength = value; }
         }
 
         public int Vitality
@@ -123,6 +125,15 @@ namespace FantasyEngine.Classes
             set { if (CurrentJob != null) CurrentJob.Wisdom = value; }
         }
 
+        /// <summary>
+        /// Stat points that still need to be allocated.
+        /// </summary>
+        public int StatRemaining
+        {
+            get { return CurrentJob != null ? CurrentJob.StatRemaining : 0; }
+            set { if (CurrentJob != null) CurrentJob.StatRemaining = value; }
+        }
+
         public Status Statut
         {
             get { return CurrentJob != null ? CurrentJob.Statut : Status.Normal; }
@@ -136,6 +147,7 @@ namespace FantasyEngine.Classes
         {
         }
 
+        #region Battle Stats
         /// <summary>
         /// Get the base damage of the current job with the current equipement.
         /// </summary>
@@ -144,7 +156,7 @@ namespace FantasyEngine.Classes
         public int getBaseDamage(eDamageOption damageOption)
         {
             // 1 barehanded
-            return (Strenght / 4) + (Level / 4) + 1/*weapon.Damage*/;
+            return (Strength / 4) + (Level / 4) + 1/*weapon.Damage*/;
         }
 
         /// <summary>
@@ -192,13 +204,83 @@ namespace FantasyEngine.Classes
         /// <returns></returns>
         public int getDefenseMultiplier()
         {
-            return /*getNbShield() > 0 ? ((getAgility() / 16) + (getLevel() / 16) + 1) * getNbShield() :*/
+            return /*getNbShield() > 0 ? ((Agility / 16) + (Level / 16) + 1) * getNbShield() :*/
                 (Agility / 32) + (Level / 32);
         }
+
+        /// <summary>
+        /// Get the magic base damage of the current job with the current equipement.
+        /// </summary>
+        /// <returns></returns>
+        public int getMagicBaseDamage()
+        {
+            //return (Intelligence / 2) + 1; //FF3
+            return (Intelligence / 4) + (Level / 4) + 1;
+        }
+
+        /// <summary>
+        /// Get the magic hit pourcentage of the current job with the current equipement.
+        /// </summary>
+        /// <returns></returns>
+        public int getMagicHitPourc()
+        {
+            // 80% barehanded
+            //return (Intelligence / 2) + 80; //FF3
+            return (Intelligence / 8) + (Accuracy / 8) + (Level / 4) + 80/*magic.HitPourc*/;
+        }
+
+        /// <summary>
+        /// Get the maximum magic hit number times of the current job with the current equipement.
+        /// </summary>
+        /// <returns></returns>
+        public int getMagicAttackMultiplier()
+        {
+            int attMul = (Intelligence / 16) + (Level / 16) + 1;
+            return attMul < 16 ? attMul : 16;
+        }
+
+        /// <summary>
+        /// Get the magic defense of the current job with the current equipement.
+        /// </summary>
+        /// <returns></returns>
+        public int getMagicDefenseDamage()
+        {
+            return (Wisdom / 2) + 0/*armors.Defense*/;
+        }
+
+        /// <summary>
+        /// Get the magic evade pourcentage of the current job with the current equipement.
+        /// </summary>
+        /// <returns></returns>
+        public int getMagicEvadePourc()
+        {
+            return (Agility / 8) + (Wisdom / 8) + 0/*armors.EvadePourc*/;
+        }
+
+        /// <summary>
+        /// Get the maximum magic block number times of the current job with the current equipement.
+        /// </summary>
+        /// <returns></returns>
+        public int getMagicDefenseMultiplier()
+        {
+            return /*getNbShield() > 0 ? ((Agility / 32) + (Wisdom / 32) + (Level / 16) + 1) * getNbShield() :*/
+                (Agility / 64) + (Wisdom / 64) + (Level / 32);
+            //return (Agility / 32) + (Wisdom / 16); //FF3
+        }
+        #endregion Battle Stats
 
         public override string ToString()
         {
             return Name + " [Lv:" + Level + "]";
         }
+
+        #region ICloneable Membres
+
+        public object Clone()
+        {
+            return this.CloneExt();
+        }
+
+        #endregion
     }
 }

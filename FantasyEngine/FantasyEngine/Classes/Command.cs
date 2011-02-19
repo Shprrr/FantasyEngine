@@ -63,7 +63,7 @@ namespace FantasyEngine.Classes
             //self.cursor_rect.set(x, y, cursor_width, 32)
             GameMain.spriteBatch.Draw(GameMain.cursor,
                 new Vector2(Rectangle.Left + Tileset.TileWidth + cursorx,
-                    Rectangle.Top + Tileset.TileHeight + cursory),
+                    Rectangle.Top + Tileset.TileHeight + cursory) + Offset,
                 Color.White);
         }
 
@@ -209,7 +209,7 @@ namespace FantasyEngine.Classes
             for (int i = 0; i < _Choices.Length; i++)
                 GameMain.spriteBatch.DrawString(GameMain.font, _Choices[i],
                     new Vector2(Rectangle.Left + Tileset.TileWidth + GameMain.cursor.Width,
-                        Rectangle.Top + Tileset.TileHeight + i * GameMain.font.LineSpacing),
+                        Rectangle.Top + Tileset.TileHeight + i * GameMain.font.LineSpacing) + Offset,
                     Color.White);
         }
     }

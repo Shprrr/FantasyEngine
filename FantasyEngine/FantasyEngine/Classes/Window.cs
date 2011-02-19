@@ -19,6 +19,7 @@ namespace FantasyEngine.Classes
 
         private SpriteBatch _SpriteBatch;
         public Rectangle Rectangle;
+        public Vector2 Offset;
 
         /// <summary>
         /// Bound of the inside of the window.  It's where is legal to draw.
@@ -49,46 +50,56 @@ namespace FantasyEngine.Classes
             Rectangle pos;
 
             pos = Rectangle;
-            _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(4), Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Fond
+            pos.Offset((int)Offset.X, (int)Offset.Y);
+            _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(4),
+                Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Fond
 
 
             pos = new Rectangle(Rectangle.X + Tileset.TileWidth, Rectangle.Y,
                 Rectangle.Width - (Tileset.TileWidth * 2), Tileset.TileHeight);
+            pos.Offset((int)Offset.X, (int)Offset.Y);
             _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(1),
                 Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Bord Haut
 
             pos = new Rectangle(Rectangle.X, Rectangle.Y + Tileset.TileHeight,
                 Tileset.TileWidth, Rectangle.Height - (Tileset.TileHeight * 2));
+            pos.Offset((int)Offset.X, (int)Offset.Y);
             _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(3),
                 Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Bord Gauche
 
             pos = new Rectangle(Rectangle.Right - Tileset.TileWidth, Rectangle.Y + Tileset.TileHeight,
                 Tileset.TileWidth, Rectangle.Height - (Tileset.TileHeight * 2));
+            pos.Offset((int)Offset.X, (int)Offset.Y);
             _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(5),
                 Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Bord Droite
 
             pos = new Rectangle(Rectangle.X + Tileset.TileWidth, Rectangle.Bottom - Tileset.TileHeight,
                 Rectangle.Width - (Tileset.TileWidth * 2), Tileset.TileHeight);
+            pos.Offset((int)Offset.X, (int)Offset.Y);
             _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(7),
                 Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Bord Bas
 
             pos = new Rectangle(Rectangle.X, Rectangle.Y,
                 Tileset.TileWidth, Tileset.TileHeight);
+            pos.Offset((int)Offset.X, (int)Offset.Y);
             _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(0),
                 Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Coin HG
 
             pos = new Rectangle(Rectangle.Right - Tileset.TileWidth, Rectangle.Y,
                 Tileset.TileWidth, Tileset.TileHeight);
+            pos.Offset((int)Offset.X, (int)Offset.Y);
             _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(2),
                 Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Coin HD
 
             pos = new Rectangle(Rectangle.X, Rectangle.Bottom - Tileset.TileHeight,
                 Tileset.TileWidth, Tileset.TileHeight);
+            pos.Offset((int)Offset.X, (int)Offset.Y);
             _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(6),
                 Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Coin BG
 
             pos = new Rectangle(Rectangle.Right - Tileset.TileWidth, Rectangle.Bottom - Tileset.TileHeight,
                 Tileset.TileWidth, Tileset.TileHeight);
+            pos.Offset((int)Offset.X, (int)Offset.Y);
             _SpriteBatch.Draw(Tileset.texture, pos, Tileset.GetSourceRectangle(8),
                 Color.White, 0, Vector2.Zero, SpriteEffects.None, 0); //Coin BD
         }

@@ -17,7 +17,7 @@ namespace FantasyEngineData
         Stone
     }
 
-    public class Job
+    public class Job : ICloneable
     {
         public const int MAX_LEVEL = 50;
         public const int MAX_HP = 9999;
@@ -30,7 +30,7 @@ namespace FantasyEngineData
 
         private int _Hp;
         private int _Mp;
-        private int _Strenght;
+        private int _Strength;
         private int _Vitality;
         private int _Accuracy;
         private int _Agility;
@@ -128,16 +128,16 @@ namespace FantasyEngineData
             }
         }
 
-        public int Strenght
+        public int Strength
         {
-            get { return BaseJob.Strenght + _Strenght; }
+            get { return BaseJob.Strength + _Strength; }
             set
             {
                 if (value > 255)
                     value = 255;
                 if (value < 0)
                     value = 0;
-                _Strenght = value - BaseJob.Strenght;
+                _Strength = value - BaseJob.Strength;
             }
         }
 
@@ -267,7 +267,7 @@ namespace FantasyEngineData
 
             Level++;
             StatRemaining += STAT_PER_LEVEL_UP;
-            Strenght++;
+            Strength++;
             Vitality++;
             Accuracy++;
             Agility++;
@@ -278,5 +278,14 @@ namespace FantasyEngineData
             Hp += MaxHp - oldMaxHp;
             Mp += MaxMp - oldMaxMp;
         }
+
+        #region ICloneable Membres
+
+        public object Clone()
+        {
+            return this.CloneExt();
+        }
+
+        #endregion
     }
 }

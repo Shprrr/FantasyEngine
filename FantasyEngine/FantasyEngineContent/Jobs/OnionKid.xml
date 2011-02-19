@@ -4,7 +4,7 @@
 		<JobName>Onionkid</JobName>
 		<MaxHp>50</MaxHp>
 		<MaxMp>10</MaxMp>
-		<Strenght>5</Strenght>
+		<Strength>5</Strength>
 		<Vitality>5</Vitality>
 		<Accuracy>5</Accuracy>
 		<Agility>5</Agility>
@@ -17,7 +17,4 @@
 			<TileHeight>56</TileHeight>
 		</BattleSprite>
 	</Asset>
-	<!--//  Name      , Lvl,   Hp,   Mp, Str, Def, Acc, Agi, Mag, MDf, Battle Sprite
-	Job("Onionkid",   1,   10,    5, 255,   5, 255, 255, 255,   5, new BattleSprite(onionkid_battle, true, 56, 56))
-	//Job("Onionkid",   1,   10,    5,   5,   5,   5,   5,   5,   5, new BattleSprite(onionkid_battle, true, 56, 56))-->
 </XnaContent>

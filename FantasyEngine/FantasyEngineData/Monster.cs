@@ -6,7 +6,7 @@ namespace FantasyEngineData
 {
     public class Monster : BaseJob, ICloneable
     {
-        public float StrenghtPlus { get; set; }
+        public float StrengthPlus { get; set; }
         public float VitalityPlus { get; set; }
         public float AccuracyPlus { get; set; }
         public float AgilityPlus { get; set; }

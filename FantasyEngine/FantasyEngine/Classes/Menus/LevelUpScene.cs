@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using FantasyEngineData;
 
 namespace FantasyEngine.Classes.Menus
 {
@@ -40,8 +41,8 @@ namespace FantasyEngine.Classes.Menus
             spriteBatch.DrawString(GameMain.font, "MP:" + LevelUpingCharacter.Mp + "/" + LevelUpingCharacter.MaxMp,
                 new Vector2(174, 198), Color.White);
 
-            spriteBatch.DrawString(GameMain.font, "Strenght:", new Vector2(174, 228), Color.White);
-            spriteBatch.DrawString(GameMain.font, LevelUpingCharacter.Strenght.ToString(), new Vector2(340, 228), Color.White);
+            spriteBatch.DrawString(GameMain.font, "Strength:", new Vector2(174, 228), Color.White);
+            spriteBatch.DrawString(GameMain.font, LevelUpingCharacter.Strength.ToString(), new Vector2(340, 228), Color.White);
             spriteBatch.DrawString(GameMain.font, "Vitality:", new Vector2(174, 250), Color.White);
             spriteBatch.DrawString(GameMain.font, LevelUpingCharacter.Vitality.ToString(), new Vector2(340, 250), Color.White);
             spriteBatch.DrawString(GameMain.font, "Accuracy:", new Vector2(174, 272), Color.White);
@@ -53,7 +54,7 @@ namespace FantasyEngine.Classes.Menus
             spriteBatch.DrawString(GameMain.font, "Wisdom:", new Vector2(174, 338), Color.White);
             spriteBatch.DrawString(GameMain.font, LevelUpingCharacter.Wisdom.ToString(), new Vector2(340, 338), Color.White);
             spriteBatch.DrawString(GameMain.font, "Stat Points Remaining", new Vector2(174, 368), Color.White);
-            spriteBatch.DrawString(GameMain.font, LevelUpingCharacter.CurrentJob.StatRemaining.ToString(), new Vector2(420, 390), Color.White);
+            spriteBatch.DrawString(GameMain.font, LevelUpingCharacter.StatRemaining.ToString(), new Vector2(420, 390), Color.White);
 
             GameMain.ScissorReset();
         }

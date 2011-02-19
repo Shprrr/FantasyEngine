@@ -10,6 +10,9 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using FantasyEngine.Classes;
 
+using System.Reflection;
+using System.Collections;
+
 namespace FantasyEngine
 {
     /// <summary>
@@ -117,7 +120,7 @@ namespace FantasyEngine
         {
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
-                || Keyboard.GetState(PlayerIndex.One).IsKeyDown(Keys.Escape))
+                || Keyboard.GetState(PlayerIndex.One).IsKeyDown(Keys.OemPipe))
                 this.Exit();
 
             Input.UpdateInput(gameTime);

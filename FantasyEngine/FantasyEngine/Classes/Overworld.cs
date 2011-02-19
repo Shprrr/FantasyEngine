@@ -6,12 +6,16 @@ using FantasyEngineData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using FantasyEngine.Classes.Menus;
 
 namespace FantasyEngine.Classes
 {
     public class Overworld : Scene
     {
-        private bool showPosition = false;
+        private readonly string[] MENU_COMMANDS = { "Character", "Quit game" };
+
+        private bool _ShowPosition = false;
+        private Command _Menu;
 
         public Overworld(Game game)
             : base(game)
@@ -19,15 +23,26 @@ namespace FantasyEngine.Classes
             MediaPlayer.Stop();
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(Player.GamePlayer.Map.BackgroundMusic);
+
+            _Menu = new Command(Game, 180, MENU_COMMANDS);
+            _Menu.ChangeOffset(Game.GraphicsDevice.Viewport.Width - _Menu.Rectangle.Width, 0);
+            _Menu.Enabled = false;
+            _Menu.Visible = false;
         }
 
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+
+            Vector2 offset = new Vector2(-GameMain.OldCameraMatrix.Translation.X, -GameMain.OldCameraMatrix.Translation.Y);
+
             Player.GamePlayer.Map.Draw(gameTime);
             Player.GamePlayer.Hero.Draw(gameTime);
 
-            if (showPosition)
+            _Menu.Offset = offset;
+            _Menu.Draw(gameTime);
+
+            if (_ShowPosition)
             {
                 Rectangle heroRect = Player.GamePlayer.Hero.getRectangle();
                 Vector2 hero1 = new Vector2(heroRect.Left, heroRect.Top);
@@ -45,17 +60,21 @@ namespace FantasyEngine.Classes
         {
             base.Update(gameTime);
 
+            if (UpdateMenu(gameTime))
+                return;
+
             Player.GamePlayer.Hero.Update(gameTime);
 
             if (Input.keyStateDown.IsKeyDown(Keys.P))
-                showPosition = !showPosition;
+                _ShowPosition = !_ShowPosition;
 
             int step = 2;
 
+            #region Update Direction
             if (Input.keyStateHeld.IsKeyDown(Keys.Up)
-                || Input.keyStateHeld.IsKeyDown(Keys.Down)
-                || Input.keyStateHeld.IsKeyDown(Keys.Left)
-                || Input.keyStateHeld.IsKeyDown(Keys.Right))
+                        || Input.keyStateHeld.IsKeyDown(Keys.Down)
+                        || Input.keyStateHeld.IsKeyDown(Keys.Left)
+                        || Input.keyStateHeld.IsKeyDown(Keys.Right))
             {
                 Rectangle heroRect = Player.GamePlayer.Hero.getRectangle();
 
@@ -115,15 +134,18 @@ namespace FantasyEngine.Classes
 
                 return;
             } // if (Direction held)
+            #endregion Update Direction
+
+            if (Input.keyStateDown.IsKeyDown(Keys.C))
+            {
+                AddSubScene(new CharacterScene(Game, Player.GamePlayer.Actors[0]));
+            }
 
             if (Input.keyStateDown.IsKeyDown(Keys.B))
             {
                 MapObject.Encounter mob = Player.GamePlayer.Map.Encounters[0];
                 Battle battle = new Battle(Game, "battleback_grass");
-                //battle._Enemies[0] = new Battler(Game, @"Monsters\goblin");
-                //battle._Enemies[0].mapJobs[0] = Game.Content.Load<Job>(@"Monsters\Goblin");//new Job("Goblin", 1, 10, 1, 2, 2, 2, 1, 2, 2, new BattleSprite("goblin"));
                 battle._Enemies[0] = new Battler(Game, mob.Monster, mob.Level);
-                //battle._Enemies[0].mCurrentJob = 0;
                 battle._Enemies[0].Name = battle._Enemies[0].CurrentJob.JobName + "1";
                 battle.StartPhase1();
                 Scene.ChangeMainScene(battle);
@@ -133,6 +155,40 @@ namespace FantasyEngine.Classes
             {
                 int i = 0;
             }
+        }
+
+        /// <summary>
+        /// Update the Menu window.
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <returns>If it catches the update</returns>
+        private bool UpdateMenu(GameTime gameTime)
+        {
+            _Menu.Update(gameTime);
+
+            if (Input.keyStateDown.IsKeyDown(Keys.Escape))
+            {
+                _Menu.Enabled = !_Menu.Enabled;
+                _Menu.Visible = !_Menu.Visible;
+                return true;
+            }
+
+            if (_Menu.Enabled)
+                if (Input.keyStateDown.IsKeyDown(Keys.Enter))
+                {
+                    switch (_Menu.CursorPosition)
+                    {
+                        case 0:
+                            AddSubScene(new CharacterScene(Game, Player.GamePlayer.Actors[0]));
+                            break;
+
+                        case 1:
+                            Game.Exit();
+                            break;
+                    }
+                }
+
+            return _Menu.Enabled;
         }
     }
 }

@@ -4,7 +4,7 @@
 		<JobName>Goblin</JobName>
 		<MaxHp>4</MaxHp>
 		<MaxMp>0</MaxMp>
-		<Strenght>5</Strenght>
+		<Strength>5</Strength>
 		<Vitality>3</Vitality>
 		<Accuracy>2</Accuracy>
 		<Agility>1</Agility>
@@ -14,7 +14,7 @@
 			<SpriteName>goblin</SpriteName>
 			<IsTiled>false</IsTiled>
 		</BattleSprite>
-		<StrenghtPlus>1.7</StrenghtPlus>
+		<StrengthPlus>1.7</StrengthPlus>
 		<VitalityPlus>1.3</VitalityPlus>
 		<AccuracyPlus>1</AccuracyPlus>
 		<AgilityPlus>1</AgilityPlus>

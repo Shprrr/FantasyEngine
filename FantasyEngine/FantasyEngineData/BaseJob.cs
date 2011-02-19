@@ -14,7 +14,7 @@ namespace FantasyEngineData
         private string _JobName;
         private int _MaxHp;
         private int _MaxMp;
-        private int _Strenght;
+        private int _Strength;
         private int _Vitality;
         private int _Accuracy;
         private int _Agility;
@@ -61,16 +61,16 @@ namespace FantasyEngineData
             }
         }
 
-        public int Strenght
+        public int Strength
         {
-            get { return _Strenght; }
+            get { return _Strength; }
             set
             {
                 if (value > MAX_STAT)
                     value = MAX_STAT;
                 if (value < 1)
                     value = 1;
-                _Strenght = value;
+                _Strength = value;
             }
         }
 
@@ -146,13 +146,13 @@ namespace FantasyEngineData
         }
 
         public BaseJob(string jobName, int hp, int mp,
-            int strenght, int defense, int accuracy, int agility, int magic, int magicDefense,
+            int strength, int defense, int accuracy, int agility, int magic, int magicDefense,
             BattleSprite pBattleSprite)
         {
             JobName = jobName;
             MaxHp = hp;
             MaxMp = mp;
-            Strenght = strenght;
+            Strength = strength;
             Vitality = defense;
             Accuracy = accuracy;
             Agility = agility;
