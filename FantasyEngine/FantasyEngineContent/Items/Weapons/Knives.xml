@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+	<Asset Type="FantasyEngineData.Items.Weapon[]">
+		<Item>
+			<Name>Knife</Name>
+			<Type>Knife</Type>
+			<Price>20</Price>
+			<AllowableJobs>On</AllowableJobs>
+			<NumberHands>One</NumberHands>
+			<Damage>6</Damage>
+			<HitPourc>85</HitPourc>
+		</Item>
+		<Item>
+			<Name>Dagger</Name>
+			<Type>Knife</Type>
+			<Price>60</Price>
+			<AllowableJobs>On</AllowableJobs>
+			<NumberHands>One</NumberHands>
+			<Damage>8</Damage>
+			<HitPourc>85</HitPourc>
+		</Item>
+	</Asset>
+</XnaContent>

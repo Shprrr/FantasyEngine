@@ -12,7 +12,7 @@ namespace FantasyEngine.Classes
 {
     public class Overworld : Scene
     {
-        private readonly string[] MENU_COMMANDS = { "Character", "Quit game" };
+        private readonly string[] MENU_COMMANDS = { "Character", "Inventory", "Quit game" };
 
         private bool _ShowPosition = false;
         private Command _Menu;
@@ -141,6 +141,11 @@ namespace FantasyEngine.Classes
                 AddSubScene(new CharacterScene(Game, Player.GamePlayer.Actors[0]));
             }
 
+            if (Input.keyStateDown.IsKeyDown(Keys.I))
+            {
+                AddSubScene(new InventoryScene(Game));
+            }
+
             if (Input.keyStateDown.IsKeyDown(Keys.B))
             {
                 MapObject.Encounter mob = Player.GamePlayer.Map.Encounters[0];
@@ -183,6 +188,10 @@ namespace FantasyEngine.Classes
                             break;
 
                         case 1:
+                            AddSubScene(new InventoryScene(Game));
+                            break;
+
+                        case 2:
                             Game.Exit();
                             break;
                     }

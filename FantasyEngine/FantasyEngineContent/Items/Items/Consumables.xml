@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+	<Asset Type="FantasyEngineData.Items.Item[]">
+		<Item>
+			<Name>Potion</Name>
+			<Type>Consumable</Type>
+			<Price>10</Price>
+			<AllowableJobs>*</AllowableJobs>
+		</Item>
+		<Item>
+			<Name>Antidote</Name>
+			<Type>Consumable</Type>
+			<Price>15</Price>
+			<AllowableJobs>*</AllowableJobs>
+		</Item>
+	</Asset>
+</XnaContent>

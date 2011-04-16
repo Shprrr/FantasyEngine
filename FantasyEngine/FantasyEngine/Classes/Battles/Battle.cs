@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using FantasyEngineData;
+using FantasyEngineData.Items;
 
 namespace FantasyEngine.Classes.Battles
 {
@@ -122,7 +123,7 @@ namespace FantasyEngine.Classes.Battles
         private bool _CanLose = true;
         private int _Exp = 0;
         private int _Gold = 0;
-        private List<Item> _Treasure = new List<Item>();
+        private List<BaseItem> _Treasure = new List<BaseItem>();
         #endregion Fields
 
         /// <summary>
@@ -205,7 +206,7 @@ namespace FantasyEngine.Classes.Battles
 #endif
                                 if (actor.Level != oldLevel)
                                     Scene.AddSubScene(new FantasyEngine.Classes.Menus.LevelUpScene(Game, actor));
-                                Player.GamePlayer.Gold += _Gold / nbActor;
+                                Player.GamePlayer.Inventory.Gold += _Gold / nbActor;
                                 Player.GamePlayer.Inventory.AddRange(_Treasure);
                             }
                         }
@@ -1023,7 +1024,7 @@ namespace FantasyEngine.Classes.Battles
 
             int x = 16;
             int y = 32 + (GameMain.font.LineSpacing * 2) + Window.Tileset.TileHeight;
-            foreach (Item item in _Treasure)
+            foreach (BaseItem item in _Treasure)
             {
                 spriteBatch.DrawString(GameMain.font, item.Name, new Vector2(x, y), Color.White);
                 y += GameMain.font.LineSpacing;

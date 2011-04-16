@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <XnaContent>
 	<Asset Type="FantasyEngineData.BaseJob">
+		<JobAbbreviation>On</JobAbbreviation>
 		<JobName>Onionkid</JobName>
 		<MaxHp>50</MaxHp>
 		<MaxMp>10</MaxMp>

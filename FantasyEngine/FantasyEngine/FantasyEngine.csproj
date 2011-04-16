@@ -123,6 +123,7 @@
     <Compile Include="Classes\Input.cs" />
     <Compile Include="Classes\MapObject.cs" />
     <Compile Include="Classes\Menus\CharacterScene.cs" />
+    <Compile Include="Classes\Menus\InventoryScene.cs" />
     <Compile Include="Classes\Menus\LevelUpScene.cs" />
     <Compile Include="Classes\Player.cs" />
     <Compile Include="Classes\Scene.cs" />

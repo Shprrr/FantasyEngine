@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FantasyEngineData;
+using FantasyEngineData.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -79,7 +80,7 @@ namespace FantasyEngine.Classes.Battles
         public Vector2 BattlerPosition;
 
         public int GoldToGive = 0;
-        public List<Item> Treasure = new List<Item>();
+        public List<BaseItem> Treasure = new List<BaseItem>();
 
         public int multiplierRH, multiplierLH;
         public int damageRH, damageLH;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FantasyEngineData;
+using FantasyEngineData.Items;
 
 namespace FantasyEngine.Classes
 {
@@ -16,11 +17,9 @@ namespace FantasyEngine.Classes
 
         public Character[] Actors = new Character[MAX_ACTOR];
         public Sprite Hero;
-        public List<Item> Inventory = new List<Item>();
+        public Inventory Inventory = new Inventory();
         //Quest
         //Bank
         public MapObject Map;
-
-        public int Gold { get; set; }
     }
 }

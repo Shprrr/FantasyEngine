@@ -26,20 +26,15 @@
 					<LevelMaximum>1</LevelMaximum>
 					<Gold>4</Gold>
 					<Treasure>
-						<Item>
-							<Name>Potion</Name>
-						</Item>
+						<Item>Items\Potion</Item>
+						<Item>Weapons\Short Sword</Item>
 					</Treasure>
 				</DropRule>
 				<DropRule>
 					<Gold>8</Gold>
 					<Treasure>
-						<Item>
-							<Name>Potion</Name>
-						</Item>
-						<Item>
-							<Name>Antidote</Name>
-						</Item>
+						<Item>Items\Potion</Item>
+						<Item>Items\Antidote</Item>
 					</Treasure>
 				</DropRule>
 			</Drops>

@@ -94,9 +94,21 @@ namespace FantasyEngine
             font = Content.Load<SpriteFont>(@"Images\font_normal");
             font.LineSpacing += 2;
 
-            cursor = Content.Load<Texture2D>("Images/cursor");
+            cursor = Content.Load<Texture2D>(@"Images\cursor");
 
-            Classes.Window.Tileset = new Tileset(Content.Load<Texture2D>("Images/window_tileset"), 8, 8);
+            Classes.Window.Tileset = new Tileset(Content.Load<Texture2D>(@"Images\window_tileset"), 8, 8);
+
+            // Load all items in the ItemManager
+            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Items\Consumables"));
+            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Weapons\Knives"));
+            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Weapons\Swords"));
+
+//#if DEBUG
+//            // TESTS
+//            //FantasyEngineData.Items.ItemManager.Load(new FantasyEngineData.Items.BaseItem[] { Content.Load<FantasyEngineData.Items.Weapon>(@"Items\Weapons\Sword") });
+//            FantasyEngineData.Monster mob = Content.Load<FantasyEngineData.Monster>(@"Monsters\Goblin");
+//            // TESTS
+//#endif
         }
 
         /// <summary>

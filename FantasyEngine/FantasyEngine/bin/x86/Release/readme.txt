@@ -6,6 +6,7 @@ Backspace    : Cancel/Return.
 Page Up/Down : Scroll the CTB Window.
 Esc          : Main menu.
 C            : Character Screen.
+I            : Inventory Screen.
 F9           : Mute the music.
 
 Special debug commands

@@ -8,9 +8,9 @@ namespace FantasyEngine.Classes
 {
     public class Selectable : Window
     {
-        protected int mItem_max = 1;
-        protected int mColumn_max = 1;
-        protected int mIndex = -1;
+        protected int _Item_max = 1;
+        protected int _Column_max = 1;
+        protected int _Index = -1;
         protected int oy = 0;
 
         public Selectable(Game game, int x, int y, int width, int height)
@@ -25,15 +25,12 @@ namespace FantasyEngine.Classes
             if (!Visible)
                 return;
 
-            //GRRLIB_Printf(mRectangle.left, mRectangle.bottom + 20, pFontNormal, clrNormal, 1, 
-            //    "Ac:%i IteMax:%i Inde:%i ColMax:%i", mActive, mItem_max, mIndex, mColumn_max);
-
             //Draw the cursor
-            if (mIndex < 0)
+            if (_Index < 0)
                 return;
 
             ////Get current row
-            //int row = mIndex / mColumn_max;
+            //int row = _Index / _Column_max;
 
             //// If current row is before top row
             //if (row < getTop_Row())
@@ -50,17 +47,13 @@ namespace FantasyEngine.Classes
             //}
 
             // Calculate cursor width
-            int cursor_width = Rectangle.Width / mColumn_max - 32;
+            int cursor_width = Rectangle.Width / _Column_max - 32;
 
             // Calculate cursor coordinates
-            int cursorx = mIndex % mColumn_max * (cursor_width + 32);
-            int cursory = mIndex / mColumn_max * GameMain.font.LineSpacing - oy;
-
-            //GRRLIB_Printf(mRectangle.left, mRectangle.bottom + 40, pFontNormal, clrNormal, 1, 
-            //    "cursorx:%i cursory:%i", cursorx, cursory);
+            int cursorx = _Index % _Column_max * (cursor_width + 32);
+            int cursory = _Index / _Column_max * GameMain.font.LineSpacing - oy;
 
             // Update cursor rectangle
-            //self.cursor_rect.set(x, y, cursor_width, 32)
             GameMain.spriteBatch.Draw(GameMain.cursor,
                 new Vector2(Rectangle.Left + Tileset.TileWidth + cursorx,
                     Rectangle.Top + Tileset.TileHeight + cursory) + Offset,
@@ -75,18 +68,18 @@ namespace FantasyEngine.Classes
                 return;
 
             //If cursor is movable
-            if (Enabled && mItem_max > 0 && mIndex >= 0)
+            if (Enabled && _Item_max > 0 && _Index >= 0)
             {
                 if (Input.keyStateHeld.IsKeyDown(Keys.Down))
                 {
                     // If column count is 1 and directional button was pressed down with no
                     // repeat, or if cursor position is more to the front than
                     // (item count - column count)
-                    if ((mColumn_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Down)) ||
-                        mIndex < mItem_max - mColumn_max)
+                    if ((_Column_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Down)) ||
+                        _Index < _Item_max - _Column_max)
                     {
                         // Move cursor down
-                        mIndex = (mIndex + mColumn_max) % mItem_max;
+                        _Index = (_Index + _Column_max) % _Item_max;
                     }
 
                     Input.PutDelay(Keys.Down);
@@ -97,11 +90,11 @@ namespace FantasyEngine.Classes
                 {
                     // If column count is 1 and directional button was pressed up with no
                     // repeat, or if cursor position is more to the back than column count
-                    if ((mColumn_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Up)) ||
-                        mIndex >= mColumn_max)
+                    if ((_Column_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Up)) ||
+                        _Index >= _Column_max)
                     {
                         // Move cursor up
-                        mIndex = (mIndex - mColumn_max + mItem_max) % mItem_max;
+                        _Index = (_Index - _Column_max + _Item_max) % _Item_max;
                     }
 
                     Input.PutDelay(Keys.Up);
@@ -112,10 +105,10 @@ namespace FantasyEngine.Classes
                 {
                     // If column count is 2 or more, and cursor position is closer to front
                     // than (item count -1)
-                    if (mColumn_max >= 2 && mIndex < mItem_max - 1)
+                    if (_Column_max >= 2 && _Index < _Item_max - 1)
                     {
                         // Move cursor right
-                        mIndex += 1;
+                        _Index += 1;
                     }
 
                     Input.PutDelay(Keys.Right);
@@ -125,10 +118,10 @@ namespace FantasyEngine.Classes
                 if (Input.keyStateHeld.IsKeyDown(Keys.Left))
                 {
                     // If column count is 2 or more, and cursor position is more back than 0
-                    if (mColumn_max >= 2 && mIndex > 0)
+                    if (_Column_max >= 2 && _Index > 0)
                     {
                         // Move cursor left
-                        mIndex -= 1;
+                        _Index -= 1;
                     }
 
                     Input.PutDelay(Keys.Left);
@@ -144,10 +137,10 @@ namespace FantasyEngine.Classes
         /// </summary>
         public int CursorPosition
         {
-            get { return mIndex; }
+            get { return _Index; }
             set
             {
-                mIndex = value;
+                _Index = value;
 
                 //Update help
             }
@@ -184,19 +177,36 @@ namespace FantasyEngine.Classes
         /// Compute rows from number of items and columns.
         /// </summary>
         /// <returns></returns>
-        public int getRow_max() { return (mItem_max + mColumn_max - 1) / mColumn_max; }
+        public int getRow_max() { return (_Item_max + _Column_max - 1) / _Column_max; }
     }
 
     public class Command : Selectable
     {
         private string[] _Choices;
 
+        public string[] Choices
+        {
+            get { return _Choices; }
+            set
+            {
+                _Choices = value;
+                _Item_max = value.Length;
+                Rectangle.Height = (value.Length / _Column_max * GameMain.font.LineSpacing) + (Tileset.TileHeight * 2);
+            }
+        }
+
         public Command(Game game, int width, string[] choices)
             : base(game, 0, 0, width, (choices.Length * GameMain.font.LineSpacing) + (Tileset.TileHeight * 2))
         {
-            _Choices = choices;
-            mIndex = 0;
-            mItem_max = _Choices.Length;
+            Choices = choices;
+            _Index = 0;
+        }
+
+        public Command(Game game, int width, string[] choices, int nbColumn)
+            : this(game, width, choices)
+        {
+            _Column_max = nbColumn;
+            Rectangle.Height = (choices.Length / _Column_max * GameMain.font.LineSpacing) + (Tileset.TileHeight * 2);
         }
 
         public override void Draw(GameTime gameTime)
@@ -206,10 +216,13 @@ namespace FantasyEngine.Classes
             if (!Visible)
                 return;
 
+            // Calculate cursor width
+            int cursor_width = Rectangle.Width / _Column_max - 32;
+
             for (int i = 0; i < _Choices.Length; i++)
                 GameMain.spriteBatch.DrawString(GameMain.font, _Choices[i],
-                    new Vector2(Rectangle.Left + Tileset.TileWidth + GameMain.cursor.Width,
-                        Rectangle.Top + Tileset.TileHeight + i * GameMain.font.LineSpacing) + Offset,
+                    new Vector2(Rectangle.Left + Tileset.TileWidth + GameMain.cursor.Width * 1.5f + i % _Column_max * (cursor_width + 32),
+                        Rectangle.Top + Tileset.TileHeight + i / _Column_max * GameMain.font.LineSpacing - oy) + Offset,
                     Color.White);
         }
     }

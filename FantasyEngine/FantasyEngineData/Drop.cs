@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FantasyEngineData.Items;
 using Microsoft.Xna.Framework.Content;
 
 namespace FantasyEngineData
@@ -26,15 +27,20 @@ namespace FantasyEngineData
             }
 
             public int Gold { get; set; }
-            public List<Item> Treasure { get; set; }
+
+            [ContentSerializerIgnore()]
+            public List<BaseItem> Treasure { get; set; }
+            [ContentSerializer(ElementName = "Treasure")]
+            public List<string> TreasureRef { get; set; }
 
             public DropRule()
             {
                 Gold = 0;
-                Treasure = new List<Item>();
+                Treasure = new List<BaseItem>();
+                TreasureRef = new List<string>();
             }
 
-            public DropRule(int gold, List<Item> treasure)
+            public DropRule(int gold, List<BaseItem> treasure)
             {
                 Gold = gold;
                 Treasure = treasure;
@@ -66,12 +72,39 @@ namespace FantasyEngineData
                 foreach (Item item in Treasure)
                 {
                     treasure += oper + item;
-                    oper = ",";
+                    oper = "; ";
                 }
 
                 treasure += "}";
 
                 return condition + "G:" + Gold + " Items:" + treasure;
+            }
+        }
+
+        public class DropRuleContentReader : ContentTypeReader<DropRule>
+        {
+            protected override DropRule Read(ContentReader input, DropRule existingInstance)
+            {
+                DropRule dropRule = existingInstance;
+
+                if (dropRule == null)
+                {
+                    dropRule = new DropRule();
+                }
+
+                dropRule.LevelMinimum = input.ReadInt32();
+                dropRule.LevelMaximum = input.ReadInt32();
+                dropRule.Gold = input.ReadInt32();
+                dropRule.TreasureRef = input.ReadObject<List<string>>();
+
+                // Add all treasure in the treasure list.
+                foreach (string treasure in dropRule.TreasureRef)
+                {
+                    string[] trea = treasure.Trim().Split('\\');
+                    dropRule.Treasure.Add(ItemManager.GetBaseItem(trea[0], trea[1]));
+                }
+
+                return dropRule;
             }
         }
 
@@ -91,7 +124,7 @@ namespace FantasyEngineData
 
         }
 
-        public void GetDrop(Job job, ref int gold, ref List<Item> treasure)
+        public void GetDrop(Job job, ref int gold, ref List<BaseItem> treasure)
         {
             foreach (DropRule rule in Drops)
             {

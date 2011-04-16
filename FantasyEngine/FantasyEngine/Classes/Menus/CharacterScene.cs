@@ -10,7 +10,7 @@ namespace FantasyEngine.Classes.Menus
 {
     public class CharacterScene : Scene
     {
-        private int cursorIndex = 0;
+        private int _CursorIndex = 0;
         private Window _CharacterWindow;
         /// <summary>
         /// Character who is shown.
@@ -97,14 +97,14 @@ namespace FantasyEngine.Classes.Menus
             if (_RealActiveCharacter.StatRemaining > 0)
             {
                 // Place the cursor to his place for his index.
-                if (cursorIndex < 12)
-                    if (cursorIndex % 2 == 0)
-                        spriteBatch.Draw(GameMain.cursor, new Vector2(244, 236 + (cursorIndex / 2 * 22)) + offset, Color.White);
+                if (_CursorIndex < 12)
+                    if (_CursorIndex % 2 == 0)
+                        spriteBatch.Draw(GameMain.cursor, new Vector2(244, 236 + (_CursorIndex / 2 * 22)) + offset, Color.White);
                     else
-                        spriteBatch.Draw(GameMain.cursor, new Vector2(326, 236 + ((cursorIndex - 1) / 2 * 22)) + offset,
+                        spriteBatch.Draw(GameMain.cursor, new Vector2(326, 236 + ((_CursorIndex - 1) / 2 * 22)) + offset,
                             null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, 0);
                 else
-                    if (cursorIndex == 12)
+                    if (_CursorIndex == 12)
                         spriteBatch.Draw(GameMain.cursor, new Vector2(90, 398) + offset, Color.White);
                     else
                         spriteBatch.Draw(GameMain.cursor, new Vector2(188, 398) + offset, Color.White);
@@ -153,13 +153,14 @@ namespace FantasyEngine.Classes.Menus
 
             if (_RealActiveCharacter.StatRemaining > 0)
             {
+                //TODO: Encapsuler dans une classe Cursor ?
                 if (Input.keyStateHeld.IsKeyDown(Keys.Up))
                 {
                     if ((column_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Up)) ||
-                        cursorIndex >= column_max)
+                        _CursorIndex >= column_max)
                     {
                         // Move cursor up
-                        cursorIndex = (cursorIndex - column_max + item_max) % item_max;
+                        _CursorIndex = (_CursorIndex - column_max + item_max) % item_max;
                     }
 
                     Input.PutDelay(Keys.Up);
@@ -169,10 +170,10 @@ namespace FantasyEngine.Classes.Menus
                 if (Input.keyStateHeld.IsKeyDown(Keys.Down))
                 {
                     if ((column_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Down)) ||
-                        cursorIndex < item_max - column_max)
+                        _CursorIndex < item_max - column_max)
                     {
                         // Move cursor down
-                        cursorIndex = (cursorIndex + column_max) % item_max;
+                        _CursorIndex = (_CursorIndex + column_max) % item_max;
                     }
 
                     Input.PutDelay(Keys.Down);
@@ -182,10 +183,10 @@ namespace FantasyEngine.Classes.Menus
                 if (Input.keyStateHeld.IsKeyDown(Keys.Left))
                 {
                     // If column count is 2 or more, and cursor position is more back than 0
-                    if (column_max >= 2 && cursorIndex > 0)
+                    if (column_max >= 2 && _CursorIndex > 0)
                     {
                         // Move cursor left
-                        cursorIndex -= 1;
+                        _CursorIndex -= 1;
                     }
 
                     Input.PutDelay(Keys.Left);
@@ -196,10 +197,10 @@ namespace FantasyEngine.Classes.Menus
                 {
                     // If column count is 2 or more, and cursor position is closer to front
                     // than (item count -1)
-                    if (column_max >= 2 && cursorIndex < item_max - 1)
+                    if (column_max >= 2 && _CursorIndex < item_max - 1)
                     {
                         // Move cursor right
-                        cursorIndex += 1;
+                        _CursorIndex += 1;
                     }
 
                     Input.PutDelay(Keys.Right);
@@ -208,7 +209,7 @@ namespace FantasyEngine.Classes.Menus
 
                 if (Input.keyStateDown.IsKeyDown(Keys.Enter))
                 {
-                    switch (cursorIndex)
+                    switch (_CursorIndex)
                     {
                         case 0: //-Strength
                             if (_RealActiveCharacter.Strength < ActiveCharacter.Strength)

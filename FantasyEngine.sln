@@ -7,9 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyEngineContent", "Fan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyEngineData", "FantasyEngine\FantasyEngineData\FantasyEngineData.csproj", "{4C3BB6F4-B8EC-4CA6-BF33-BAE546823200}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyEngineContentPipelineExt", "FantasyEngine\FantasyEngineContentPipelineExt\FantasyEngineContentPipelineExt.csproj", "{094DA10E-F01D-42C6-9250-4AEB7626B539}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://maxime-pc:8080/tfs/defaultcollection
 		SccLocalPath0 = .
@@ -22,6 +24,9 @@ Global
 		SccProjectUniqueName3 = FantasyEngine\\FantasyEngineData\\FantasyEngineData.csproj
 		SccProjectName3 = FantasyEngine/FantasyEngineData
 		SccLocalPath3 = FantasyEngine\\FantasyEngineData
+		SccProjectUniqueName4 = FantasyEngine\\FantasyEngineContentPipelineExt\\FantasyEngineContentPipelineExt.csproj
+		SccProjectName4 = FantasyEngine/FantasyEngineContentPipelineExt
+		SccLocalPath4 = FantasyEngine\\FantasyEngineContentPipelineExt
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -38,6 +43,10 @@ Global
 		{4C3BB6F4-B8EC-4CA6-BF33-BAE546823200}.Debug|x86.Build.0 = Debug|x86
 		{4C3BB6F4-B8EC-4CA6-BF33-BAE546823200}.Release|x86.ActiveCfg = Release|x86
 		{4C3BB6F4-B8EC-4CA6-BF33-BAE546823200}.Release|x86.Build.0 = Release|x86
+		{094DA10E-F01D-42C6-9250-4AEB7626B539}.Debug|x86.ActiveCfg = Debug|x86
+		{094DA10E-F01D-42C6-9250-4AEB7626B539}.Debug|x86.Build.0 = Debug|x86
+		{094DA10E-F01D-42C6-9250-4AEB7626B539}.Release|x86.ActiveCfg = Debug|x86
+		{094DA10E-F01D-42C6-9250-4AEB7626B539}.Release|x86.Build.0 = Debug|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

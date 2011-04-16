@@ -96,12 +96,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Items\Armor.cs" />
+    <Compile Include="Items\BaseItem.cs" />
     <Compile Include="BaseJob.cs" />
     <Compile Include="BattleSprite.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="Drop.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Item.cs" />
+    <Compile Include="Items\Inventory.cs" />
+    <Compile Include="Items\Item.cs" />
+    <Compile Include="Items\ItemManager.cs" />
+    <Compile Include="Items\Shield.cs" />
+    <Compile Include="Items\Weapon.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="Monster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Content;
 
 namespace FantasyEngineData
 {
@@ -24,6 +25,9 @@ namespace FantasyEngineData
         public BattleSprite BattleSprite;
 
         #region Properties
+        [ContentSerializer(Optional = true)]
+        public string JobAbbreviation { get; set; }
+
         public string JobName
         {
             get { return _JobName; }
