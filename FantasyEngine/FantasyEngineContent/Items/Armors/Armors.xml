@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+	<Asset Type="FantasyEngineData.Items.Armor[]">
+		<Item>
+			<Name>Leather Armor</Name>
+			<Type>Armor</Type>
+			<Price>95</Price>
+			<AllowableJobs>*</AllowableJobs>
+			<Location>Body</Location>
+			<DefenseValue>2</DefenseValue>
+			<EvadePourc>1</EvadePourc>
+			<MagicDefenseValue>1</MagicDefenseValue>
+			<MagicEvadePourc>1</MagicEvadePourc>
+		</Item>
+	</Asset>
+</XnaContent>

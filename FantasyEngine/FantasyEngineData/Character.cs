@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FantasyEngineData.Items;
 
 namespace FantasyEngineData
 {
@@ -13,7 +14,8 @@ namespace FantasyEngineData
         public enum eDamageOption
         {
             RIGHT,
-            LEFT
+            LEFT,
+            BOTH
         }
 
         #region Fields
@@ -46,6 +48,7 @@ namespace FantasyEngineData
             }
         }
 
+        #region Stats
         public int Level
         {
             get { return CurrentJob != null ? CurrentJob.Level : 0; }
@@ -133,6 +136,7 @@ namespace FantasyEngineData
             get { return CurrentJob != null ? CurrentJob.StatRemaining : 0; }
             set { if (CurrentJob != null) CurrentJob.StatRemaining = value; }
         }
+        #endregion Stats
 
         public Status Statut
         {
@@ -141,6 +145,157 @@ namespace FantasyEngineData
         }
 
         public bool IsDead { get { return Hp == 0; } }
+
+        #region Equipments
+        private BaseItem _RightHand = null;
+        private BaseItem _LeftHand = null;
+        private Armor _Head = null;
+        private Armor _Body = null;
+        private Armor _Arms = null;
+        private Armor _Feet = null;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public BaseItem RightHand
+        {
+            get { return _RightHand; }
+            set
+            {
+                if (value == null && _RightHand != null)
+                {
+                    _RightHand.IsEquiped = false;
+                    _RightHand = value;
+                    RaiseOnEquipmentChanged();
+                }
+
+                if ((value is Weapon || value is Shield)
+                    && value.IsAllowed(CurrentJob.BaseJob))
+                {
+                    value.IsEquiped = true;
+                    _RightHand = value;
+                    RaiseOnEquipmentChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public BaseItem LeftHand
+        {
+            get { return _LeftHand; }
+            set
+            {
+                if (value == null && _LeftHand != null)
+                {
+                    _LeftHand.IsEquiped = false;
+                    _LeftHand = value;
+                    RaiseOnEquipmentChanged();
+                }
+
+                if ((value is Weapon || value is Shield)
+                    && value.IsAllowed(CurrentJob.BaseJob))
+                {
+                    value.IsEquiped = true;
+                    _LeftHand = value;
+                    RaiseOnEquipmentChanged();
+                }
+            }
+        }
+
+        public Armor Head
+        {
+            get { return _Head; }
+            set
+            {
+                if (value == null && _Head != null)
+                {
+                    _Head.IsEquiped = false;
+                    _Head = value;
+                    RaiseOnEquipmentChanged();
+                }
+
+                if (value is Armor
+                   && value.IsAllowed(CurrentJob.BaseJob)
+                   && value.Location == ArmorLocation.Head)
+                {
+                    value.IsEquiped = true;
+                    _Head = value;
+                    RaiseOnEquipmentChanged();
+                }
+            }
+        }
+
+        public Armor Body
+        {
+            get { return _Body; }
+            set
+            {
+                if (value == null && _Body != null)
+                {
+                    _Body.IsEquiped = false;
+                    _Body = value;
+                    RaiseOnEquipmentChanged();
+                }
+
+                if (value is Armor
+                   && value.IsAllowed(CurrentJob.BaseJob)
+                   && value.Location == ArmorLocation.Body)
+                {
+                    value.IsEquiped = true;
+                    _Body = value;
+                    RaiseOnEquipmentChanged();
+                }
+            }
+        }
+
+        public Armor Arms
+        {
+            get { return _Arms; }
+            set
+            {
+                if (value == null && _Arms != null)
+                {
+                    _Arms.IsEquiped = false;
+                    _Arms = value;
+                    RaiseOnEquipmentChanged();
+                }
+
+                if (value is Armor
+                   && value.IsAllowed(CurrentJob.BaseJob)
+                   && value.Location == ArmorLocation.Arms)
+                {
+                    value.IsEquiped = true;
+                    _Arms = value;
+                    RaiseOnEquipmentChanged();
+                }
+            }
+        }
+
+        public Armor Feet
+        {
+            get { return _Feet; }
+            set
+            {
+                if (value == null && _Feet != null)
+                {
+                    _Feet.IsEquiped = false;
+                    _Feet = value;
+                    RaiseOnEquipmentChanged();
+                }
+
+                if (value is Armor
+                    && value.IsAllowed(CurrentJob.BaseJob)
+                    && value.Location == ArmorLocation.Feet)
+                {
+                    value.IsEquiped = true;
+                    _Feet = value;
+                    RaiseOnEquipmentChanged();
+                }
+            }
+        }
+        #endregion Equipments
         #endregion Properties
 
         public Character()
@@ -149,29 +304,47 @@ namespace FantasyEngineData
 
         #region Battle Stats
         /// <summary>
-        /// Get the base damage of the current job with the current equipement.
+        /// Get the base damage of the current job with the current equipment.
         /// </summary>
         /// <param name="damageOption"></param>
         /// <returns></returns>
         public int getBaseDamage(eDamageOption damageOption)
         {
-            // 1 barehanded
-            return (Strength / 4) + (Level / 4) + 1/*weapon.Damage*/;
+            int weaponDamage = 0;
+
+            if (damageOption != eDamageOption.LEFT && RightHand is Weapon)
+                weaponDamage += ((Weapon)RightHand).Damage;
+            if (damageOption != eDamageOption.RIGHT && LeftHand is Weapon)
+                weaponDamage += ((Weapon)LeftHand).Damage;
+            if (RightHand == null && LeftHand == null) // Est-ce que Shield est barehand ?
+                weaponDamage = 1; // Barehand
+
+            return (Strength / 4) + (Level / 4) + weaponDamage;
         }
 
         /// <summary>
-        /// Get the hit pourcentage of the current job with the current equipement.
+        /// Get the hit pourcentage of the current job with the current equipment.
         /// </summary>
         /// <param name="damageOption"></param>
         /// <returns></returns>
         public int getHitPourc(eDamageOption damageOption)
         {
-            // 80% barehanded
-            return (Accuracy / 4) + (Level / 4) + 80/*weapon.HitPourc*/;
+            int weaponHitPourc = 0;
+
+            if (damageOption != eDamageOption.LEFT && RightHand is Weapon)
+                weaponHitPourc += ((Weapon)RightHand).HitPourc;
+            if (damageOption != eDamageOption.RIGHT && LeftHand is Weapon)
+                weaponHitPourc += ((Weapon)LeftHand).HitPourc;
+            if (damageOption == eDamageOption.BOTH && RightHand is Weapon && LeftHand is Weapon)
+                weaponHitPourc /= 2; // On a additionné 2 fois un 100%, donc on remet sur 100%
+            if (RightHand == null && LeftHand == null) // Est-ce que Shield est barehand ?
+                weaponHitPourc = 80; // Barehand
+
+            return (Accuracy / 4) + (Level / 4) + weaponHitPourc;
         }
 
         /// <summary>
-        /// Get the maximum hit number times of the current job with the current equipement.
+        /// Get the maximum hit number times of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
         public int getAttackMultiplier()
@@ -181,35 +354,81 @@ namespace FantasyEngineData
         }
 
         /// <summary>
-        /// Get the defense of the current job with the current equipement.
+        /// Get the defense of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
         public int getDefenseDamage()
         {
-            return (Vitality / 2) + 0/*armors.Defense*/;
+            int armorsDefense = 0;
+
+            if (Head != null)
+                armorsDefense += Head.DefenseValue;
+            if (Body != null)
+                armorsDefense += Body.DefenseValue;
+            if (Arms != null)
+                armorsDefense += Arms.DefenseValue;
+            if (Feet != null)
+                armorsDefense += Feet.DefenseValue;
+            if (RightHand is Shield)
+                armorsDefense += ((Shield)RightHand).DefenseValue;
+            if (LeftHand is Shield)
+                armorsDefense += ((Shield)LeftHand).DefenseValue;
+
+            return (Vitality / 2) + armorsDefense;
         }
 
         /// <summary>
-        /// Get the evade pourcentage of the current job with the current equipement.
+        /// Get the evade pourcentage of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
         public int getEvadePourc()
         {
-            return (Agility / 4) + 0/*armors.EvadePourc*/;
+            int armorsEvadePourc = 0;
+
+            if (Head != null)
+                armorsEvadePourc += Head.EvadePourc;
+            if (Body != null)
+                armorsEvadePourc += Body.EvadePourc;
+            if (Arms != null)
+                armorsEvadePourc += Arms.EvadePourc;
+            if (Feet != null)
+                armorsEvadePourc += Feet.EvadePourc;
+            if (RightHand is Shield)
+                armorsEvadePourc += ((Shield)RightHand).EvadePourc;
+            if (LeftHand is Shield)
+                armorsEvadePourc += ((Shield)LeftHand).EvadePourc;
+
+            return (Agility / 4) + armorsEvadePourc;
         }
 
         /// <summary>
-        /// Get the maximum block number times of the current job with the current equipement.
+        /// Get the number of shield currently equiped.
+        /// </summary>
+        /// <returns></returns>
+        private int getNbShield()
+        {
+            int nbShield = 0;
+
+            if (RightHand is Shield)
+                nbShield++;
+            if (LeftHand is Shield)
+                nbShield++;
+
+            return nbShield;
+        }
+
+        /// <summary>
+        /// Get the maximum block number times of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
         public int getDefenseMultiplier()
         {
-            return /*getNbShield() > 0 ? ((Agility / 16) + (Level / 16) + 1) * getNbShield() :*/
+            return getNbShield() > 0 ? ((Agility / 16) + (Level / 16) + 1) * getNbShield() :
                 (Agility / 32) + (Level / 32);
         }
 
         /// <summary>
-        /// Get the magic base damage of the current job with the current equipement.
+        /// Get the magic base damage of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
         public int getMagicBaseDamage()
@@ -219,7 +438,7 @@ namespace FantasyEngineData
         }
 
         /// <summary>
-        /// Get the magic hit pourcentage of the current job with the current equipement.
+        /// Get the magic hit pourcentage of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
         public int getMagicHitPourc()
@@ -230,7 +449,7 @@ namespace FantasyEngineData
         }
 
         /// <summary>
-        /// Get the maximum magic hit number times of the current job with the current equipement.
+        /// Get the maximum magic hit number times of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
         public int getMagicAttackMultiplier()
@@ -245,25 +464,55 @@ namespace FantasyEngineData
         /// <returns></returns>
         public int getMagicDefenseDamage()
         {
-            return (Wisdom / 2) + 0/*armors.Defense*/;
+            int armorsDefense = 0;
+
+            if (Head != null)
+                armorsDefense += Head.MagicDefenseValue;
+            if (Body != null)
+                armorsDefense += Body.MagicDefenseValue;
+            if (Arms != null)
+                armorsDefense += Arms.MagicDefenseValue;
+            if (Feet != null)
+                armorsDefense += Feet.MagicDefenseValue;
+            if (RightHand is Shield)
+                armorsDefense += ((Shield)RightHand).MagicDefenseValue;
+            if (LeftHand is Shield)
+                armorsDefense += ((Shield)LeftHand).MagicDefenseValue;
+
+            return (Wisdom / 2) + armorsDefense;
         }
 
         /// <summary>
-        /// Get the magic evade pourcentage of the current job with the current equipement.
+        /// Get the magic evade pourcentage of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
         public int getMagicEvadePourc()
         {
-            return (Agility / 8) + (Wisdom / 8) + 0/*armors.EvadePourc*/;
+            int armorsEvadePourc = 0;
+
+            if (Head != null)
+                armorsEvadePourc += Head.MagicEvadePourc;
+            if (Body != null)
+                armorsEvadePourc += Body.MagicEvadePourc;
+            if (Arms != null)
+                armorsEvadePourc += Arms.MagicEvadePourc;
+            if (Feet != null)
+                armorsEvadePourc += Feet.MagicEvadePourc;
+            if (RightHand is Shield)
+                armorsEvadePourc += ((Shield)RightHand).MagicEvadePourc;
+            if (LeftHand is Shield)
+                armorsEvadePourc += ((Shield)LeftHand).MagicEvadePourc;
+
+            return (Agility / 8) + (Wisdom / 8) + armorsEvadePourc;
         }
 
         /// <summary>
-        /// Get the maximum magic block number times of the current job with the current equipement.
+        /// Get the maximum magic block number times of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
         public int getMagicDefenseMultiplier()
         {
-            return /*getNbShield() > 0 ? ((Agility / 32) + (Wisdom / 32) + (Level / 16) + 1) * getNbShield() :*/
+            return getNbShield() > 0 ? ((Agility / 32) + (Wisdom / 32) + (Level / 16) + 1) * getNbShield() :
                 (Agility / 64) + (Wisdom / 64) + (Level / 32);
             //return (Agility / 32) + (Wisdom / 16); //FF3
         }
@@ -273,6 +522,17 @@ namespace FantasyEngineData
         {
             return Name + " [Lv:" + Level + "]";
         }
+
+        #region Events
+        public delegate void EquipmentChangedHandler(EventArgs e);
+        public event EquipmentChangedHandler EquipmentChanged;
+        protected virtual void RaiseOnEquipmentChanged()
+        {
+            // Raise the event by using the () operator.
+            if (EquipmentChanged != null)
+                EquipmentChanged(new EventArgs());
+        }
+        #endregion Events
 
         #region ICloneable Membres
 

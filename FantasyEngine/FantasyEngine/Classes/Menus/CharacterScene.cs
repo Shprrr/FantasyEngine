@@ -10,7 +10,7 @@ namespace FantasyEngine.Classes.Menus
 {
     public class CharacterScene : Scene
     {
-        private int _CursorIndex = 0;
+        private Cursor CursorWindow;
         private Window _CharacterWindow;
         /// <summary>
         /// Character who is shown.
@@ -21,9 +21,21 @@ namespace FantasyEngine.Classes.Menus
         public CharacterScene(Game game, Character activeCharacter)
             : base(game)
         {
+            CursorWindow = new Cursor(Game, 14, 2);
             _CharacterWindow = new Window(Game, 76, 55, 488, 370);
             _RealActiveCharacter = activeCharacter;
             ActiveCharacter = (Character)activeCharacter.CloneExt();
+            _RealActiveCharacter.EquipmentChanged += new Character.EquipmentChangedHandler(_RealActiveCharacter_EquipmentChanged);
+        }
+
+        private void _RealActiveCharacter_EquipmentChanged(EventArgs e)
+        {
+            ActiveCharacter.RightHand = _RealActiveCharacter.RightHand;
+            ActiveCharacter.LeftHand = _RealActiveCharacter.LeftHand;
+            ActiveCharacter.Head = _RealActiveCharacter.Head;
+            ActiveCharacter.Body = _RealActiveCharacter.Body;
+            ActiveCharacter.Arms = _RealActiveCharacter.Arms;
+            ActiveCharacter.Feet = _RealActiveCharacter.Feet;
         }
 
         public override void Draw(GameTime gameTime)
@@ -71,10 +83,10 @@ namespace FantasyEngine.Classes.Menus
 
             spriteBatch.DrawString(GameMain.font, "Attack:", new Vector2(348, 236) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.getAttackMultiplier() + "x", new Vector2(474, 236) + offset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getBaseDamage(Character.eDamageOption.RIGHT).ToString(),
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getBaseDamage(Character.eDamageOption.BOTH).ToString(),
                 new Vector2(514, 236) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Hit %:", new Vector2(348, 258) + offset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getHitPourc(Character.eDamageOption.RIGHT) + "%", new Vector2(514, 258) + offset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getHitPourc(Character.eDamageOption.BOTH) + "%", new Vector2(514, 258) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Defense:", new Vector2(348, 280) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.getDefenseMultiplier() + "x", new Vector2(474, 280) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.getDefenseDamage().ToString(),
@@ -97,17 +109,22 @@ namespace FantasyEngine.Classes.Menus
             if (_RealActiveCharacter.StatRemaining > 0)
             {
                 // Place the cursor to his place for his index.
-                if (_CursorIndex < 12)
-                    if (_CursorIndex % 2 == 0)
-                        spriteBatch.Draw(GameMain.cursor, new Vector2(244, 236 + (_CursorIndex / 2 * 22)) + offset, Color.White);
+                CursorWindow.Effects = SpriteEffects.None;
+                if (CursorWindow.CursorIndex < 12)
+                    if (CursorWindow.CursorIndex % 2 == 0)
+                        CursorWindow.Position = new Vector2(244, 236 + (CursorWindow.CursorIndex / 2 * 22));
                     else
-                        spriteBatch.Draw(GameMain.cursor, new Vector2(326, 236 + ((_CursorIndex - 1) / 2 * 22)) + offset,
-                            null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, 0);
+                    {
+                        CursorWindow.Position = new Vector2(326, 236 + ((CursorWindow.CursorIndex - 1) / 2 * 22));
+                        CursorWindow.Effects = SpriteEffects.FlipHorizontally;
+                    }
                 else
-                    if (_CursorIndex == 12)
-                        spriteBatch.Draw(GameMain.cursor, new Vector2(90, 398) + offset, Color.White);
+                    if (CursorWindow.CursorIndex == 12)
+                        CursorWindow.Position = new Vector2(90, 398);
                     else
-                        spriteBatch.Draw(GameMain.cursor, new Vector2(188, 398) + offset, Color.White);
+                        CursorWindow.Position = new Vector2(188, 398);
+
+                CursorWindow.Draw(gameTime);
 
                 // Hide the minus if we can't do it.
                 if (_RealActiveCharacter.Strength < ActiveCharacter.Strength)
@@ -148,68 +165,13 @@ namespace FantasyEngine.Classes.Menus
             if (!Input.UpdateInput(gameTime))
                 return;
 
-            int item_max = 14;
-            int column_max = 2;
-
             if (_RealActiveCharacter.StatRemaining > 0)
             {
-                //TODO: Encapsuler dans une classe Cursor ?
-                if (Input.keyStateHeld.IsKeyDown(Keys.Up))
-                {
-                    if ((column_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Up)) ||
-                        _CursorIndex >= column_max)
-                    {
-                        // Move cursor up
-                        _CursorIndex = (_CursorIndex - column_max + item_max) % item_max;
-                    }
-
-                    Input.PutDelay(Keys.Up);
-                    return;
-                }
-
-                if (Input.keyStateHeld.IsKeyDown(Keys.Down))
-                {
-                    if ((column_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Down)) ||
-                        _CursorIndex < item_max - column_max)
-                    {
-                        // Move cursor down
-                        _CursorIndex = (_CursorIndex + column_max) % item_max;
-                    }
-
-                    Input.PutDelay(Keys.Down);
-                    return;
-                }
-
-                if (Input.keyStateHeld.IsKeyDown(Keys.Left))
-                {
-                    // If column count is 2 or more, and cursor position is more back than 0
-                    if (column_max >= 2 && _CursorIndex > 0)
-                    {
-                        // Move cursor left
-                        _CursorIndex -= 1;
-                    }
-
-                    Input.PutDelay(Keys.Left);
-                    return;
-                }
-
-                if (Input.keyStateHeld.IsKeyDown(Keys.Right))
-                {
-                    // If column count is 2 or more, and cursor position is closer to front
-                    // than (item count -1)
-                    if (column_max >= 2 && _CursorIndex < item_max - 1)
-                    {
-                        // Move cursor right
-                        _CursorIndex += 1;
-                    }
-
-                    Input.PutDelay(Keys.Right);
-                    return;
-                }
+                CursorWindow.Update(gameTime);
 
                 if (Input.keyStateDown.IsKeyDown(Keys.Enter))
                 {
-                    switch (_CursorIndex)
+                    switch (CursorWindow.CursorIndex)
                     {
                         case 0: //-Strength
                             if (_RealActiveCharacter.Strength < ActiveCharacter.Strength)
@@ -337,6 +299,9 @@ namespace FantasyEngine.Classes.Menus
                     }
                 }
             }
+
+            if (Input.keyStateDown.IsKeyDown(Keys.E))
+                Scene.AddSubScene(new EquipScene(Game, _RealActiveCharacter));
 
             if (Input.keyStateDown.IsKeyDown(Keys.Escape)
                 || Input.keyStateDown.IsKeyDown(Keys.Back)

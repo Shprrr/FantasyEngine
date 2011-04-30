@@ -185,7 +185,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Items\Armors\" />
+    <Compile Include="Items\Armors\Arms.xml">
+      <Name>Arms</Name>
+      <Importer>XmlImporter</Importer>
+      <Processor>PassThroughProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Items\Weapons\Swords.xml">
@@ -205,6 +209,34 @@
   <ItemGroup>
     <Compile Include="Items\Weapons\Knives.xml">
       <Name>Knives</Name>
+      <Importer>XmlImporter</Importer>
+      <Processor>PassThroughProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Items\Armors\Heads.xml">
+      <Name>Heads</Name>
+      <Importer>XmlImporter</Importer>
+      <Processor>PassThroughProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Items\Armors\Armors.xml">
+      <Name>Armors</Name>
+      <Importer>XmlImporter</Importer>
+      <Processor>PassThroughProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Items\Armors\Feet.xml">
+      <Name>Feet</Name>
+      <Importer>XmlImporter</Importer>
+      <Processor>PassThroughProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Items\Armors\Shields.xml">
+      <Name>Shields</Name>
       <Importer>XmlImporter</Importer>
       <Processor>PassThroughProcessor</Processor>
     </Compile>

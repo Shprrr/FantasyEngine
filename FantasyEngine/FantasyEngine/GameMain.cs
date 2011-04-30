@@ -102,13 +102,11 @@ namespace FantasyEngine
             FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Items\Consumables"));
             FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Weapons\Knives"));
             FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Weapons\Swords"));
-
-//#if DEBUG
-//            // TESTS
-//            //FantasyEngineData.Items.ItemManager.Load(new FantasyEngineData.Items.BaseItem[] { Content.Load<FantasyEngineData.Items.Weapon>(@"Items\Weapons\Sword") });
-//            FantasyEngineData.Monster mob = Content.Load<FantasyEngineData.Monster>(@"Monsters\Goblin");
-//            // TESTS
-//#endif
+            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Heads"));
+            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Armors"));
+            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Arms"));
+            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Feet"));
+            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Shields"));
         }
 
         /// <summary>

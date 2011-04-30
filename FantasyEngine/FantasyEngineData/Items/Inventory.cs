@@ -24,14 +24,21 @@ namespace FantasyEngineData.Items
                 Number = number;
             }
 
-            public static implicit operator InvItem(BaseItem item)
-            {
-                return new InvItem(item);
-            }
-
             public override string ToString()
             {
                 return Item.Name + " * " + Number;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is InvItem)
+                    return Equals(obj as InvItem);
+                return base.Equals(obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
             }
 
             #region IEquatable<InvItem> Membres
@@ -42,6 +49,18 @@ namespace FantasyEngineData.Items
             }
 
             #endregion
+
+            public static implicit operator InvItem(BaseItem item)
+            {
+                return new InvItem(item);
+            }
+
+            public static bool operator ==(InvItem invItem1, InvItem invItem2)
+            {
+                return invItem1.Equals(invItem2);
+            }
+
+            public static bool operator !=(InvItem invItem1, InvItem invItem2) { return !(invItem1 == invItem2); }
         }
 
         private List<InvItem> _Items = new List<InvItem>();
@@ -63,14 +82,19 @@ namespace FantasyEngineData.Items
             Weapons = new List<Weapon>();
         }
 
+        public void Add(InvItem invItem)
+        {
+            if (Items.Contains(invItem))
+                Items.Find(i => i == invItem).Number += invItem.Number;
+            else
+                Items.Add(invItem);
+        }
+
         public void AddRange(List<BaseItem> items)
         {
             foreach (BaseItem item in items)
             {
-                if (Items.Contains(item))
-                    Items.Find(i => i.Item == item).Number++;
-                else
-                    Items.Add(new InvItem(item, 1));
+                Add(item);
             }
         }
 

@@ -11,21 +11,29 @@ namespace FantasyEngine.Classes.Menus
     {
         private readonly string[] USE_COMMANDS = { "Use", "Sort", "Discard" };
         private readonly string[] EQUIP_COMMANDS = { "Equip", "Sort", "Discard" };
+        private readonly string[] ITEM_EQUIP_COMMANDS = { "Right Hand", "Head", "Left Hand", "Body", "Arms", "Feet" };
 
-        private int _CursorIndex = 0;
+        private Cursor CursorWindow;
         private int _CursorSortBeginIndex = -1;
         private Window _InventoryWindow;
         private Command _UseCommand;
+        private Command _EquipCommand;
 
         public InventoryScene(Game game)
             : base(game)
         {
+            CursorWindow = new Cursor(Game, Player.GamePlayer.Inventory.Items.Count, 2);
             _InventoryWindow = new Window(Game, 76, 55, 488, 370);
 
             _UseCommand = new Command(Game, 472, USE_COMMANDS, 3);
             _UseCommand.ChangeOffset(84, _InventoryWindow.Rectangle.Bottom - _UseCommand.Rectangle.Height - Window.Tileset.TileHeight);
             _UseCommand.Enabled = false;
             _UseCommand.Visible = false;
+
+            _EquipCommand = new Command(Game, 472, ITEM_EQUIP_COMMANDS, 2);
+            _EquipCommand.ChangeOffset(84, _InventoryWindow.Rectangle.Bottom - _UseCommand.Rectangle.Height - Window.Tileset.TileHeight);
+            _EquipCommand.Enabled = false;
+            _EquipCommand.Visible = false;
         }
 
         public override void Draw(GameTime gameTime)
@@ -55,17 +63,19 @@ namespace FantasyEngine.Classes.Menus
             spriteBatch.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold, new Vector2(110, 390) + offset, Color.White);
 
             // Draw cursor
-            spriteBatch.Draw(GameMain.cursor,
-                new Vector2((_CursorIndex % 2 == 0 ? 90 : 327), 96 + _CursorIndex / 2 * 16) + offset, Color.White);
+            CursorWindow.Position = new Vector2((CursorWindow.CursorIndex % 2 == 0 ? 90 : 327), 96 + CursorWindow.CursorIndex / 2 * 16);
+            CursorWindow.Draw(gameTime);
 
             if (_CursorSortBeginIndex >= 0)
-                spriteBatch.Draw(GameMain.cursor,
-                    new Vector2((_CursorSortBeginIndex % 2 == 0 ? 90 : 327), 96 + _CursorSortBeginIndex / 2 * 16) + offset, Color.White * 0.5f);
+                Cursor.DrawShadow(gameTime, new Vector2((_CursorSortBeginIndex % 2 == 0 ? 90 : 327), 96 + _CursorSortBeginIndex / 2 * 16));
 
             GameMain.ScissorReset();
 
             _UseCommand.Offset = offset;
             _UseCommand.Draw(gameTime);
+
+            _EquipCommand.Offset = offset;
+            _EquipCommand.Draw(gameTime);
         }
 
         public override void Update(GameTime gameTime)
@@ -74,83 +84,41 @@ namespace FantasyEngine.Classes.Menus
 
             _UseCommand.Update(gameTime);
 
+            _EquipCommand.Update(gameTime);
+
             if (!Input.UpdateInput(gameTime))
                 return;
 
-            int item_max = Player.GamePlayer.Inventory.Items.Count;
-            int column_max = 2;
+            CursorWindow.ItemMax = Player.GamePlayer.Inventory.Items.Count;
 
             // Command actif ou on est en train de faire un tri
-            if (!_UseCommand.Enabled /*|| _CursorSortBeginIndex >= 0*/)
+            if (!_UseCommand.Enabled && !_EquipCommand.Enabled)
             {
-                //TODO: Encapsuler dans une classe Cursor ?
-                if (Input.keyStateHeld.IsKeyDown(Keys.Up))
-                {
-                    if ((column_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Up)) ||
-                        _CursorIndex >= column_max)
-                    {
-                        // Move cursor up
-                        _CursorIndex = (_CursorIndex - column_max + item_max) % item_max;
-                    }
-
-                    Input.PutDelay(Keys.Up);
-                    return;
-                }
-
-                if (Input.keyStateHeld.IsKeyDown(Keys.Down))
-                {
-                    if ((column_max == 1 && Input.keyStateDown.IsKeyDown(Keys.Down)) ||
-                        _CursorIndex < item_max - column_max)
-                    {
-                        // Move cursor down
-                        _CursorIndex = (_CursorIndex + column_max) % item_max;
-                    }
-
-                    Input.PutDelay(Keys.Down);
-                    return;
-                }
-
-                if (Input.keyStateHeld.IsKeyDown(Keys.Left))
-                {
-                    // If column count is 2 or more, and cursor position is more back than 0
-                    if (column_max >= 2 && _CursorIndex > 0)
-                    {
-                        // Move cursor left
-                        _CursorIndex -= 1;
-                    }
-
-                    Input.PutDelay(Keys.Left);
-                    return;
-                }
-
-                if (Input.keyStateHeld.IsKeyDown(Keys.Right))
-                {
-                    // If column count is 2 or more, and cursor position is closer to front
-                    // than (item count -1)
-                    if (column_max >= 2 && _CursorIndex < item_max - 1)
-                    {
-                        // Move cursor right
-                        _CursorIndex += 1;
-                    }
-
-                    Input.PutDelay(Keys.Right);
-                    return;
-                }
+                CursorWindow.Update(gameTime);
             }
 
             if (Input.keyStateDown.IsKeyDown(Keys.Enter))
             {
-                BaseItem item = Player.GamePlayer.Inventory.Items[_CursorIndex].Item;
+                BaseItem item = Player.GamePlayer.Inventory.Items[CursorWindow.CursorIndex].Item;
                 if (_UseCommand.Enabled)
                     switch (_UseCommand.CursorPosition)
                     {
                         case 0: // Use/Equip
+                            if (item is Item)
+                            {
+                                // Use
+                            }
+                            else
+                            {
+                                // Equip
+                                _EquipCommand.Enabled = true;
+                                _EquipCommand.Visible = true;
+                            }
                             _UseCommand.Enabled = false;
-                            _UseCommand.Visible = false;
                             break;
 
                         case 1: // Sort
-                            _CursorSortBeginIndex = _CursorIndex;
+                            _CursorSortBeginIndex = CursorWindow.CursorIndex;
                             _UseCommand.Enabled = false;
                             break;
 
@@ -168,6 +136,65 @@ namespace FantasyEngine.Classes.Menus
                     _UseCommand.Enabled = false;
                     _UseCommand.Visible = false;
                 }
+                else if (_EquipCommand.Enabled)
+                {
+                    BaseItem lastItemEquiped = null;
+                    switch (_EquipCommand.CursorPosition)
+                    {
+                        case 0: // Right Hand
+                            lastItemEquiped = Player.GamePlayer.Actors[0].RightHand;
+                            Player.GamePlayer.Actors[0].RightHand = item;
+                            break;
+
+                        case 1: // Head
+                            if (item is Armor)
+                            {
+                                lastItemEquiped = Player.GamePlayer.Actors[0].Head;
+                                Player.GamePlayer.Actors[0].Head = (Armor)item;
+                            }
+                            break;
+
+                        case 2: // Left Hand
+                            lastItemEquiped = Player.GamePlayer.Actors[0].LeftHand;
+                            Player.GamePlayer.Actors[0].LeftHand = item;
+                            break;
+
+                        case 3: // Body
+                            if (item is Armor)
+                            {
+                                lastItemEquiped = Player.GamePlayer.Actors[0].Body;
+                                Player.GamePlayer.Actors[0].Body = (Armor)item;
+                            }
+                            break;
+
+                        case 4: // Arms
+                            if (item is Armor)
+                            {
+                                lastItemEquiped = Player.GamePlayer.Actors[0].Arms;
+                                Player.GamePlayer.Actors[0].Arms = (Armor)item;
+                            }
+                            break;
+
+                        case 5: // Feet
+                            if (item is Armor)
+                            {
+                                lastItemEquiped = Player.GamePlayer.Actors[0].Feet;
+                                Player.GamePlayer.Actors[0].Feet = (Armor)item;
+                            }
+                            break;
+                    }
+
+                    if (item.IsEquiped)
+                    {
+                        Player.GamePlayer.Inventory.Drop(item);
+                        if (lastItemEquiped != null)
+                            Player.GamePlayer.Inventory.Add(lastItemEquiped);
+
+                        _EquipCommand.Enabled = false;
+                        _EquipCommand.Visible = false;
+                        _UseCommand.Visible = false;
+                    }
+                }
                 else
                 {
                     _UseCommand.Choices = item is Item ? USE_COMMANDS : EQUIP_COMMANDS;
@@ -179,15 +206,22 @@ namespace FantasyEngine.Classes.Menus
             if (Input.keyStateDown.IsKeyDown(Keys.Escape)
                 || Input.keyStateDown.IsKeyDown(Keys.Back))
             {
-                // Annule un tri
-                if (_UseCommand.Enabled)
+                if (_EquipCommand.Enabled)
+                {
+                    _EquipCommand.Enabled = false;
+                    _EquipCommand.Visible = false;
+                    _UseCommand.Enabled = true;
+                    _UseCommand.Visible = true;
+                }
+                else if (_UseCommand.Enabled)
                 {
                     _UseCommand.Enabled = false;
                     _UseCommand.Visible = false;
                 }
                 else if (_CursorSortBeginIndex >= 0)
                 {
-                    _CursorIndex = _CursorSortBeginIndex;
+                    // Annule un tri
+                    CursorWindow.CursorIndex = _CursorSortBeginIndex;
                     _CursorSortBeginIndex = -1;
                     _UseCommand.Enabled = true;
                 }

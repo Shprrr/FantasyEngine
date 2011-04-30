@@ -2,9 +2,9 @@
 <XnaContent>
 	<Asset Type="FantasyEngineData.Monster">
 		<JobName>Goblin</JobName>
-		<MaxHp>4</MaxHp>
+		<MaxHp>40</MaxHp>
 		<MaxMp>0</MaxMp>
-		<Strength>5</Strength>
+		<Strength>25</Strength>
 		<Vitality>3</Vitality>
 		<Accuracy>2</Accuracy>
 		<Agility>1</Agility>

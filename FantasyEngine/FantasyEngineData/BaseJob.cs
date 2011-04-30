@@ -148,22 +148,5 @@ namespace FantasyEngineData
         {
 
         }
-
-        public BaseJob(string jobName, int hp, int mp,
-            int strength, int defense, int accuracy, int agility, int magic, int magicDefense,
-            BattleSprite pBattleSprite)
-        {
-            JobName = jobName;
-            MaxHp = hp;
-            MaxMp = mp;
-            Strength = strength;
-            Vitality = defense;
-            Accuracy = accuracy;
-            Agility = agility;
-            Intelligence = magic;
-            Wisdom = magicDefense;
-
-            BattleSprite = pBattleSprite;
-        }
     }
 }

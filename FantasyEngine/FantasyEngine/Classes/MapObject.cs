@@ -82,8 +82,6 @@ namespace FantasyEngine.Classes
             // a camera moving. we also cast to integers to avoid filtering artifacts
             GameMain.cameraMatrix = Matrix.CreateTranslation((int)-Offset.X, (int)-Offset.Y, 0);
 
-            //GameMain.spriteBatch.End();
-            //GameMain.spriteBatch.Begin(0, null, null, null, null, null, GameMain.cameraMatrix);
             Rectangle visibleArea = new Rectangle(
                 (int)Offset.X,
                 (int)Offset.Y,
@@ -91,8 +89,6 @@ namespace FantasyEngine.Classes
                 GraphicsDevice.Viewport.Height);
 
             _MapData.Draw(GameMain.spriteBatch, visibleArea);
-            //GameMain.spriteBatch.End();
-            //GameMain.spriteBatch.Begin();
         }
     }
 }

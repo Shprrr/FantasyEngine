@@ -102,6 +102,13 @@ namespace FantasyEngine.Classes.Battles
 
             IndexCurrentJob = character.IndexCurrentJob;
 
+            RightHand = character.RightHand;
+            LeftHand = character.LeftHand;
+            Head = character.Head;
+            Body = character.Body;
+            Arms = character.Arms;
+            Feet = character.Feet;
+
             BattleSprite? battleSprite = character.CurrentJob.BattleSprite;
             if (battleSprite.HasValue)
             {
@@ -218,13 +225,19 @@ namespace FantasyEngine.Classes.Battles
             damageRH = 0;
             damageLH = 0;
 
-            //Si un Weapon est équipée dans la main droite
+            if (attacker.RightHand is Weapon)
             {
                 CalculateDamage(attacker, eDamageOption.RIGHT, ref multiplierRH, ref damageRH);
             }
 
-            //Si un Weapon est équipée dans la main gauche
+            if (attacker.LeftHand is Weapon)
             {
+                CalculateDamage(attacker, eDamageOption.LEFT, ref multiplierLH, ref damageLH);
+            }
+
+            if (!(attacker.RightHand is Weapon && attacker.LeftHand is Weapon))
+            {
+                CalculateDamage(attacker, eDamageOption.RIGHT, ref multiplierRH, ref damageRH);
             }
         }
 

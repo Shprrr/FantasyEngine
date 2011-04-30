@@ -64,6 +64,11 @@ namespace FantasyEngine.Classes
             //Player.GamePlayer.Inventory.Items.Add(ItemManager.GetWeapon("Knife"), 1);
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetItem("Potion"), 2));
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetWeapon("Knife"), 1));
+            Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetShield("Leather Shield"), 2));
+            Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetArmor("Leather Helmet"), 1));
+            Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetArmor("Leather Armor"), 1));
+            Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetArmor("Leather Gloves"), 1));
+            Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetArmor("Leather Boots"), 1));
             Player.GamePlayer.Inventory.Gold = 20;
 
             Scene.ChangeMainScene(new Overworld(Game));
@@ -80,6 +85,8 @@ namespace FantasyEngine.Classes
             state = eState.STATE_MAIN;
             cursorIndex = eCursor.CUR_NEW_GAME; //TODO: Détecter si ya au moins un save pour changer le default
             cursorIndexSelection = 0; //TODO: Détecter le dernier save utilisé
+
+            GameMain.cameraMatrix = Matrix.Identity;
         }
 
         protected override void LoadContent()

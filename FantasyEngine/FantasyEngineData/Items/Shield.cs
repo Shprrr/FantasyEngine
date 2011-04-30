@@ -8,52 +8,81 @@ namespace FantasyEngineData.Items
     {
         #region Field Region
         int defenseValue;
-        int defenseModifier;
+        //int defenseModifier;
+        int evadePourc;
+        int magicDefenseValue;
+        int magicEvadePourc;
         #endregion
 
         #region Property Region
         public int DefenseValue
         {
             get { return defenseValue; }
-            protected set { defenseValue = value; }
+            set { defenseValue = value; }
         }
-        public int DefenseModifier
+        //public int DefenseModifier
+        //{
+        //    get { return defenseModifier; }
+        //    protected set { defenseModifier = value; }
+        //}
+        public int EvadePourc
         {
-            get { return defenseModifier; }
-            protected set { defenseModifier = value; }
+            get { return evadePourc; }
+            set { evadePourc = value; }
+        }
+        public int MagicDefenseValue
+        {
+            get { return magicDefenseValue; }
+            set { magicDefenseValue = value; }
+        }
+        public int MagicEvadePourc
+        {
+            get { return magicEvadePourc; }
+            set { magicEvadePourc = value; }
         }
         #endregion
 
         #region Constructor Region
+        public Shield()
+            : base()
+        {
+        }
+
         public Shield(
                 string shieldName,
                 string shieldType,
                 int price,
                 float weight,
                 int defenseValue,
-                int defenseModifier,
-                params BaseJob[] allowableClasses)
-            : base(shieldName, shieldType, price, weight, allowableClasses)
+            //int defenseModifier,
+                int evadePourc,
+                int magicDefenseValue,
+                int magicEvadePourc,
+                string allowableJobs)
+            : base(shieldName, shieldType, price, weight, allowableJobs)
         {
             DefenseValue = defenseValue;
-            DefenseModifier = defenseModifier;
+            //DefenseModifier = defenseModifier;
+            EvadePourc = evadePourc;
+            MagicDefenseValue = magicDefenseValue;
+            MagicEvadePourc = magicEvadePourc;
         }
         #endregion
 
         #region Abstract Method Region
         public override object Clone()
         {
-            BaseJob[] allowedClasses = new BaseJob[allowableJobs.Count];
-            for (int i = 0; i < allowableJobs.Count; i++)
-                allowedClasses[i] = allowableJobs[i];
             Shield shield = new Shield(
-            Name,
-            Type,
-            Price,
-            Weight,
-            DefenseValue,
-            DefenseModifier,
-            allowedClasses);
+                Name,
+                Type,
+                Price,
+                Weight,
+                DefenseValue,
+                //DefenseModifier,
+                EvadePourc,
+                MagicDefenseValue,
+                MagicEvadePourc,
+                AllowableJobs);
             return shield;
         }
 
@@ -61,9 +90,13 @@ namespace FantasyEngineData.Items
         {
             string shieldString = base.ToString() + ", ";
             shieldString += DefenseValue.ToString() + ", ";
-            shieldString += DefenseModifier.ToString();
-            foreach (BaseJob t in allowableJobs)
-                shieldString += ", " + t.JobName;
+            //shieldString += DefenseModifier.ToString();
+            shieldString += EvadePourc.ToString() + ", ";
+            shieldString += MagicDefenseValue.ToString() + ", ";
+            shieldString += MagicEvadePourc.ToString() + ", ";
+            //foreach (BaseJob t in allowableJobs)
+            //    shieldString += ", " + t.JobName;
+            shieldString += ", " + AllowableJobs;
             return shieldString;
         }
         #endregion

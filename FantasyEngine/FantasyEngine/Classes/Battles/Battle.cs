@@ -773,7 +773,17 @@ namespace FantasyEngine.Classes.Battles
                 switch (_CurrentAction.kind)
                 {
                     case BattleAction.eKind.ATTACK:
-                        spriteBatch.DrawString(GameMain.font, "Sword swing !", new Vector2(0, 200), Color.White);
+                        //spriteBatch.DrawString(GameMain.font, "Sword swing !", new Vector2(0, 200), Color.White);
+                        if (_OrderBattle[0].battler.RightHand != null)
+                            spriteBatch.DrawString(GameMain.font,
+                                _OrderBattle[0].battler.RightHand.Name + " swing !", new Vector2(0, 200), Color.White);
+
+                        if (_OrderBattle[0].battler.LeftHand != null)
+                            spriteBatch.DrawString(GameMain.font,
+                                _OrderBattle[0].battler.LeftHand.Name + " swing !", new Vector2(0, 220), Color.White);
+
+                        if (_OrderBattle[0].battler.RightHand == null && _OrderBattle[0].battler.LeftHand == null)
+                            spriteBatch.DrawString(GameMain.font, "Barehand swing !", new Vector2(0, 200), Color.White);
                         break;
 
                     case BattleAction.eKind.MAGIC:
@@ -802,7 +812,17 @@ namespace FantasyEngine.Classes.Battles
                 switch (_CurrentAction.kind)
                 {
                     case BattleAction.eKind.ATTACK:
-                        spriteBatch.DrawString(GameMain.font, "Sword hitted !", new Vector2(0, 220), Color.White);
+                        //spriteBatch.DrawString(GameMain.font, "Sword hitted !", new Vector2(0, 220), Color.White);
+                        if (_OrderBattle[0].battler.RightHand != null)
+                            spriteBatch.DrawString(GameMain.font,
+                                _OrderBattle[0].battler.RightHand.Name + " hitted !", new Vector2(0, 200), Color.White);
+
+                        if (_OrderBattle[0].battler.LeftHand != null)
+                            spriteBatch.DrawString(GameMain.font,
+                                _OrderBattle[0].battler.LeftHand.Name + " hitted !", new Vector2(0, 220), Color.White);
+
+                        if (_OrderBattle[0].battler.RightHand == null && _OrderBattle[0].battler.LeftHand == null)
+                            spriteBatch.DrawString(GameMain.font, "Barehand hitted !", new Vector2(0, 200), Color.White);
                         break;
 
                     case BattleAction.eKind.MAGIC:
@@ -836,9 +856,11 @@ namespace FantasyEngine.Classes.Battles
                         for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
                             if (_TargetBattler[i] != null)
                             {
-                                string damage = _TargetBattler[i].multiplierRH == 0 ? MISS :
-                                    _TargetBattler[i].multiplierRH + " hit" + (_TargetBattler[i].multiplierRH > 1 ? "s" : "") +
-                                    Environment.NewLine + _TargetBattler[i].damageRH;
+                                int totalMultiplier = _TargetBattler[i].multiplierRH + _TargetBattler[i].multiplierLH;
+                                int totalDamage = _TargetBattler[i].damageRH + _TargetBattler[i].damageLH;
+                                string damage = totalMultiplier == 0 ? MISS :
+                                    totalMultiplier + " hit" + (totalMultiplier > 1 ? "s" : "") +
+                                    Environment.NewLine + totalDamage;
                                 spriteBatch.DrawString(GameMain.font, damage,
                                     new Vector2(_TargetBattler[i].BattlerPosition.X,
                                         _TargetBattler[i].BattlerPosition.Y - 12),

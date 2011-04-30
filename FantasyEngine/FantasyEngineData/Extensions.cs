@@ -24,7 +24,10 @@ namespace FantasyEngineData
 
             foreach (FieldInfo fi in fields)
             {
-                //We query if the fiels support the ICloneable interface.
+                if (fi.FieldType.BaseType == typeof(MulticastDelegate))
+                    continue;
+
+                //We query if the fields support the ICloneable interface.
                 Type ICloneType = fi.FieldType.
                             GetInterface("ICloneable", true);
 

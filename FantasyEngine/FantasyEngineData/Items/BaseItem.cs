@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Content;
 namespace FantasyEngineData.Items
 {
     public enum Hands { One, Two }
-    public enum ArmorLocation { Body, Head, Hands, Feet }
+    public enum ArmorLocation { Body, Head, Arms, Feet }
 
     public abstract class BaseItem
     {
@@ -17,7 +17,6 @@ namespace FantasyEngineData.Items
         string type;
         int price;
         float weight;
-        protected List<BaseJob> allowableJobs = new List<BaseJob>();
         bool equipped = false;
         #endregion
 
@@ -48,18 +47,13 @@ namespace FantasyEngineData.Items
             protected set { weight = value; }
         }
 
-        [ContentSerializerIgnore()]
-        public List<BaseJob> AllowableJobs
-        {
-            get { return allowableJobs; }
-        }
-        [ContentSerializer(ElementName = "AllowableJobs")]
-        public string AllowableJobsRef { get; set; }
+        public string AllowableJobs { get; set; }
 
+        [ContentSerializerIgnore()]
         public bool IsEquiped
         {
             get { return equipped; }
-            protected set { equipped = value; }
+            set { if (!(this is Item)) equipped = value; }
         }
         #endregion
 
@@ -69,24 +63,38 @@ namespace FantasyEngineData.Items
 
         }
 
-        public BaseItem(string name, string type, int price, float weight, params BaseJob[]
-            allowableClasses)
+        public BaseItem(string name, string type, int price, float weight, string allowableJobs)
         {
-            foreach (BaseJob job in allowableClasses)
-                AllowableJobs.Add(job);
             Name = name;
             Type = type;
             Price = price;
             Weight = weight;
+            AllowableJobs = allowableJobs;
         }
         #endregion
 
-        #region Abstract Method Region
+        #region Methods
         public abstract object Clone();
 
-        public virtual bool CanEquip(BaseJob characterType)
+        /// <summary>
+        /// Determine if the job is allowed to use this item.
+        /// </summary>
+        /// <param name="job">Job who wants to use this item</param>
+        /// <returns></returns>
+        public bool IsAllowed(BaseJob job)
         {
-            return allowableJobs.Contains(characterType);
+            if (AllowableJobs == "*")
+                return true;
+
+            string[] allowableJobs = AllowableJobs.Trim().Split(' ');
+
+            foreach (string allowableJob in allowableJobs)
+            {
+                if (job.JobAbbreviation == allowableJob)
+                    return true;
+            }
+
+            return false;
         }
 
         public override string ToString()
@@ -98,27 +106,27 @@ namespace FantasyEngineData.Items
             itemString += Weight.ToString();
             return itemString;
         }
-        #endregion
 
-        /// <summary>
-        /// Determine if the job is allowed to use this item.
-        /// </summary>
-        /// <param name="job">Job who wants to use this item</param>
-        /// <returns></returns>
-        public bool IsAllowed(BaseJob job)
+        public override bool Equals(object obj)
         {
-            if (AllowableJobsRef == "*")
-                return true;
-
-            string[] allowableJobs = AllowableJobsRef.Trim().Split(' ');
-
-            foreach (string allowableJob in allowableJobs)
-            {
-                if (job.JobAbbreviation == allowableJob)
-                    return true;
-            }
-
-            return false;
+            if (obj is BaseItem)
+                return Name == ((BaseItem)obj).Name;
+            return base.Equals(obj);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+        #endregion Methods
+
+        public static bool operator ==(BaseItem item1, BaseItem item2)
+        {
+            if (((object)item1) == null)
+                return ((object)item2) == null;
+            return item1.Equals(item2);
+        }
+
+        public static bool operator !=(BaseItem item1, BaseItem item2) { return !(item1 == item2); }
     }
 }

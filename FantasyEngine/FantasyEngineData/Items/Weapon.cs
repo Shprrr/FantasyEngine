@@ -59,8 +59,8 @@ namespace FantasyEngineData.Items
             //int damageModifier,
                 int hitPourc,
             //int attackModifier,
-                params BaseJob[] allowableClasses)
-            : base(weaponName, weaponType, price, weight, allowableClasses)
+                string allowableJobs)
+            : base(weaponName, weaponType, price, weight, allowableJobs)
         {
             NumberHands = hands;
             Damage = damage;
@@ -73,9 +73,6 @@ namespace FantasyEngineData.Items
         #region Abstract Method Region
         public override object Clone()
         {
-            BaseJob[] allowedClasses = new BaseJob[allowableJobs.Count];
-            for (int i = 0; i < allowableJobs.Count; i++)
-                allowedClasses[i] = allowableJobs[i];
             Weapon weapon = new Weapon(
             Name,
             Type,
@@ -86,7 +83,7 @@ namespace FantasyEngineData.Items
                 //DamageModifier,
             HitPourc,
                 //AttackModifier,
-            allowedClasses);
+            AllowableJobs);
             return weapon;
         }
 
@@ -98,8 +95,9 @@ namespace FantasyEngineData.Items
             //weaponString += DamageModifier.ToString();
             weaponString += HitPourc.ToString() + "%, ";
             //weaponString += AttackModifier.ToString() + ", ";
-            foreach (BaseJob t in allowableJobs)
-                weaponString += ", " + t.JobName;
+            //foreach (BaseJob t in allowableJobs)
+            //    weaponString += ", " + t.JobName;
+            weaponString += ", " + AllowableJobs;
             return base.ToString();
         }
         #endregion

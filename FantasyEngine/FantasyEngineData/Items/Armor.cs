@@ -9,60 +9,89 @@ namespace FantasyEngineData.Items
         #region Field Region
         ArmorLocation location;
         int defenseValue;
-        int defenseModifier;
+        //int defenseModifier;
+        int evadePourc;
+        int magicDefenseValue;
+        int magicEvadePourc;
         #endregion
 
         #region Property Region
         public ArmorLocation Location
         {
             get { return location; }
-            protected set { location = value; }
+            set { location = value; }
         }
         public int DefenseValue
         {
             get { return defenseValue; }
-            protected set { defenseValue = value; }
+            set { defenseValue = value; }
         }
-        public int DefenseModifier
+        //public int DefenseModifier
+        //{
+        //    get { return defenseModifier; }
+        //    protected set { defenseModifier = value; }
+        //}
+        public int EvadePourc
         {
-            get { return defenseModifier; }
-            protected set { defenseModifier = value; }
+            get { return evadePourc; }
+            set { evadePourc = value; }
+        }
+        public int MagicDefenseValue
+        {
+            get { return magicDefenseValue; }
+            set { magicDefenseValue = value; }
+        }
+        public int MagicEvadePourc
+        {
+            get { return magicEvadePourc; }
+            set { magicEvadePourc = value; }
         }
         #endregion
 
         #region Constructor Region
+        public Armor()
+            : base()
+        {
+        }
+
         public Armor(
                 string armorName,
                 string armorType,
                 int price,
                 float weight,
-                ArmorLocation locaion,
+                ArmorLocation location,
                 int defenseValue,
-                int defenseModifier,
-                params BaseJob[] allowableClasses)
-            : base(armorName, armorType, price, weight, allowableClasses)
+            //int defenseModifier,
+                int evadePourc,
+                int magicDefenseValue,
+                int magicEvadePourc,
+                string allowableJobs)
+            : base(armorName, armorType, price, weight, allowableJobs)
         {
             Location = location;
             DefenseValue = defenseValue;
-            DefenseModifier = defenseModifier;
+            //DefenseModifier = defenseModifier;
+            EvadePourc = evadePourc;
+            MagicDefenseValue = magicDefenseValue;
+            MagicEvadePourc = magicEvadePourc;
         }
         #endregion
 
         #region Abstract Method Region
         public override object Clone()
         {
-            BaseJob[] allowedClasses = new BaseJob[allowableJobs.Count];
-            for (int i = 0; i < allowableJobs.Count; i++)
-                allowedClasses[i] = allowableJobs[i];
             Armor armor = new Armor(
-            Name,
-            Type,
-            Price,
-            Weight,
-            Location,
-            DefenseValue,
-            DefenseModifier,
-            allowedClasses);
+                Name,
+                Type,
+                Price,
+                Weight,
+                Location,
+                DefenseValue,
+                //DefenseModifier,
+                EvadePourc,
+                MagicDefenseValue,
+                MagicEvadePourc,
+                AllowableJobs);
             return armor;
         }
 
@@ -71,9 +100,13 @@ namespace FantasyEngineData.Items
             string armorString = base.ToString() + ", ";
             armorString += Location.ToString() + ", ";
             armorString += DefenseValue.ToString() + ", ";
-            armorString += DefenseModifier.ToString();
-            foreach (BaseJob t in allowableJobs)
-                armorString += ", " + t.JobName;
+            //armorString += DefenseModifier.ToString();
+            armorString += EvadePourc.ToString() + ", ";
+            armorString += MagicDefenseValue.ToString() + ", ";
+            armorString += MagicEvadePourc.ToString() + ", ";
+            //foreach (BaseJob t in allowableJobs)
+            //    armorString += ", " + t.JobName;
+            armorString += ", " + AllowableJobs;
             return armorString;
         }
         #endregion
