@@ -10,21 +10,18 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using FantasyEngine.Classes;
 
-using System.Reflection;
-using System.Collections;
-
 namespace FantasyEngine
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class GameMain : Microsoft.Xna.Framework.Game
+    public class GameMain : Game
     {
         // Le mot commence par S, fini par X et a un E au milieu.
         // J'espère que tu ne penses pas croche.
         // Réponse : SquareEnix
 
-        GraphicsDeviceManager graphics;
+        #region Static fields
         protected static Rectangle defaultScissor;
 
         /// <summary>
@@ -47,8 +44,10 @@ namespace FantasyEngine
         /// Cursor for menus.
         /// </summary>
         public static Texture2D cursor;
+        #endregion Static fields
 
         private bool showFps = false;
+        private GraphicsDeviceManager graphics;
 
 
         public GameMain()
@@ -100,6 +99,7 @@ namespace FantasyEngine
 
             // Load all items in the ItemManager
             FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Items\Consumables"));
+            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Items\Offensives"));
             FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Weapons\Knives"));
             FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Weapons\Swords"));
             FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Heads"));

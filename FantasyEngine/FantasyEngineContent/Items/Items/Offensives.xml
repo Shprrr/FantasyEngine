@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+	<Asset Type="FantasyEngineData.Items.Item[]">
+		<Item>
+			<Name>Ultima Scroll</Name>
+			<Type>Offensive</Type>
+			<Price>1000</Price>
+			<AllowableJobs>*</AllowableJobs>
+			<Effect>
+				<Type>Flare</Type>
+				<Value>5</Value>
+				<Multiplier>3</Multiplier>
+			</Effect>
+			<DefaultTarget>MULTI_ENEMY</DefaultTarget>
+		</Item>
+	</Asset>
+</XnaContent>

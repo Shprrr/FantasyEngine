@@ -40,7 +40,6 @@ namespace FantasyEngineData.Items
         //    get { return attackModifier; }
         //    protected set { attackModifier = value; }
         //}
-        //TODO: Elements, Effets
         #endregion
 
         #region Constructor Region
@@ -59,8 +58,9 @@ namespace FantasyEngineData.Items
             //int damageModifier,
                 int hitPourc,
             //int attackModifier,
-                string allowableJobs)
-            : base(weaponName, weaponType, price, weight, allowableJobs)
+                string allowableJobs,
+                Effect effect)
+            : base(weaponName, weaponType, price, weight, allowableJobs, effect)
         {
             NumberHands = hands;
             Damage = damage;
@@ -74,16 +74,17 @@ namespace FantasyEngineData.Items
         public override object Clone()
         {
             Weapon weapon = new Weapon(
-            Name,
-            Type,
-            Price,
-            Weight,
-            NumberHands,
-            Damage,
+                Name,
+                Type,
+                Price,
+                Weight,
+                NumberHands,
+                Damage,
                 //DamageModifier,
-            HitPourc,
+                HitPourc,
                 //AttackModifier,
-            AllowableJobs);
+                AllowableJobs,
+                Effect);
             return weapon;
         }
 

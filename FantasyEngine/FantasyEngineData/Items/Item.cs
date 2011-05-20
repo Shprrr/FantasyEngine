@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
+using FantasyEngineData.Battles;
 
 namespace FantasyEngineData.Items
 {
     public class Item : BaseItem
     {
+        public const string TYPE_CONSUMABLE = "Consumable";
+
+        public eTargetType DefaultTarget { get; set; }
+
         #region Constructors
         public Item()
             : base()
@@ -14,10 +19,10 @@ namespace FantasyEngineData.Items
 
         }
 
-        public Item(string name, string type, int price, float weight, string allowableJobs)
-            : base(name, type, price, weight, allowableJobs)
+        public Item(string name, string type, int price, float weight, string allowableJobs, Effect effect, eTargetType defaultTarget)
+            : base(name, type, price, weight, allowableJobs, effect)
         {
-
+            DefaultTarget = defaultTarget;
         }
         #endregion Constructors
 
@@ -29,7 +34,9 @@ namespace FantasyEngineData.Items
                 Type,
                 Price,
                 Weight,
-                AllowableJobs);
+                AllowableJobs,
+                Effect,
+                DefaultTarget);
             return item;
         }
         #endregion Abstract Method Region

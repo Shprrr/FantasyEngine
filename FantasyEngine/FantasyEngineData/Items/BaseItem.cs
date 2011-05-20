@@ -49,6 +49,9 @@ namespace FantasyEngineData.Items
 
         public string AllowableJobs { get; set; }
 
+        [ContentSerializer(Optional = true)]
+        public Effect Effect { get; set; }
+
         [ContentSerializerIgnore()]
         public bool IsEquiped
         {
@@ -63,13 +66,14 @@ namespace FantasyEngineData.Items
 
         }
 
-        public BaseItem(string name, string type, int price, float weight, string allowableJobs)
+        public BaseItem(string name, string type, int price, float weight, string allowableJobs, Effect effect)
         {
             Name = name;
             Type = type;
             Price = price;
             Weight = weight;
             AllowableJobs = allowableJobs;
+            Effect = effect;
         }
         #endregion
 

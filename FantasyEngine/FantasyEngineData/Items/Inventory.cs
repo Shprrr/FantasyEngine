@@ -70,16 +70,20 @@ namespace FantasyEngineData.Items
 
         public int Gold { get; set; }
 
+#if false
         [ContentSerializerIgnore]
         public List<Weapon> Weapons { get; set; }
 
         public List<string> WeaponList { get; set; }
+#endif
 
         public Inventory()
         {
             Gold = 0;
 
+#if false
             Weapons = new List<Weapon>();
+#endif
         }
 
         public void Add(InvItem invItem)
@@ -123,6 +127,13 @@ namespace FantasyEngineData.Items
             Items.Insert(index, item);
         }
 
+        public void Use(BaseItem item, Character user, Character target = null)
+        {
+            if (item.Effect != null
+                && item.Effect.Use(user, target))
+                Drop(item);
+        }
+
         public override string ToString()
         {
             return "G=" + Gold + "; Unique item=" + Items.Count + "; Item count=" + Items.Sum(i => i.Number);
@@ -140,6 +151,7 @@ namespace FantasyEngineData.Items
                 inventory = new Inventory();
             }
 
+#if false
             //inventory.Name = input.ReadString();
             //armory.ArmorList = input.ReadObject<List<string>>();
             inventory.WeaponList = input.ReadObject<List<string>>();
@@ -150,6 +162,7 @@ namespace FantasyEngineData.Items
                 Weapon newWeapon = input.ContentManager.Load<Weapon>(weapon).Clone() as Weapon;
                 inventory.Weapons.Add(newWeapon);
             }
+#endif
 
             return inventory;
         }

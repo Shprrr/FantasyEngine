@@ -9,6 +9,11 @@ namespace FantasyEngineData
     public static class Extensions
     {
         /// <summary>
+        /// Generate random number.
+        /// </summary>
+        public static Random rand = new Random();
+
+        /// <summary>
         /// Clone the object, and returning a reference to a cloned object.
         /// </summary>
         /// <returns>Reference to the new cloned object.</returns>
@@ -127,6 +132,5 @@ namespace FantasyEngineData
             }
             return newObject;
         }
-
     }
 }

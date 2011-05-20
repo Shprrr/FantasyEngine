@@ -107,6 +107,10 @@ namespace FantasyEngine.Classes.Menus
                             if (item is Item)
                             {
                                 // Use
+                                //TODO: Choose an Actor.
+                                if (item.Type == Item.TYPE_CONSUMABLE)
+                                    Player.GamePlayer.Inventory.Use(item, Player.GamePlayer.Actors[0]);
+                                _UseCommand.Visible = false;
                             }
                             else
                             {
@@ -139,6 +143,7 @@ namespace FantasyEngine.Classes.Menus
                 else if (_EquipCommand.Enabled)
                 {
                     BaseItem lastItemEquiped = null;
+                    //TODO: Choose an Actor.
                     switch (_EquipCommand.CursorPosition)
                     {
                         case 0: // Right Hand

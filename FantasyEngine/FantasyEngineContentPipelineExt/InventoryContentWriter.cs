@@ -24,9 +24,11 @@ namespace FantasyEngineContentPipelineExt
     {
         protected override void Write(ContentWriter output, TWrite value)
         {
+#if false
             //output.Write(value.Name);
             //output.WriteObject<List<string>>(value.ArmorList);
             output.WriteObject<List<string>>(value.WeaponList);
+#endif
         }
 
         public override string GetRuntimeReader(TargetPlatform targetPlatform)

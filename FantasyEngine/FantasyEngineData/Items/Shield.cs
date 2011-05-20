@@ -58,8 +58,9 @@ namespace FantasyEngineData.Items
                 int evadePourc,
                 int magicDefenseValue,
                 int magicEvadePourc,
-                string allowableJobs)
-            : base(shieldName, shieldType, price, weight, allowableJobs)
+                string allowableJobs,
+                Effect effect)
+            : base(shieldName, shieldType, price, weight, allowableJobs, effect)
         {
             DefenseValue = defenseValue;
             //DefenseModifier = defenseModifier;
@@ -82,7 +83,8 @@ namespace FantasyEngineData.Items
                 EvadePourc,
                 MagicDefenseValue,
                 MagicEvadePourc,
-                AllowableJobs);
+                AllowableJobs,
+                Effect);
             return shield;
         }
 

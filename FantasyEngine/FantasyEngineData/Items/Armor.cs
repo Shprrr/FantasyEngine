@@ -65,8 +65,9 @@ namespace FantasyEngineData.Items
                 int evadePourc,
                 int magicDefenseValue,
                 int magicEvadePourc,
-                string allowableJobs)
-            : base(armorName, armorType, price, weight, allowableJobs)
+                string allowableJobs,
+                Effect effect)
+            : base(armorName, armorType, price, weight, allowableJobs, effect)
         {
             Location = location;
             DefenseValue = defenseValue;
@@ -91,7 +92,8 @@ namespace FantasyEngineData.Items
                 EvadePourc,
                 MagicDefenseValue,
                 MagicEvadePourc,
-                AllowableJobs);
+                AllowableJobs,
+                Effect);
             return armor;
         }
 

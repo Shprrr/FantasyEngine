@@ -11,11 +11,17 @@ namespace FantasyEngineData
         public const int MAX_JOB = 4;
 
         //TODO: Transferer dans les Weapons
-        public enum eDamageOption
+        public enum ePhysicalDamageOption
         {
             RIGHT,
             LEFT,
             BOTH
+        }
+        public enum eMagicalDamageOption
+        {
+            NONE,
+            BLACK,
+            WHITE
         }
 
         #region Fields
@@ -308,13 +314,13 @@ namespace FantasyEngineData
         /// </summary>
         /// <param name="damageOption"></param>
         /// <returns></returns>
-        public int getBaseDamage(eDamageOption damageOption)
+        public int getBaseDamage(ePhysicalDamageOption damageOption)
         {
             int weaponDamage = 0;
 
-            if (damageOption != eDamageOption.LEFT && RightHand is Weapon)
+            if (damageOption != ePhysicalDamageOption.LEFT && RightHand is Weapon)
                 weaponDamage += ((Weapon)RightHand).Damage;
-            if (damageOption != eDamageOption.RIGHT && LeftHand is Weapon)
+            if (damageOption != ePhysicalDamageOption.RIGHT && LeftHand is Weapon)
                 weaponDamage += ((Weapon)LeftHand).Damage;
             if (RightHand == null && LeftHand == null) // Est-ce que Shield est barehand ?
                 weaponDamage = 1; // Barehand
@@ -327,15 +333,15 @@ namespace FantasyEngineData
         /// </summary>
         /// <param name="damageOption"></param>
         /// <returns></returns>
-        public int getHitPourc(eDamageOption damageOption)
+        public int getHitPourc(ePhysicalDamageOption damageOption)
         {
             int weaponHitPourc = 0;
 
-            if (damageOption != eDamageOption.LEFT && RightHand is Weapon)
+            if (damageOption != ePhysicalDamageOption.LEFT && RightHand is Weapon)
                 weaponHitPourc += ((Weapon)RightHand).HitPourc;
-            if (damageOption != eDamageOption.RIGHT && LeftHand is Weapon)
+            if (damageOption != ePhysicalDamageOption.RIGHT && LeftHand is Weapon)
                 weaponHitPourc += ((Weapon)LeftHand).HitPourc;
-            if (damageOption == eDamageOption.BOTH && RightHand is Weapon && LeftHand is Weapon)
+            if (damageOption == ePhysicalDamageOption.BOTH && RightHand is Weapon && LeftHand is Weapon)
                 weaponHitPourc /= 2; // On a additionné 2 fois un 100%, donc on remet sur 100%
             if (RightHand == null && LeftHand == null) // Est-ce que Shield est barehand ?
                 weaponHitPourc = 80; // Barehand
@@ -430,31 +436,61 @@ namespace FantasyEngineData
         /// <summary>
         /// Get the magic base damage of the current job with the current equipment.
         /// </summary>
+        /// <param name="damageOption"></param>
+        /// <param name="spellDamage"></param>
         /// <returns></returns>
-        public int getMagicBaseDamage()
+        public int getMagicBaseDamage(eMagicalDamageOption damageOption, int spellDamage)
         {
-            //return (Intelligence / 2) + 1; //FF3
-            return (Intelligence / 4) + (Level / 4) + 1;
+            //return (Intelligence / 2) + spellDamage; //FF3
+            switch (damageOption)
+            {
+                case eMagicalDamageOption.BLACK:
+                    return (Intelligence / 4) + (Level / 4) + spellDamage;
+                case eMagicalDamageOption.WHITE:
+                    return (Wisdom / 4) + (Level / 4) + spellDamage;
+                default:
+                    return (Intelligence / 8) + (Wisdom / 8) + (Level / 4) + spellDamage;
+            }
         }
 
         /// <summary>
         /// Get the magic hit pourcentage of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
-        public int getMagicHitPourc()
+        public int getMagicHitPourc(eMagicalDamageOption damageOption, int spellHitPourc)
         {
             // 80% barehanded
-            //return (Intelligence / 2) + 80; //FF3
-            return (Intelligence / 8) + (Accuracy / 8) + (Level / 4) + 80/*magic.HitPourc*/;
+            //return (Intelligence / 2) + spellHitPourc; //FF3
+            switch (damageOption)
+            {
+                case eMagicalDamageOption.BLACK:
+                    return (Intelligence / 8) + (Accuracy / 8) + (Level / 4) + spellHitPourc;
+                case eMagicalDamageOption.WHITE:
+                    return (Wisdom / 8) + (Accuracy / 8) + (Level / 4) + spellHitPourc;
+                default:
+                    return (Intelligence / 16) + (Wisdom / 16) + (Accuracy / 8) + (Level / 4) + spellHitPourc;
+            }
         }
 
         /// <summary>
         /// Get the maximum magic hit number times of the current job with the current equipment.
         /// </summary>
         /// <returns></returns>
-        public int getMagicAttackMultiplier()
+        public int getMagicAttackMultiplier(eMagicalDamageOption damageOption)
         {
-            int attMul = (Intelligence / 16) + (Level / 16) + 1;
+            int attMul = 0;
+            switch (damageOption)
+            {
+                case eMagicalDamageOption.BLACK:
+                    attMul = (Intelligence / 16) + (Level / 16) + 1;
+                    break;
+                case eMagicalDamageOption.WHITE:
+                    attMul = (Wisdom / 16) + (Level / 16) + 1;
+                    break;
+                default:
+                    attMul = (Intelligence / 32) + (Wisdom / 32) + (Level / 16) + 1;
+                    break;
+            }
             return attMul < 16 ? attMul : 16;
         }
 
@@ -517,6 +553,127 @@ namespace FantasyEngineData
             //return (Agility / 32) + (Wisdom / 16); //FF3
         }
         #endregion Battle Stats
+
+        public void CalculatePhysicalDamage(Character attacker, ePhysicalDamageOption damageOption, out int multiplier, out int damage)
+        {
+            //Calculate min and max base damage
+            int baseMinDmg = attacker.getBaseDamage(damageOption);
+
+            //Bonus on base damage for Attacker
+            //baseMinDmg += HasCheer ? 10 * CheerLevel : 0;
+            //ou
+            //baseMinDmg += HasCheer ? baseMinDmg * CheerLevel / 15 : 0;
+            //baseMinDmg *= IsAlly ? 2 : 1;
+            //baseMinDmg *= ElementalEffect(attacker);
+            //baseMinDmg *= IsMini || IsToad ? 2 : 1;
+            //baseMinDmg *= attacker->IsMini || attacker->IsToad ? 0 : 1;
+
+            int baseMaxDmg = (int)(baseMinDmg * 1.5);
+
+            //Calculate hit%
+            int hitPourc = attacker.getHitPourc(damageOption);
+            hitPourc = (hitPourc < 99 ? hitPourc : 99);
+            //hitPourc /= (attacker.IsFrontRow || weapon.IsLongRange ? 1 : 2);
+            //hitPourc /= (blindStatus ? 2 : 1);
+            //hitPourc /= (IsFrontRow || weapon.IsLongRange ? 1 : 2);
+
+            //Calculate attack multiplier
+            multiplier = 0;
+            for (int i = 0; i < attacker.getAttackMultiplier(); i++)
+                if (Extensions.rand.Next(0, 100) < hitPourc)
+                    multiplier++;
+
+            //Bonus on defense for Target
+            int defense = getDefenseDamage();
+            //defense *= (IsDefending ? 4 : 1);
+            //defense *= (IsAlly ? 0 : 1);
+            //defense *= (IsRunning ? 0 : 1);
+            //defense *= (IsMini || IsToad ? 0 : 1);
+
+            //Calculate defense multiplier
+            int defenseMul = getDefenseMultiplier();
+            //defenseMul *= (IsAlly ? 0 : 1);
+            //defenseMul *= (IsRunning ? 0 : 1);
+            //defenseMul *= (IsMini || IsToad ? 0 : 1);
+
+            //Calculate multiplier and final damage
+            for (int i = 0; i < defenseMul; i++)
+                if (Extensions.rand.Next(0, 100) < getEvadePourc())
+                    multiplier--;
+
+            damage = (Extensions.rand.Next(baseMinDmg, baseMaxDmg + 1) - defense) * multiplier;
+            //damage *= AttackIsJump ? 3 : 1;
+
+            //Validate final damage and multiplier
+            if (damage < 1) //Min 1 s'il tape au moins une fois
+                damage = 1;
+
+            if (multiplier < 1) //Check s'il tape au moins une fois
+                damage = 0;
+        }
+
+        public void CalculateMagicalDamage(Character attacker, eMagicalDamageOption damageOption, int spellDamage, int spellHitPourc, int nbTarget, ref int multiplier, out int damage)
+        {
+            bool isItem = spellHitPourc == 100;
+
+            //Calculate min and max base damage
+            int baseMinDmg = attacker.getMagicBaseDamage(damageOption, spellDamage);
+
+            //Bonus on base damage for Attacker
+            //baseMinDmg *= ElementalEffect(attacker);
+            //baseMinDmg *= IsMini || IsToad ? 2 : 1;
+
+            int baseMaxDmg = (int)(baseMinDmg * 1.5);
+
+            //Calculate hit%
+            int hitPourc = 0;
+            if (isItem)
+                hitPourc = 100;
+            else
+            {
+                hitPourc = attacker.getMagicHitPourc(damageOption, spellHitPourc);
+                hitPourc = (hitPourc < 99 ? hitPourc : 99);
+            }
+
+            //Calculate attack multiplier
+            if (!isItem)
+            {
+                multiplier = 0;
+                for (int i = 0; i < attacker.getMagicAttackMultiplier(damageOption); i++)
+                    if (Extensions.rand.Next(0, 100) < hitPourc)
+                        multiplier++;
+            }
+
+            //Bonus on defense for Target
+            int defense = getMagicDefenseDamage();
+            //defense *= (IsDefending ? 4 : 1);
+            //defense *= (IsAlly ? 0 : 1);
+            //defense *= (IsRunning ? 0 : 1);
+            //defense *= (IsMini || IsToad ? 0 : 1);
+
+            //Calculate defense multiplier
+            int defenseMul = getMagicDefenseMultiplier();
+            //defenseMul *= (IsAlly ? 0 : 1);
+            //defenseMul *= (IsRunning ? 0 : 1);
+            //defenseMul *= (IsMini || IsToad ? 0 : 1);
+
+            //Calculate multiplier and final damage
+            if (!isItem)
+                for (int i = 0; i < defenseMul; i++)
+                    if (Extensions.rand.Next(0, 100) < getMagicEvadePourc())
+                        multiplier--;
+
+            damage = (Extensions.rand.Next(baseMinDmg, baseMaxDmg + 1) - defense) * multiplier;
+
+            damage /= nbTarget;
+
+            //Validate final damage and multiplier
+            if (damage < 1) //Min 1 s'il tape au moins une fois
+                damage = 1;
+
+            if (multiplier < 1) //Check s'il tape au moins une fois
+                damage = 0;
+        }
 
         public override string ToString()
         {

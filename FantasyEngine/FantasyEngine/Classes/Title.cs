@@ -60,8 +60,6 @@ namespace FantasyEngine.Classes
             Vector2 startingPoint = new Vector2(64, 64);
             Player.GamePlayer.Hero = new Sprite(Game, "onionkid", startingPoint);
             Player.GamePlayer.Map = new MapObject(Game, MapObject.eMapNo.VILLAGE, startingPoint - new Vector2(304, 224));
-            //Player.GamePlayer.Inventory.Items.Add(ItemManager.GetItem("Potion"), 2);
-            //Player.GamePlayer.Inventory.Items.Add(ItemManager.GetWeapon("Knife"), 1);
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetItem("Potion"), 2));
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetWeapon("Knife"), 1));
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetShield("Leather Shield"), 2));
@@ -69,6 +67,8 @@ namespace FantasyEngine.Classes
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetArmor("Leather Armor"), 1));
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetArmor("Leather Gloves"), 1));
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetArmor("Leather Boots"), 1));
+            Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetItem("Phoenix Down"), 3));
+            Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetItem("Ultima Scroll"), 1));
             Player.GamePlayer.Inventory.Gold = 20;
 
             Scene.ChangeMainScene(new Overworld(Game));

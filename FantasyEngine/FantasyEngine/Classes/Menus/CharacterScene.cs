@@ -83,10 +83,10 @@ namespace FantasyEngine.Classes.Menus
 
             spriteBatch.DrawString(GameMain.font, "Attack:", new Vector2(348, 236) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.getAttackMultiplier() + "x", new Vector2(474, 236) + offset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getBaseDamage(Character.eDamageOption.BOTH).ToString(),
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getBaseDamage(Character.ePhysicalDamageOption.BOTH).ToString(),
                 new Vector2(514, 236) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Hit %:", new Vector2(348, 258) + offset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getHitPourc(Character.eDamageOption.BOTH) + "%", new Vector2(514, 258) + offset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getHitPourc(Character.ePhysicalDamageOption.BOTH) + "%", new Vector2(514, 258) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Defense:", new Vector2(348, 280) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.getDefenseMultiplier() + "x", new Vector2(474, 280) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.getDefenseDamage().ToString(),
@@ -94,11 +94,11 @@ namespace FantasyEngine.Classes.Menus
             spriteBatch.DrawString(GameMain.font, "Evade:", new Vector2(348, 302) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.getEvadePourc() + "%", new Vector2(514, 302) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, "M.Attack:", new Vector2(348, 324) + offset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicAttackMultiplier() + "x", new Vector2(474, 324) + offset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicBaseDamage().ToString(),
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicAttackMultiplier(Character.eMagicalDamageOption.NONE) + "x", new Vector2(474, 324) + offset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicBaseDamage(Character.eMagicalDamageOption.NONE, 1).ToString(),
                 new Vector2(514, 324) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, "M.Hit %:", new Vector2(348, 346) + offset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicHitPourc() + "%", new Vector2(514, 346) + offset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicHitPourc(Character.eMagicalDamageOption.NONE, 80) + "%", new Vector2(514, 346) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, "M.Defense:", new Vector2(348, 368) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicDefenseMultiplier() + "x", new Vector2(474, 368) + offset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicDefenseDamage().ToString(),

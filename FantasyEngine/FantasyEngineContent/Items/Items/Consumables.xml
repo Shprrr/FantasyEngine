@@ -6,12 +6,32 @@
 			<Type>Consumable</Type>
 			<Price>10</Price>
 			<AllowableJobs>*</AllowableJobs>
+			<Effect>
+				<Type>RecoveryHP</Type>
+				<Value>50</Value>
+			</Effect>
+			<DefaultTarget>SINGLE_PARTY</DefaultTarget>
 		</Item>
 		<Item>
 			<Name>Antidote</Name>
 			<Type>Consumable</Type>
 			<Price>15</Price>
 			<AllowableJobs>*</AllowableJobs>
+			<Effect>
+				<Type>Poisona</Type>
+			</Effect>
+			<DefaultTarget>SINGLE_PARTY</DefaultTarget>
+		</Item>
+		<Item>
+			<Name>Phoenix Down</Name>
+			<Type>Consumable</Type>
+			<Price>100</Price>
+			<AllowableJobs>*</AllowableJobs>
+			<Effect>
+				<Type>Life</Type>
+				<Multiplier>0.25</Multiplier>
+			</Effect>
+			<DefaultTarget>SINGLE_PARTY</DefaultTarget>
 		</Item>
 	</Asset>
 </XnaContent>

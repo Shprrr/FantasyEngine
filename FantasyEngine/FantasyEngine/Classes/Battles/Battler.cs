@@ -1,74 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FantasyEngineData;
-using FantasyEngineData.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using FantasyEngineData;
+using FantasyEngineData.Battles;
+using FantasyEngineData.Items;
 
 namespace FantasyEngine.Classes.Battles
 {
     public class Battler : Character
     {
-        static Random rand = new Random();
-        private void CalculateDamage(Battler pAttacker, eDamageOption damageOption, ref int multiplier, ref int damage)
-        {
-            //Calculate min and max base damage
-            int baseMinDmg = pAttacker.getBaseDamage(damageOption);
-
-            //Bonus on base damage for Attacker
-            //baseMinDmg += HasCheer ? 10 * CheerLevel : 0;
-            //ou
-            //baseMinDmg += HasCheer ? baseMinDmg * CheerLevel / 15 : 0;
-            //baseMinDmg *= IsAlly ? 2 : 1;
-            //baseMinDmg *= ElementalEffect(pAttacker);
-            //baseMinDmg *= IsMini || IsToad ? 2 : 1;
-            //baseMinDmg *= pAttacker->IsMini || pAttacker->IsToad ? 0 : 1;
-
-            int baseMaxDmg = (int)(baseMinDmg * 1.5);
-
-            //Calculate hit%
-            int hitPourc = pAttacker.getHitPourc(damageOption);
-            hitPourc = (hitPourc < 99 ? hitPourc : 99);
-            //hitPourc /= (pAttacker.IsFrontRow || weapon.IsLongRange ? 1 : 2);
-            //hitPourc /= (blindStatus ? 2 : 1);
-            //hitPourc /= (IsFrontRow || weapon.IsLongRange ? 1 : 2);
-
-            //Calculate attack multiplier
-            multiplier = 0;
-            for (int i = 0; i < pAttacker.getAttackMultiplier(); i++)
-                if (rand.Next(0, 100) < hitPourc)
-                    multiplier++;
-
-            //Bonus on defense for Target
-            int defense = getDefenseDamage();
-            //defense *= (IsDefending ? 4 : 1);
-            //defense *= (IsAlly ? 0 : 1);
-            //defense *= (IsRunning ? 0 : 1);
-            //defense *= (IsMini || IsToad ? 0 : 1);
-
-            //Calculate defense multiplier
-            int defenseMul = getDefenseMultiplier();
-            //defenseMul *= (IsAlly ? 0 : 1);
-            //defenseMul *= (IsRunning ? 0 : 1);
-            //defenseMul *= (IsMini || IsToad ? 0 : 1);
-
-            //Calculate multiplier and final damage
-            for (int i = 0; i < defenseMul; i++)
-                if (rand.Next(0, 100) < getEvadePourc())
-                    multiplier--;
-
-            damage = (rand.Next(baseMinDmg, baseMaxDmg + 1) - defense) * multiplier;
-            //damage *= AttackIsJump ? 3 : 1;
-
-            //Validate final damage and multiplier
-            if (damage < 1) //Min 1 s'il tape au moins une fois
-                damage = 1;
-
-            if (multiplier < 1) //Check s'il tape au moins une fois
-                damage = 0;
-        }
-
         /// <summary>
         /// Counter for CTB.  Tell the number of tick to wait for the next action.
         /// </summary>
@@ -91,8 +33,12 @@ namespace FantasyEngine.Classes.Battles
             set { if (CurrentJob != null) CurrentJob.BattleSprite = value.Value; }
         }
 
+        public bool IsActor { get; set; }
+
         public Battler(Game game, Character character)
         {
+            IsActor = Player.GamePlayer.Actors.Contains(character);
+
             Name = character.Name;
 
             for (int i = 0; i < MAX_JOB; i++)
@@ -210,7 +156,7 @@ namespace FantasyEngine.Classes.Battles
             int minICV = 3 * TS;
             int maxICV = 30 * TS / 9;
 
-            Counter = rand.Next(minICV, maxICV + 1);
+            Counter = Extensions.rand.Next(minICV, maxICV + 1);
         }
 
         public int getCounterValue(int rank)
@@ -227,18 +173,29 @@ namespace FantasyEngine.Classes.Battles
 
             if (attacker.RightHand is Weapon)
             {
-                CalculateDamage(attacker, eDamageOption.RIGHT, ref multiplierRH, ref damageRH);
+                CalculatePhysicalDamage(attacker, ePhysicalDamageOption.RIGHT, out multiplierRH, out damageRH);
             }
 
             if (attacker.LeftHand is Weapon)
             {
-                CalculateDamage(attacker, eDamageOption.LEFT, ref multiplierLH, ref damageLH);
+                CalculatePhysicalDamage(attacker, ePhysicalDamageOption.LEFT, out multiplierLH, out damageLH);
             }
 
             if (!(attacker.RightHand is Weapon && attacker.LeftHand is Weapon))
             {
-                CalculateDamage(attacker, eDamageOption.RIGHT, ref multiplierRH, ref damageRH);
+                CalculatePhysicalDamage(attacker, ePhysicalDamageOption.RIGHT, out multiplierRH, out damageRH);
             }
+        }
+
+        public void Used(Battler attacker, BaseItem item, int nbTarget)
+        {
+            multiplierRH = 0;
+            multiplierLH = 0;
+            damageRH = 0;
+            damageLH = 0;
+
+            if (item.Effect != null)
+                multiplierRH = item.Effect.Use(attacker, this, out damageRH, nbTarget) ? 1 : 0;
         }
 
         public void GiveDamage()
@@ -273,14 +230,14 @@ namespace FantasyEngine.Classes.Battles
             List<int> indexTargetPotential = new List<int>();
 
             //TODO: Si aucun skill appris, attack obligatoirement physique.
-            action.kind = BattleAction.eKind.ATTACK;
+            action.Kind = BattleAction.eKind.ATTACK;
             for (int i = 0; i < enemies.Length; i++)
             {
                 if (enemies[i] != null)
                     indexTargetPotential.Add(i);
             }
-            action.target = new Cursor(game, enemies, actors, eTargetType.SINGLE_PARTY,
-                indexTargetPotential[rand.Next(indexTargetPotential.Count)]);
+            action.Target = new Cursor(game, enemies, actors, eTargetType.SINGLE_PARTY,
+                indexTargetPotential[Extensions.rand.Next(indexTargetPotential.Count)]);
             return action;
 
             /*
@@ -312,20 +269,20 @@ namespace FantasyEngine.Classes.Battles
                 //// ???
 
                 //TODO: Si Weapon équipé main gauche.
-                int attPhysic = getBaseDamage(eDamageOption.RIGHT) - enemies[i].getDefenseDamage();
+                int attPhysic = getBaseDamage(ePhysicalDamageOption.RIGHT) - enemies[i].getDefenseDamage();
                 int attMagic = 0;
 
                 if (attPhysic > attMagic)
                 {
-                    action.kind = BattleAction.eKind.ATTACK;
+                    action.Kind = BattleAction.eKind.ATTACK;
                     indexTargetPotential.Add(i);
                 }
             }
 
-            if (action.kind == BattleAction.eKind.ATTACK)
+            if (action.Kind == BattleAction.eKind.ATTACK)
             {
-                action.target = new Cursor(game, enemies, actors, eTargetType.SINGLE_PARTY,
-                    indexTargetPotential[rand.Next(indexTargetPotential.Count)]);
+                action.Target = new Cursor(game, enemies, actors, eTargetType.SINGLE_PARTY,
+                    indexTargetPotential[Extensions.rand.Next(indexTargetPotential.Count)]);
                 return action;
             }
 
@@ -341,7 +298,7 @@ namespace FantasyEngine.Classes.Battles
              * S'il n'y pas de skill utile,
              * Kind = Guard
             */
-            action.kind = BattleAction.eKind.GUARD;
+            action.Kind = BattleAction.eKind.GUARD;
 
             return action;
         }

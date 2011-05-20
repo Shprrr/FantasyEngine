@@ -4,20 +4,10 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using FantasyEngineData.Battles;
 
 namespace FantasyEngine.Classes.Battles
 {
-    public enum eTargetType
-    {
-        NONE,
-        SINGLE_ENEMY,
-        MULTI_ENEMY,
-        SINGLE_PARTY,
-        MULTI_PARTY,
-        SELF,
-        ALL
-    }
-
     public class Cursor : DrawableGameComponent
     {
         private int _Index = 0;

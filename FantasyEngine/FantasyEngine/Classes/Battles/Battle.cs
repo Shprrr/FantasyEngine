@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using FantasyEngineData;
+using FantasyEngineData.Battles;
 using FantasyEngineData.Items;
 
 namespace FantasyEngine.Classes.Battles
@@ -21,17 +22,17 @@ namespace FantasyEngine.Classes.Battles
             GUARD
         }
 
-        public eKind kind;
-        public Cursor target;
+        public eKind Kind;
+        public Cursor Target;
         public int skillId;
-        public int itemId;
+        public BaseItem Item;
 
-        public BattleAction(Game game, eKind kind = eKind.WAIT, int skillId = -1, int itemId = -1)
+        public BattleAction(Game game, eKind kind = eKind.WAIT, int skillId = -1, BaseItem item = null)
         {
-            this.kind = kind;
-            this.target = null;
+            this.Kind = kind;
+            this.Target = null;
             this.skillId = skillId;
-            this.itemId = itemId;
+            this.Item = item;
         }
     }
 
@@ -104,6 +105,7 @@ namespace FantasyEngine.Classes.Battles
         private Window _MessageWindow;
         private Window _CTBWindow;
         private Window _ResultWindow;
+        private ItemSelection _ItemSelection;
 
         private int _CTBWindowScrollY;
 
@@ -157,7 +159,7 @@ namespace FantasyEngine.Classes.Battles
         {
             foreach (Battler actor in _Actors)
             {
-                //TODO :Pas sur, mais je ne pense pas que ca marche pour plus qu'un actor.
+                //TODO: Pas sur, mais je ne pense pas que ca marche pour plus qu'un actor.
                 if (actor != null && actor.IsDead)
                 {
                     BattleEnd(_CanLose ? 1 : 2);
@@ -402,7 +404,7 @@ namespace FantasyEngine.Classes.Battles
         /// <summary>
         /// Start the select of the target with a default target.
         /// </summary>
-        /// <param name="defaultValue"></param>
+        /// <param name="defaultValue">First position of the target cursor</param>
         private void StartTargetSelection(eTargetType defaultValue)
         {
             //Make cursor
@@ -414,11 +416,23 @@ namespace FantasyEngine.Classes.Battles
         private void EndTargetSelection()
         {
             _Target = null;
+        }
 
-            if (_PlayerCommand.CursorPosition == 0) //Attack
-            {
-                _PlayerCommand.Enabled = true;
-            }
+        private void StartItemSelection()
+        {
+            _ItemSelection.Enabled = true;
+            _ItemSelection.Visible = true;
+
+            _PlayerCommand.Enabled = false;
+        }
+
+        private void EndItemSelection()
+        {
+            _ItemSelection.Enabled = false;
+            _ItemSelection.Visible = false;
+
+            if (_CurrentAction.Item is Item)
+                StartTargetSelection(((Item)_CurrentAction.Item).DefaultTarget);
         }
 
         /// <summary>
@@ -463,12 +477,12 @@ namespace FantasyEngine.Classes.Battles
         /// </summary>
         private void Phase4Step2()
         {
-            switch (_CurrentAction.kind)
+            switch (_CurrentAction.Kind)
             {
                 case BattleAction.eKind.ATTACK:
                     //Set animation id
 
-                    _CurrentAction.target.getTargetBattler(_TargetBattler);
+                    _CurrentAction.Target.getTargetBattler(_TargetBattler);
                     for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
                         if (_TargetBattler[i] != null)
                             _TargetBattler[i].Attacked(getActiveBattler());
@@ -478,6 +492,23 @@ namespace FantasyEngine.Classes.Battles
                     break;
 
                 case BattleAction.eKind.ITEM:
+                    //Set animation id
+
+                    int nbTarget = 0;
+                    _CurrentAction.Target.getTargetBattler(_TargetBattler);
+                    for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
+                        if (_TargetBattler[i] != null)
+                            nbTarget++;
+
+                    for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
+                        if (_TargetBattler[i] != null)
+                            _TargetBattler[i].Used(getActiveBattler(), _CurrentAction.Item, nbTarget);
+
+                    if (getActiveBattler().IsActor)
+                    {
+                        Player.GamePlayer.Inventory.Drop(_CurrentAction.Item);
+                        _ItemSelection.RefreshChoices();
+                    }
                     break;
 
                 case BattleAction.eKind.GUARD:
@@ -714,6 +745,11 @@ namespace FantasyEngine.Classes.Battles
                 160, 480 - _HelpWindow.Rectangle.Bottom - 160);
             _CTBWindowScrollY = 0;
 
+            _ItemSelection = new ItemSelection(Game, 480, 160);
+            _ItemSelection.ChangeOffset(80, 320);
+            _ItemSelection.Enabled = false;
+            _ItemSelection.Visible = false;
+
             _ResultWindow = new Window(Game, 0, 0, 640, 480);
             _ResultWindow.Visible = false;
 
@@ -768,21 +804,23 @@ namespace FantasyEngine.Classes.Battles
 
             DrawCTBWindow(gameTime);
 
+            _ItemSelection.Draw(gameTime);
+
             if (_Phase == 4 && _PhaseStep == 3)
             {
-                switch (_CurrentAction.kind)
+                switch (_CurrentAction.Kind)
                 {
                     case BattleAction.eKind.ATTACK:
                         //spriteBatch.DrawString(GameMain.font, "Sword swing !", new Vector2(0, 200), Color.White);
-                        if (_OrderBattle[0].battler.RightHand != null)
+                        if (getActiveBattler().RightHand != null)
                             spriteBatch.DrawString(GameMain.font,
-                                _OrderBattle[0].battler.RightHand.Name + " swing !", new Vector2(0, 200), Color.White);
+                                getActiveBattler().RightHand.Name + " swing !", new Vector2(0, 200), Color.White);
 
-                        if (_OrderBattle[0].battler.LeftHand != null)
+                        if (getActiveBattler().LeftHand != null)
                             spriteBatch.DrawString(GameMain.font,
-                                _OrderBattle[0].battler.LeftHand.Name + " swing !", new Vector2(0, 220), Color.White);
+                                getActiveBattler().LeftHand.Name + " swing !", new Vector2(0, 220), Color.White);
 
-                        if (_OrderBattle[0].battler.RightHand == null && _OrderBattle[0].battler.LeftHand == null)
+                        if (getActiveBattler().RightHand == null && getActiveBattler().LeftHand == null)
                             spriteBatch.DrawString(GameMain.font, "Barehand swing !", new Vector2(0, 200), Color.White);
                         break;
 
@@ -790,6 +828,7 @@ namespace FantasyEngine.Classes.Battles
                         break;
 
                     case BattleAction.eKind.ITEM:
+                        spriteBatch.DrawString(GameMain.font, _CurrentAction.Item.Name + " is used !", new Vector2(0, 200), Color.White);
                         break;
 
                     case BattleAction.eKind.GUARD:
@@ -809,19 +848,19 @@ namespace FantasyEngine.Classes.Battles
 
             if (_Phase == 4 && _PhaseStep == 4)
             {
-                switch (_CurrentAction.kind)
+                switch (_CurrentAction.Kind)
                 {
                     case BattleAction.eKind.ATTACK:
                         //spriteBatch.DrawString(GameMain.font, "Sword hitted !", new Vector2(0, 220), Color.White);
-                        if (_OrderBattle[0].battler.RightHand != null)
+                        if (getActiveBattler().RightHand != null)
                             spriteBatch.DrawString(GameMain.font,
-                                _OrderBattle[0].battler.RightHand.Name + " hitted !", new Vector2(0, 200), Color.White);
+                                getActiveBattler().RightHand.Name + " hitted !", new Vector2(0, 200), Color.White);
 
-                        if (_OrderBattle[0].battler.LeftHand != null)
+                        if (getActiveBattler().LeftHand != null)
                             spriteBatch.DrawString(GameMain.font,
-                                _OrderBattle[0].battler.LeftHand.Name + " hitted !", new Vector2(0, 220), Color.White);
+                                getActiveBattler().LeftHand.Name + " hitted !", new Vector2(0, 220), Color.White);
 
-                        if (_OrderBattle[0].battler.RightHand == null && _OrderBattle[0].battler.LeftHand == null)
+                        if (getActiveBattler().RightHand == null && getActiveBattler().LeftHand == null)
                             spriteBatch.DrawString(GameMain.font, "Barehand hitted !", new Vector2(0, 200), Color.White);
                         break;
 
@@ -829,6 +868,7 @@ namespace FantasyEngine.Classes.Battles
                         break;
 
                     case BattleAction.eKind.ITEM:
+                        spriteBatch.DrawString(GameMain.font, _CurrentAction.Item.Name + " hitted !", new Vector2(0, 200), Color.White);
                         break;
 
                     case BattleAction.eKind.GUARD:
@@ -848,7 +888,7 @@ namespace FantasyEngine.Classes.Battles
 
             if (_Phase == 4 && _PhaseStep == 5)
             {
-                switch (_CurrentAction.kind)
+                switch (_CurrentAction.Kind)
                 {
                     case BattleAction.eKind.ATTACK:
                     case BattleAction.eKind.MAGIC:
@@ -859,7 +899,8 @@ namespace FantasyEngine.Classes.Battles
                                 int totalMultiplier = _TargetBattler[i].multiplierRH + _TargetBattler[i].multiplierLH;
                                 int totalDamage = _TargetBattler[i].damageRH + _TargetBattler[i].damageLH;
                                 string damage = totalMultiplier == 0 ? MISS :
-                                    totalMultiplier + " hit" + (totalMultiplier > 1 ? "s" : "") +
+                                    (_CurrentAction.Kind != BattleAction.eKind.ITEM ?
+                                        totalMultiplier + " hit" + (totalMultiplier > 1 ? "s" : "") : "") +
                                     Environment.NewLine + totalDamage;
                                 spriteBatch.DrawString(GameMain.font, damage,
                                     new Vector2(_TargetBattler[i].BattlerPosition.X,
@@ -1067,6 +1108,8 @@ namespace FantasyEngine.Classes.Battles
                 _Target.Update(gameTime);
             //return;
 
+            _ItemSelection.Update(gameTime);
+
             if (_Phase == 6 && CurrentScene == this) //WaitEnd
             {
                 // Return to map
@@ -1110,6 +1153,11 @@ namespace FantasyEngine.Classes.Battles
                                     return;
 
                                 case 2: //Item
+                                    //Set current action
+                                    _CurrentAction = new BattleAction(Game, BattleAction.eKind.ITEM);
+
+                                    //Select the item
+                                    StartItemSelection();
                                     return;
 
                                 case 3: //Guard
@@ -1129,19 +1177,24 @@ namespace FantasyEngine.Classes.Battles
                         } // if (_PlayerCommand.Enabled)
                         else if (_Target != null)
                         {
-                            _CurrentAction.target = _Target;
+                            _CurrentAction.Target = _Target;
                             EndTargetSelection();
 
                             //Next
                             StartPhase4();
                             return;
                         }
+                        else if (_ItemSelection.Enabled)
+                        {
+                            _CurrentAction.Item = _ItemSelection.ItemSelected;
+                            EndItemSelection();
+                        }
                         break;
 
                     case 5: //Result Command
                         BattleEnd(0);
                         break;
-                } //switch(mPhase)
+                } // switch (_Phase)
             } //if(wpaddown & CONTROL_ACCEPT)
 
             if (Input.keyStateDown.IsKeyDown(Keys.Back))
@@ -1152,6 +1205,23 @@ namespace FantasyEngine.Classes.Battles
                         if (_Target != null)
                         {
                             EndTargetSelection();
+
+                            switch (_PlayerCommand.CursorPosition)
+                            {
+                                case 0: //Attack
+                                    _PlayerCommand.Enabled = true;
+                                    break;
+                                case 2: //Item
+                                    StartItemSelection();
+                                    break;
+                            }
+                            return;
+                        }
+                        else if (_ItemSelection.Enabled)
+                        {
+                            _CurrentAction.Item = null;
+                            EndItemSelection();
+                            _PlayerCommand.Enabled = true;
                             return;
                         }
                         break;

@@ -69,9 +69,9 @@ namespace FantasyEngineData
                 string treasure = "{";
                 oper = string.Empty;
 
-                foreach (Item item in Treasure)
+                foreach (BaseItem item in Treasure)
                 {
-                    treasure += oper + item;
+                    treasure += oper + item.Name;
                     oper = "; ";
                 }
 
@@ -126,6 +126,7 @@ namespace FantasyEngineData
 
         public void GetDrop(Job job, ref int gold, ref List<BaseItem> treasure)
         {
+            List<DropRule> dropValidated = new List<DropRule>();
             foreach (DropRule rule in Drops)
             {
                 if (rule.LevelMinimum > job.Level)
@@ -135,10 +136,12 @@ namespace FantasyEngineData
                     continue;
 
                 // Rule passe toute les validations.
-                gold = rule.Gold;
-                treasure = rule.Treasure;
-                break;
+                dropValidated.Add(rule);
             }
+
+            int index = Extensions.rand.Next(dropValidated.Count);
+            gold = dropValidated[index].Gold;
+            treasure = dropValidated[index].Treasure;
         }
     }
 }
