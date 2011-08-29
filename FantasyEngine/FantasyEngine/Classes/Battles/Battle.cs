@@ -459,7 +459,7 @@ namespace FantasyEngine.Classes.Battles
             if (Judge())
             {
                 // If won or lost: end method
-                Scene.ChangeMainScene(new Overworld(Game));
+                Scene.ChangeMainScene(new Overworld.Overworld(Game));
                 return;
             }
 
@@ -1114,7 +1114,7 @@ namespace FantasyEngine.Classes.Battles
             {
                 // Return to map
                 MediaPlayer.Stop();
-                Scene.ChangeMainScene(new Overworld(Game));
+                Scene.ChangeMainScene(new Overworld.Overworld(Game));
                 return;
             }
 

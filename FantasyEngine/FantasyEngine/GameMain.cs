@@ -34,7 +34,22 @@ namespace FantasyEngine
         /// <summary>
         /// The Matrix for the camera when the SpriteBatch began.
         /// </summary>
-        public static Matrix OldCameraMatrix { get { return _OldCameraMatrix; } }
+        public static Matrix OldCameraMatrix
+        {
+            get { return _OldCameraMatrix; }
+
+            protected set
+            {
+                _OldCameraMatrix = value;
+                _CameraOffset = new Vector2(-GameMain.OldCameraMatrix.Translation.X, -GameMain.OldCameraMatrix.Translation.Y);
+            }
+        }
+
+        private static Vector2 _CameraOffset;
+        /// <summary>
+        /// Offset to draw 0,0 in the current camera.
+        /// </summary>
+        public static Vector2 CameraOffset { get { return _CameraOffset; } }
 
         /// <summary>
         /// Default font.
@@ -96,6 +111,8 @@ namespace FantasyEngine
             cursor = Content.Load<Texture2D>(@"Images\cursor");
 
             Classes.Window.Tileset = new Tileset(Content.Load<Texture2D>(@"Images\window_tileset"), 8, 8);
+
+            Classes.Window.NextDialog = Content.Load<Texture2D>(@"Images\next_dialog");
 
             // Load all items in the ItemManager
             FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Items\Consumables"));
@@ -184,7 +201,7 @@ namespace FantasyEngine
 
             // TODO: Add your drawing code here
             spriteBatch.Begin(0, null, null, null, rastState, null, cameraMatrix);
-            _OldCameraMatrix = cameraMatrix;
+            OldCameraMatrix = cameraMatrix;
             //spriteBatch.Begin();
             base.Draw(gameTime);
             spriteBatch.End();
@@ -206,6 +223,7 @@ namespace FantasyEngine
             spriteBatch.End();
             spriteBatch.GraphicsDevice.ScissorRectangle = rectangle;
             spriteBatch.Begin(0, null, null, null, rastState, null, cameraMatrix);
+            OldCameraMatrix = cameraMatrix;
         }
 
         /// <summary>

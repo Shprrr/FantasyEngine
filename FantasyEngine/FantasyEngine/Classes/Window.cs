@@ -9,6 +9,7 @@ namespace FantasyEngine.Classes
     public class Window : DrawableGameComponent
     {
         public static Tileset Tileset;
+        public static Texture2D NextDialog;
 
         public enum eHAlign
         {

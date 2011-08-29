@@ -52,6 +52,31 @@ namespace FantasyEngine.Classes
         }
 
         /// <summary>
+        /// Remove the key in the keystate to not process this key anymore in this frame.
+        /// </summary>
+        /// <param name="key">Key who has been processed</param>
+        public static void CatchKeys(Keys key)
+        {
+            Keys[] keys = keyStateDown.GetPressedKeys();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (keys[i] == key)
+                    keys[i] = Keys.None;
+            }
+
+            keyStateDown = new KeyboardState(keys);
+
+            keys = keyStateHeld.GetPressedKeys();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (keys[i] == key)
+                    keys[i] = Keys.None;
+            }
+
+            keyStateHeld = new KeyboardState(keys);
+        }
+
+        /// <summary>
         /// Update inputs for the frame and tell if it needs to be processed.
         /// </summary>
         /// <param name="gameTime"></param>

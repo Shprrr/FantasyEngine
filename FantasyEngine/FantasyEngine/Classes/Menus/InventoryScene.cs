@@ -40,27 +40,25 @@ namespace FantasyEngine.Classes.Menus
         {
             base.Draw(gameTime);
 
-            Vector2 offset = new Vector2(-GameMain.OldCameraMatrix.Translation.X, -GameMain.OldCameraMatrix.Translation.Y);
-
-            _InventoryWindow.Offset = offset;
+            _InventoryWindow.Offset = GameMain.CameraOffset;
             _InventoryWindow.Draw(gameTime);
             GameMain.Scissor(_InventoryWindow.InsideBound);
 
-            spriteBatch.DrawString(GameMain.font, "Inventory", new Vector2(260, 68) + offset, Color.White);
+            spriteBatch.DrawString(GameMain.font, "Inventory", new Vector2(260, 68) + GameMain.CameraOffset, Color.White);
 
             // Draw list of items
             int i = 0;
             foreach (var item in Player.GamePlayer.Inventory.Items)
             {
                 spriteBatch.DrawString(GameMain.font, item.Item.Name,
-                    new Vector2((i % 2 == 0 ? 110 : 347), 96 + i / 2 * 16) + offset, Color.White);
+                    new Vector2((i % 2 == 0 ? 110 : 347), 96 + i / 2 * 16) + GameMain.CameraOffset, Color.White);
                 spriteBatch.DrawString(GameMain.font, item.Number.ToString(),
-                    new Vector2((i % 2 == 0 ? 277 : 514), 96 + i / 2 * 16) + offset, Color.White);
+                    new Vector2((i % 2 == 0 ? 277 : 514), 96 + i / 2 * 16) + GameMain.CameraOffset, Color.White);
                 i++;
             }
 
             // Draw Gold
-            spriteBatch.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold, new Vector2(110, 390) + offset, Color.White);
+            spriteBatch.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold, new Vector2(110, 390) + GameMain.CameraOffset, Color.White);
 
             // Draw cursor
             CursorWindow.Position = new Vector2((CursorWindow.CursorIndex % 2 == 0 ? 90 : 327), 96 + CursorWindow.CursorIndex / 2 * 16);
@@ -71,10 +69,10 @@ namespace FantasyEngine.Classes.Menus
 
             GameMain.ScissorReset();
 
-            _UseCommand.Offset = offset;
+            _UseCommand.Offset = GameMain.CameraOffset;
             _UseCommand.Draw(gameTime);
 
-            _EquipCommand.Offset = offset;
+            _EquipCommand.Offset = GameMain.CameraOffset;
             _EquipCommand.Draw(gameTime);
         }
 

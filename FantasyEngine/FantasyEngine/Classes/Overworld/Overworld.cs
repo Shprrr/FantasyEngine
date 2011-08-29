@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using FantasyEngine.Classes.Battles;
+using FantasyEngine.Classes.Menus;
 using FantasyEngineData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using FantasyEngine.Classes.Menus;
 
-namespace FantasyEngine.Classes
+namespace FantasyEngine.Classes.Overworld
 {
     public class Overworld : Scene
     {
@@ -34,12 +34,10 @@ namespace FantasyEngine.Classes
         {
             base.Draw(gameTime);
 
-            Vector2 offset = new Vector2(-GameMain.OldCameraMatrix.Translation.X, -GameMain.OldCameraMatrix.Translation.Y);
-
             Player.GamePlayer.Map.Draw(gameTime);
             Player.GamePlayer.Hero.Draw(gameTime);
 
-            _Menu.Offset = offset;
+            _Menu.Offset = GameMain.CameraOffset;
             _Menu.Draw(gameTime);
 
             if (_ShowPosition)
@@ -52,13 +50,18 @@ namespace FantasyEngine.Classes
                 GameMain.spriteBatch.DrawString(GameMain.font,
                     "X:" + tile1.X + ", Y:" + tile1.Y + " (" + hero1 + ")" + Environment.NewLine +
                     "X:" + tile2.X + ", Y:" + tile2.Y + " (" + hero2 + ")",
-                   new Vector2(-GameMain.OldCameraMatrix.Translation.X, -GameMain.OldCameraMatrix.Translation.Y) + new Vector2(8, 16), Color.White);
+                    new Vector2(8, 16) + GameMain.CameraOffset, Color.White);
             }
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
+            Player.GamePlayer.Map.Update(gameTime);
+
+            if (!Player.GamePlayer.Hero.Enabled)
+                return;
 
             if (UpdateMenu(gameTime))
                 return;
@@ -68,7 +71,7 @@ namespace FantasyEngine.Classes
             if (Input.keyStateDown.IsKeyDown(Keys.P))
                 _ShowPosition = !_ShowPosition;
 
-            int step = 2;
+            int step = 2; //TODO: Constante
 
             #region Update Direction
             if (Input.keyStateHeld.IsKeyDown(Keys.Up)
@@ -83,19 +86,11 @@ namespace FantasyEngine.Classes
 
                 Vector2 newOffset = Vector2.Zero;
 
-                if (Input.keyStateHeld.IsKeyDown(Keys.Up))
+                if (Input.keyStateHeld.IsKeyDown(Keys.Right))
                 {
-                    newOffset = new Vector2(0, -step);
+                    newOffset = new Vector2(step, 0);
 
-                    hero1 = new Vector2(heroRect.Left, heroRect.Top);
-                    hero2 = new Vector2(heroRect.Right, heroRect.Top);
-                }
-
-                if (Input.keyStateHeld.IsKeyDown(Keys.Down))
-                {
-                    newOffset = new Vector2(0, step);
-
-                    hero1 = new Vector2(heroRect.Left, heroRect.Bottom);
+                    hero1 = new Vector2(heroRect.Right, heroRect.Top);
                     hero2 = new Vector2(heroRect.Right, heroRect.Bottom);
                 }
 
@@ -107,15 +102,23 @@ namespace FantasyEngine.Classes
                     hero2 = new Vector2(heroRect.Left, heroRect.Bottom);
                 }
 
-                if (Input.keyStateHeld.IsKeyDown(Keys.Right))
+                if (Input.keyStateHeld.IsKeyDown(Keys.Down))
                 {
-                    newOffset = new Vector2(step, 0);
+                    newOffset = new Vector2(0, step);
 
-                    hero1 = new Vector2(heroRect.Right, heroRect.Top);
+                    hero1 = new Vector2(heroRect.Left, heroRect.Bottom);
                     hero2 = new Vector2(heroRect.Right, heroRect.Bottom);
                 }
 
-                // Clamp the camera so it never leaves the visible area of the map.
+                if (Input.keyStateHeld.IsKeyDown(Keys.Up))
+                {
+                    newOffset = new Vector2(0, -step);
+
+                    hero1 = new Vector2(heroRect.Left, heroRect.Top);
+                    hero2 = new Vector2(heroRect.Right, heroRect.Top);
+                }
+
+                // Clamp the camera so it never leaves the area of the map.
                 Vector2 cameraMax = new Vector2(
                     Player.GamePlayer.Map.MapData.Width * Player.GamePlayer.Map.MapData.TileWidth - 1,
                     Player.GamePlayer.Map.MapData.Height * Player.GamePlayer.Map.MapData.TileHeight - 1);
@@ -125,8 +128,19 @@ namespace FantasyEngine.Classes
                 TiledLib.TileLayer layer = (TiledLib.TileLayer)Player.GamePlayer.Map.MapData.GetLayer("Collision");
                 Point tile1 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(hero1 + newOffset);
                 Point tile2 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(hero2 + newOffset);
+
+                bool npcCollision = false;
+                foreach (NPC npc in Player.GamePlayer.Map.NPCs)
+                {
+                    Vector2 vect = hero1 + newOffset;
+                    npcCollision = npcCollision | npc.getRectangle().Contains((int)vect.X, (int)vect.Y);
+                    vect = hero2 + newOffset;
+                    npcCollision = npcCollision | npc.getRectangle().Contains((int)vect.X, (int)vect.Y);
+                }
+
                 if (layer.Tiles[tile1.X, tile1.Y] == null
-                    && layer.Tiles[tile2.X, tile2.Y] == null)
+                    && layer.Tiles[tile2.X, tile2.Y] == null
+                    && !npcCollision)
                 {
                     Player.GamePlayer.Map.Offset += newOffset;
                     Player.GamePlayer.Hero.Position += newOffset;
@@ -135,6 +149,38 @@ namespace FantasyEngine.Classes
                 return;
             } // if (Direction held)
             #endregion Update Direction
+
+            if (Input.keyStateDown.IsKeyDown(Keys.Enter))
+            {
+                Rectangle heroRect = Player.GamePlayer.Hero.getRectangle();
+
+                //If facing an NPC, talk to him.
+                switch (Player.GamePlayer.Hero.Direction)
+                {
+                    case Sprite.eDirection.DOWN:
+                        heroRect.Height += 2;
+                        break;
+                    case Sprite.eDirection.LEFT:
+                        heroRect.X -= 2;
+                        break;
+                    case Sprite.eDirection.UP:
+                        heroRect.Y -= 2;
+                        break;
+                    case Sprite.eDirection.RIGHT:
+                        heroRect.Width += 2;
+                        break;
+                }
+
+                foreach (NPC npc in Player.GamePlayer.Map.NPCs)
+                {
+                    // If the hero is next to the npc
+                    if (heroRect.Intersects(npc.getRectangle()))
+                    {
+                        npc.OppositeDirection(Player.GamePlayer.Hero.Direction);
+                        npc.RaiseOnTalking();
+                    }
+                }
+            }
 
             if (Input.keyStateDown.IsKeyDown(Keys.C))
             {

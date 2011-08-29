@@ -47,16 +47,12 @@ namespace FantasyEngine.Classes.Menus
         {
             base.Draw(gameTime);
 
-            Vector2 offset = new Vector2(-GameMain.OldCameraMatrix.Translation.X, -GameMain.OldCameraMatrix.Translation.Y);
-
-            GameMain.spriteBatch.Draw(GameMain.cursor, Position + offset, null, Color.White, 0, Vector2.Zero, 1, Effects, 0);
+            GameMain.spriteBatch.Draw(GameMain.cursor, Position + GameMain.CameraOffset, null, Color.White, 0, Vector2.Zero, 1, Effects, 0);
         }
 
         public static void DrawShadow(GameTime gameTime, Vector2 position, SpriteEffects effects = SpriteEffects.None)
         {
-            Vector2 offset = new Vector2(-GameMain.OldCameraMatrix.Translation.X, -GameMain.OldCameraMatrix.Translation.Y);
-
-            GameMain.spriteBatch.Draw(GameMain.cursor, position + offset, null, Color.White * 0.5f, 0, Vector2.Zero, 1, effects, 0);
+            GameMain.spriteBatch.Draw(GameMain.cursor, position + GameMain.CameraOffset, null, Color.White * 0.5f, 0, Vector2.Zero, 1, effects, 0);
         }
 
         public override void Update(GameTime gameTime)

@@ -5,11 +5,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace FantasyEngine.Classes
+namespace FantasyEngine.Classes.Overworld
 {
     public class Sprite : DrawableGameComponent
     {
-        private enum eDirection
+        public enum eDirection
         {
             DOWN,
             LEFT,
@@ -20,6 +20,21 @@ namespace FantasyEngine.Classes
         private Tileset _SpriteImage;
         private uint _Frame = 0;
         private eDirection _Direction = eDirection.DOWN;
+
+        /// <summary>
+        /// Direction of the sprite.
+        /// </summary>
+        public eDirection Direction
+        {
+            get { return _Direction; }
+            set
+            {
+                // Si nouvelle direction, on remet le frame d'animation à la bonne place.
+                if (_Direction != value)
+                    _Frame = (uint)(nbFrameAnimation * (int)value);
+                _Direction = value;
+            }
+        }
 
         /// <summary>
         /// Position in pixel on the screen.
@@ -39,7 +54,7 @@ namespace FantasyEngine.Classes
         public Sprite(Game game, string charsetName, Vector2 position)
             : base(game)
         {
-            Texture2D texture = Game.Content.Load<Texture2D>(@"Images\Characters\" + charsetName);
+            Texture2D texture = Game.Content.Load<Texture2D>(@"Images\" + charsetName);
             _SpriteImage = new Tileset(texture, texture.Width / (nbFrameAnimation * 4), texture.Height);
             Position = position;
         }
@@ -64,8 +79,6 @@ namespace FantasyEngine.Classes
                 || Input.keyStateDown.IsKeyDown(Keys.Right))
             {
                 ChangeDirection(Input.keyStateDown);
-
-                _Frame = (uint)(nbFrameAnimation * (int)_Direction);
                 return;
             }
 
@@ -76,10 +89,15 @@ namespace FantasyEngine.Classes
             {
                 ChangeDirection(Input.keyStateHeld);
 
-                _Frame = (uint)(((_Frame + 1) % nbFrameAnimation) + ((int)_Direction * nbFrameAnimation));
+                AnimateWalking();
                 Input.PutDelay(10, Input.keyStateHeld.GetPressedKeys());
                 return;
             }
+        }
+
+        public void AnimateWalking()
+        {
+            _Frame = (uint)(((_Frame + 1) % nbFrameAnimation) + ((int)Direction * nbFrameAnimation));
         }
 
         /// <summary>
@@ -89,16 +107,51 @@ namespace FantasyEngine.Classes
         void ChangeDirection(KeyboardState keyState)
         {
             if (keyState.IsKeyDown(Keys.Up))
-                _Direction = eDirection.UP;
+            {
+                Direction = eDirection.UP;
+                return;
+            }
 
             if (keyState.IsKeyDown(Keys.Down))
-                _Direction = eDirection.DOWN;
+            {
+                Direction = eDirection.DOWN;
+                return;
+            }
 
             if (keyState.IsKeyDown(Keys.Left))
-                _Direction = eDirection.LEFT;
+            {
+                Direction = eDirection.LEFT;
+                return;
+            }
 
             if (keyState.IsKeyDown(Keys.Right))
-                _Direction = eDirection.RIGHT;
+            {
+                Direction = eDirection.RIGHT;
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Change the direction to the opposite of the given direction.  It should be facing this new direction.
+        /// </summary>
+        /// <param name="direction"></param>
+        public void OppositeDirection(eDirection direction)
+        {
+            switch (direction)
+            {
+                case eDirection.DOWN:
+                    Direction = eDirection.UP;
+                    break;
+                case eDirection.LEFT:
+                    Direction = eDirection.RIGHT;
+                    break;
+                case eDirection.UP:
+                    Direction = eDirection.DOWN;
+                    break;
+                case eDirection.RIGHT:
+                    Direction = eDirection.LEFT;
+                    break;
+            }
         }
 
         /// <summary>
