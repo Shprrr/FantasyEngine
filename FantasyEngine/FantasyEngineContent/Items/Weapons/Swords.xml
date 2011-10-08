@@ -4,8 +4,10 @@
 		<Item>
 			<Name>Short Sword</Name>
 			<Type>Sword</Type>
+			<Icon>weapon_icon</Icon>
 			<Price>100</Price>
-			<AllowableJobs>On</AllowableJobs>
+			<Description>A short sword.</Description>
+			<AllowableJobs>OK So Wa</AllowableJobs>
 			<NumberHands>One</NumberHands>
 			<Damage>10</Damage>
 			<HitPourc>80</HitPourc>
@@ -13,8 +15,10 @@
 		<Item>
 			<Name>Long Sword</Name>
 			<Type>Sword</Type>
+			<Icon>weapon_icon</Icon>
 			<Price>150</Price>
-			<AllowableJobs>On</AllowableJobs>
+			<Description>A long sword.</Description>
+			<AllowableJobs>So Wa</AllowableJobs>
 			<NumberHands>One</NumberHands>
 			<Damage>12</Damage>
 			<HitPourc>85</HitPourc>

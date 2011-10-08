@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using FantasyEngine.Classes;
+using FantasyEngineData.Entities;
+using FantasyEngineData.Items;
 
 namespace FantasyEngine
 {
@@ -52,9 +49,13 @@ namespace FantasyEngine
         public static Vector2 CameraOffset { get { return _CameraOffset; } }
 
         /// <summary>
-        /// Default font.
+        /// Default font at 12pt.
         /// </summary>
         public static SpriteFont font;
+        /// <summary>
+        /// Default font at 8pt.
+        /// </summary>
+        public static SpriteFont font8;
         /// <summary>
         /// Cursor for menus.
         /// </summary>
@@ -105,25 +106,37 @@ namespace FantasyEngine
         protected override void LoadContent()
         {
             // TODO: use this.Content to load your game content here
-            font = Content.Load<SpriteFont>(@"Images\font_normal");
+            font = Content.Load<SpriteFont>(@"Images\Menus\font_normal");
             font.LineSpacing += 2;
 
-            cursor = Content.Load<Texture2D>(@"Images\cursor");
+            font8 = Content.Load<SpriteFont>(@"Images\Menus\font_normal 8pt");
+            font8.LineSpacing += 2;
 
-            Classes.Window.Tileset = new Tileset(Content.Load<Texture2D>(@"Images\window_tileset"), 8, 8);
+            cursor = Content.Load<Texture2D>(@"Images\Menus\cursor");
 
-            Classes.Window.NextDialog = Content.Load<Texture2D>(@"Images\next_dialog");
+            Classes.Window.Tileset = new Tileset(Content.Load<Texture2D>(@"Images\Menus\window_tileset"), 8, 8);
+
+            Classes.Window.NextDialog = Content.Load<Texture2D>(@"Images\Menus\next_dialog");
+
+            // Load all jobs in the JobManager
+            JobManager.Load(Content.Load<BaseJob>(@"Jobs\OnionKid"));
+            JobManager.Load(Content.Load<BaseJob>(@"Jobs\Soldier"));
+            JobManager.Load(Content.Load<BaseJob>(@"Jobs\Warrior"));
+            JobManager.Load(Content.Load<BaseJob>(@"Jobs\Archer"));
+            JobManager.Load(Content.Load<BaseJob>(@"Jobs\Thief"));
+            JobManager.Load(Content.Load<BaseJob>(@"Jobs\Black Mage"));
+            JobManager.Load(Content.Load<BaseJob>(@"Jobs\White Mage"));
 
             // Load all items in the ItemManager
-            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Items\Consumables"));
-            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Items\Offensives"));
-            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Weapons\Knives"));
-            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Weapons\Swords"));
-            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Heads"));
-            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Armors"));
-            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Arms"));
-            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Feet"));
-            FantasyEngineData.Items.ItemManager.Load(Content.Load<FantasyEngineData.Items.BaseItem[]>(@"Items\Armors\Shields"));
+           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Items\Consumables"));
+           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Items\Offensives"));
+           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Weapons\Knives"));
+           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Weapons\Swords"));
+           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Heads"));
+           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Armors"));
+           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Arms"));
+           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Feet"));
+           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Shields"));
         }
 
         /// <summary>

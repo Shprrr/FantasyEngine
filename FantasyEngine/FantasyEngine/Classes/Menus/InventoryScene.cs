@@ -13,7 +13,7 @@ namespace FantasyEngine.Classes.Menus
         private readonly string[] EQUIP_COMMANDS = { "Equip", "Sort", "Discard" };
         private readonly string[] ITEM_EQUIP_COMMANDS = { "Right Hand", "Head", "Left Hand", "Body", "Arms", "Feet" };
 
-        private Cursor CursorWindow;
+        private Cursor _CursorWindow;
         private int _CursorSortBeginIndex = -1;
         private Window _InventoryWindow;
         private Command _UseCommand;
@@ -22,7 +22,7 @@ namespace FantasyEngine.Classes.Menus
         public InventoryScene(Game game)
             : base(game)
         {
-            CursorWindow = new Cursor(Game, Player.GamePlayer.Inventory.Items.Count, 2);
+            _CursorWindow = new Cursor(Game, Player.GamePlayer.Inventory.Items.Count, 2);
             _InventoryWindow = new Window(Game, 76, 55, 488, 370);
 
             _UseCommand = new Command(Game, 472, USE_COMMANDS, 3);
@@ -52,17 +52,18 @@ namespace FantasyEngine.Classes.Menus
             {
                 spriteBatch.DrawString(GameMain.font, item.Item.Name,
                     new Vector2((i % 2 == 0 ? 110 : 347), 96 + i / 2 * 16) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, item.Number.ToString(),
-                    new Vector2((i % 2 == 0 ? 277 : 514), 96 + i / 2 * 16) + GameMain.CameraOffset, Color.White);
+                spriteBatch.DrawString(GameMain.font8, item.Number.ToString().PadLeft(3, ''),
+                    new Vector2((i % 2 == 0 ? 277 : 514), 99 + i / 2 * 16) + GameMain.CameraOffset, Color.White);
                 i++;
             }
 
             // Draw Gold
-            spriteBatch.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold, new Vector2(110, 390) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold.ToString("### ##0").Trim(),
+                new Vector2(110, 390) + GameMain.CameraOffset, Color.White);
 
             // Draw cursor
-            CursorWindow.Position = new Vector2((CursorWindow.CursorIndex % 2 == 0 ? 90 : 327), 96 + CursorWindow.CursorIndex / 2 * 16);
-            CursorWindow.Draw(gameTime);
+            _CursorWindow.Position = new Vector2((_CursorWindow.CursorIndex % 2 == 0 ? 90 : 327), 96 + _CursorWindow.CursorIndex / 2 * 16);
+            _CursorWindow.Draw(gameTime);
 
             if (_CursorSortBeginIndex >= 0)
                 Cursor.DrawShadow(gameTime, new Vector2((_CursorSortBeginIndex % 2 == 0 ? 90 : 327), 96 + _CursorSortBeginIndex / 2 * 16));
@@ -87,17 +88,15 @@ namespace FantasyEngine.Classes.Menus
             if (!Input.UpdateInput(gameTime))
                 return;
 
-            CursorWindow.ItemMax = Player.GamePlayer.Inventory.Items.Count;
+            _CursorWindow.ItemMax = Player.GamePlayer.Inventory.Items.Count;
 
             // Command actif ou on est en train de faire un tri
             if (!_UseCommand.Enabled && !_EquipCommand.Enabled)
-            {
-                CursorWindow.Update(gameTime);
-            }
+                _CursorWindow.Update(gameTime);
 
             if (Input.keyStateDown.IsKeyDown(Keys.Enter))
             {
-                BaseItem item = Player.GamePlayer.Inventory.Items[CursorWindow.CursorIndex].Item;
+                BaseItem item = Player.GamePlayer.Inventory.Items[_CursorWindow.CursorIndex].Item;
                 if (_UseCommand.Enabled)
                     switch (_UseCommand.CursorPosition)
                     {
@@ -120,7 +119,7 @@ namespace FantasyEngine.Classes.Menus
                             break;
 
                         case 1: // Sort
-                            _CursorSortBeginIndex = CursorWindow.CursorIndex;
+                            _CursorSortBeginIndex = _CursorWindow.CursorIndex;
                             _UseCommand.Enabled = false;
                             break;
 
@@ -224,7 +223,7 @@ namespace FantasyEngine.Classes.Menus
                 else if (_CursorSortBeginIndex >= 0)
                 {
                     // Annule un tri
-                    CursorWindow.CursorIndex = _CursorSortBeginIndex;
+                    _CursorWindow.CursorIndex = _CursorSortBeginIndex;
                     _CursorSortBeginIndex = -1;
                     _UseCommand.Enabled = true;
                 }

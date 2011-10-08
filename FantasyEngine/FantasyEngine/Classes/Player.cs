@@ -1,6 +1,6 @@
 ﻿using System;
 using FantasyEngine.Classes.Overworld;
-using FantasyEngineData;
+using FantasyEngineData.Entities;
 using FantasyEngineData.Items;
 
 namespace FantasyEngine.Classes

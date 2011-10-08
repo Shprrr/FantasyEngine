@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
 using TiledLib;
-using FantasyEngineData;
+using FantasyEngineData.Entities;
 
 namespace FantasyEngine.Classes.Overworld
 {
@@ -104,6 +104,15 @@ namespace FantasyEngine.Classes.Overworld
 
                         case "Woman":
                             npc.Talk(npc.Name + ": I don't have time to talk.  RUN!!");
+                            break;
+
+                        case "Griswold":
+                            //npc.Talk(npc.Name + ": Hello. What can I do for you ?");
+                            List<FantasyEngineData.Items.BaseItem> shopBuy = new List<FantasyEngineData.Items.BaseItem>();
+                            shopBuy.Add(FantasyEngineData.Items.ItemManager.GetItem("Potion"));
+                            shopBuy.Add(FantasyEngineData.Items.ItemManager.GetWeapon("Dagger"));
+                            shopBuy.Add(FantasyEngineData.Items.ItemManager.GetWeapon("Long Sword"));
+                            Scene.AddSubScene(new FantasyEngine.Classes.Menus.ShopScene(Game, shopBuy));
                             break;
                     }
                     break;

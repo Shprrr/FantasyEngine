@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using FantasyEngineData.Battles;
 
 namespace FantasyEngineData.Items
@@ -19,8 +20,8 @@ namespace FantasyEngineData.Items
 
         }
 
-        public Item(string name, string type, int price, float weight, string allowableJobs, Effect effect, eTargetType defaultTarget)
-            : base(name, type, price, weight, allowableJobs, effect)
+        public Item(string name, string type, Texture2D icon, int price, float weight, string description, string allowableJobs, Effect effect, eTargetType defaultTarget)
+            : base(name, type, icon, price, weight, description, allowableJobs, effect)
         {
             DefaultTarget = defaultTarget;
         }
@@ -32,8 +33,10 @@ namespace FantasyEngineData.Items
             Item item = new Item(
                 Name,
                 Type,
+                Icon,
                 Price,
                 Weight,
+                Description,
                 AllowableJobs,
                 Effect,
                 DefaultTarget);

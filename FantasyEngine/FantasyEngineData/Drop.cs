@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FantasyEngineData.Items;
 using Microsoft.Xna.Framework.Content;
+using FantasyEngineData.Entities;
+using FantasyEngineData.Items;
 
 namespace FantasyEngineData
 {

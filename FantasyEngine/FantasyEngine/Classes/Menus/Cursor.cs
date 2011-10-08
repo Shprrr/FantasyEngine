@@ -10,6 +10,7 @@ namespace FantasyEngine.Classes.Menus
     public class Cursor : DrawableGameComponent
     {
         private int _CursorIndex = 0;
+        private int _ItemMax = 0;
 
         #region Properties
         public int CursorIndex
@@ -19,12 +20,23 @@ namespace FantasyEngine.Classes.Menus
             {
                 if (value < 0)
                     value = 0;
-                if (value > ItemMax)
-                    value = ItemMax;
+                if (value >= ItemMax)
+                    value = _ItemMax == 0 ? 0 : ItemMax - 1;
                 _CursorIndex = value;
             }
         }
-        public int ItemMax { get; set; }
+        public int ItemMax
+        {
+            get { return _ItemMax; }
+            set
+            {
+                if (value < 0)
+                    value = 0;
+                _ItemMax = value;
+                if (CursorIndex >= _ItemMax)
+                    _CursorIndex = _ItemMax == 0 ? 0 : _ItemMax - 1;
+            }
+        }
         public int ColumnMax { get; set; }
 
         /// <summary>

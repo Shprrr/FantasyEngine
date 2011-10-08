@@ -36,4 +36,25 @@ namespace FantasyEngineContentPipelineExt
             return typeof(InventoryContentReader).AssemblyQualifiedName;
         }
     }
+
+    [ContentTypeWriter]
+    public class BaseItemContentWriter : ContentTypeWriter<BaseItem>
+    {
+        protected override void Write(ContentWriter output, BaseItem value)
+        {
+            output.Write(value.Name);
+            output.Write(value.Type);
+            output.Write(value.IconName);
+            output.Write(value.Price);
+            //output.Write(value.Weight);
+            output.Write(value.Description);
+            output.Write(value.AllowableJobs);
+            output.WriteObject(value.Effect);
+        }
+
+        public override string GetRuntimeReader(TargetPlatform targetPlatform)
+        {
+            return typeof(BaseItemContentReader).AssemblyQualifiedName;
+        }
+    }
 }

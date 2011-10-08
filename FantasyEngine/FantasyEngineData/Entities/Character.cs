@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FantasyEngineData.Items;
 
-namespace FantasyEngineData
+namespace FantasyEngineData.Entities
 {
     public class Character : ICloneable
     {

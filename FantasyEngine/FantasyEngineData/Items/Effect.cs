@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
+using FantasyEngineData.Entities;
 
 namespace FantasyEngineData.Items
 {
@@ -285,10 +286,10 @@ namespace FantasyEngineData.Items
             switch (Type)
             {
                 case eType.DrainHP:
-                    retour = "Absorb HP";
+                    retour = "Absorbs HP";
                     break;
                 case eType.DrainMP:
-                    retour = "Absorb MP";
+                    retour = "Absorbs MP";
                     break;
                 case eType.ImbueFire:
                     break;
@@ -307,12 +308,13 @@ namespace FantasyEngineData.Items
                 case eType.ImbueDark:
                     break;
                 case eType.RecoveryHP:
-                    retour = "Recover HP";
+                    retour = "Recovers HP";
                     break;
                 case eType.RecoveryMP:
-                    retour = "Recover MP";
+                    retour = "Recovers MP";
                     break;
                 case eType.Life:
+                    retour = "Revives";
                     break;
                 case eType.Esuna:
                     break;
@@ -331,22 +333,31 @@ namespace FantasyEngineData.Items
                 case eType.Soft:
                     break;
                 case eType.Fire:
+                    retour = "Casts Fire";
                     break;
                 case eType.Ice:
+                    retour = "Casts Ice";
                     break;
                 case eType.Thunder:
+                    retour = "Casts Thunder";
                     break;
                 case eType.Water:
+                    retour = "Casts Water";
                     break;
                 case eType.Aero:
+                    retour = "Casts Aero";
                     break;
                 case eType.Quake:
+                    retour = "Casts Quake";
                     break;
                 case eType.Holy:
+                    retour = "Casts Holy";
                     break;
                 case eType.Dark:
+                    retour = "Casts Dark";
                     break;
                 case eType.Flare:
+                    retour = "Casts Flare";
                     break;
                 case eType.Protect:
                     break;

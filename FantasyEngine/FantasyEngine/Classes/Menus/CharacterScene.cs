@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using FantasyEngineData;
+using FantasyEngineData.Entities;
 
 namespace FantasyEngine.Classes.Menus
 {
@@ -53,9 +54,9 @@ namespace FantasyEngine.Classes.Menus
                 new Vector2(90, 118) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Level:" + ActiveCharacter.Level,
                 new Vector2(90, 140) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, "Exp:" + ActiveCharacter.TotalExp,
+            spriteBatch.DrawString(GameMain.font, "Exp:" + ActiveCharacter.TotalExp.ToString("### ##0").Trim(),
                 new Vector2(256, 140) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, "Next Lvl:" + (Job.ExpForLevel(ActiveCharacter.Level) - ActiveCharacter.Exp),
+            spriteBatch.DrawString(GameMain.font, "Next Lvl:" + (Job.ExpForLevel(ActiveCharacter.Level) - ActiveCharacter.Exp).ToString("### ##0").Trim(),
                 new Vector2(202, 156) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "HP:" + ActiveCharacter.Hp + "/" + ActiveCharacter.MaxHp,
                 new Vector2(90, 184) + GameMain.CameraOffset, Color.White);
@@ -63,46 +64,60 @@ namespace FantasyEngine.Classes.Menus
                 new Vector2(90, 206) + GameMain.CameraOffset, Color.White);
 
             spriteBatch.DrawString(GameMain.font, "Strength:", new Vector2(90, 236) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Strength.ToString(), new Vector2(274, 236) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Strength.ToString().PadLeft(3),
+                new Vector2(274, 236) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Vitality:", new Vector2(90, 258) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Vitality.ToString(), new Vector2(274, 258) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Vitality.ToString().PadLeft(3),
+                new Vector2(274, 258) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Accuracy:", new Vector2(90, 280) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Accuracy.ToString(), new Vector2(274, 280) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Accuracy.ToString().PadLeft(3),
+                new Vector2(274, 280) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Agility:", new Vector2(90, 302) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Agility.ToString(), new Vector2(274, 302) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Agility.ToString().PadLeft(3),
+                new Vector2(274, 302) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Intelligence:", new Vector2(90, 324) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Intelligence.ToString(), new Vector2(274, 324) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Intelligence.ToString().PadLeft(3),
+                new Vector2(274, 324) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Wisdom:", new Vector2(90, 346) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Wisdom.ToString(), new Vector2(274, 346) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Wisdom.ToString().PadLeft(3),
+                new Vector2(274, 346) + GameMain.CameraOffset, Color.White);
 
             spriteBatch.DrawString(GameMain.font, "Stat Points Remaining", new Vector2(90, 368) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, ActiveCharacter.StatRemaining.ToString(),
                 new Vector2(338 - GameMain.font.MeasureString(ActiveCharacter.StatRemaining.ToString()).X, 398) + GameMain.CameraOffset, Color.White);
 
             spriteBatch.DrawString(GameMain.font, "Attack:", new Vector2(348, 236) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getAttackMultiplier() + "x", new Vector2(474, 236) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getBaseDamage(Character.ePhysicalDamageOption.BOTH).ToString(),
-                new Vector2(514, 236) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, (ActiveCharacter.getAttackMultiplier() + "x").PadLeft(3, ''),
+                new Vector2(474, 239) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, ActiveCharacter.getBaseDamage(Character.ePhysicalDamageOption.BOTH).ToString().PadLeft(3, ''),
+                new Vector2(514, 239) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Hit %:", new Vector2(348, 258) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getHitPourc(Character.ePhysicalDamageOption.BOTH) + "%", new Vector2(514, 258) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, (ActiveCharacter.getHitPourc(Character.ePhysicalDamageOption.BOTH) + "%").PadLeft(3, ''),
+                new Vector2(514, 261) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Defense:", new Vector2(348, 280) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getDefenseMultiplier() + "x", new Vector2(474, 280) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getDefenseDamage().ToString(),
-                new Vector2(514, 280) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, (ActiveCharacter.getDefenseMultiplier() + "x").PadLeft(3, ''),
+                new Vector2(474, 283) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, ActiveCharacter.getDefenseDamage().ToString().PadLeft(3, ''),
+                new Vector2(514, 283) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "Evade:", new Vector2(348, 302) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getEvadePourc() + "%", new Vector2(514, 302) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, (ActiveCharacter.getEvadePourc() + "%").PadLeft(3, ''),
+                new Vector2(514, 305) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "M.Attack:", new Vector2(348, 324) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicAttackMultiplier(Character.eMagicalDamageOption.NONE) + "x", new Vector2(474, 324) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicBaseDamage(Character.eMagicalDamageOption.NONE, 1).ToString(),
-                new Vector2(514, 324) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, (ActiveCharacter.getMagicAttackMultiplier(Character.eMagicalDamageOption.NONE) + "x").PadLeft(3, ''),
+                new Vector2(474, 327) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, ActiveCharacter.getMagicBaseDamage(Character.eMagicalDamageOption.NONE, 1).ToString().PadLeft(3, ''),
+                new Vector2(514, 327) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "M.Hit %:", new Vector2(348, 346) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicHitPourc(Character.eMagicalDamageOption.NONE, 80) + "%", new Vector2(514, 346) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, (ActiveCharacter.getMagicHitPourc(Character.eMagicalDamageOption.NONE, 80) + "%").PadLeft(3, ''),
+                new Vector2(514, 349) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "M.Defense:", new Vector2(348, 368) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicDefenseMultiplier() + "x", new Vector2(474, 368) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicDefenseDamage().ToString(),
-                new Vector2(514, 368) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, (ActiveCharacter.getMagicDefenseMultiplier() + "x").PadLeft(3, ''),
+                new Vector2(474, 371) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, ActiveCharacter.getMagicDefenseDamage().ToString().PadLeft(3, ''),
+                new Vector2(514, 371) + GameMain.CameraOffset, Color.White);
             spriteBatch.DrawString(GameMain.font, "M.Evade:", new Vector2(348, 390) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.getMagicEvadePourc() + "%", new Vector2(514, 390) + GameMain.CameraOffset, Color.White);
+            spriteBatch.DrawString(GameMain.font8, (ActiveCharacter.getMagicEvadePourc() + "%").PadLeft(3, ''),
+                new Vector2(514, 393) + GameMain.CameraOffset, Color.White);
 
             if (_RealActiveCharacter.StatRemaining > 0)
             {

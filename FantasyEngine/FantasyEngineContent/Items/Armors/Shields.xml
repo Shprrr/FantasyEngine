@@ -4,7 +4,9 @@
 		<Item>
 			<Name>Leather Shield</Name>
 			<Type>Shield</Type>
+			<Icon>shield_icon</Icon>
 			<Price>40</Price>
+			<Description>A shield in leather.</Description>
 			<AllowableJobs>*</AllowableJobs>
 			<DefenseValue>3</DefenseValue>
 			<EvadePourc>3</EvadePourc>

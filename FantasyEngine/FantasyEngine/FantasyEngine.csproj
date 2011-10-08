@@ -122,6 +122,8 @@
     <Compile Include="Classes\Battles\ItemSelection.cs" />
     <Compile Include="Classes\Command.cs" />
     <Compile Include="Classes\Input.cs" />
+    <Compile Include="Classes\Menus\ShopScene.cs" />
+    <Compile Include="Classes\NumericDropDown.cs" />
     <Compile Include="Classes\Overworld\MapObject.cs" />
     <Compile Include="Classes\Menus\CharacterScene.cs" />
     <Compile Include="Classes\Menus\Cursor.cs" />

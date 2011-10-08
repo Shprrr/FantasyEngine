@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FantasyEngineData.Items
 {
@@ -51,8 +52,10 @@ namespace FantasyEngineData.Items
         public Shield(
                 string shieldName,
                 string shieldType,
+                Texture2D icon,
                 int price,
                 float weight,
+                string description,
                 int defenseValue,
             //int defenseModifier,
                 int evadePourc,
@@ -60,7 +63,7 @@ namespace FantasyEngineData.Items
                 int magicEvadePourc,
                 string allowableJobs,
                 Effect effect)
-            : base(shieldName, shieldType, price, weight, allowableJobs, effect)
+            : base(shieldName, shieldType, icon, price, weight, description, allowableJobs, effect)
         {
             DefenseValue = defenseValue;
             //DefenseModifier = defenseModifier;
@@ -76,8 +79,10 @@ namespace FantasyEngineData.Items
             Shield shield = new Shield(
                 Name,
                 Type,
+                Icon,
                 Price,
                 Weight,
+                Description,
                 DefenseValue,
                 //DefenseModifier,
                 EvadePourc,

@@ -4,8 +4,10 @@
 		<Item>
 			<Name>Knife</Name>
 			<Type>Knife</Type>
+			<Icon>weapon_icon</Icon>
 			<Price>20</Price>
-			<AllowableJobs>On</AllowableJobs>
+			<Description>A little knife.</Description>
+			<AllowableJobs>OK So Wa Th BM WM</AllowableJobs>
 			<NumberHands>One</NumberHands>
 			<Damage>6</Damage>
 			<HitPourc>85</HitPourc>
@@ -13,8 +15,10 @@
 		<Item>
 			<Name>Dagger</Name>
 			<Type>Knife</Type>
+			<Icon>weapon_icon</Icon>
 			<Price>60</Price>
-			<AllowableJobs>On</AllowableJobs>
+			<Description>A dagger.</Description>
+			<AllowableJobs>OK Th</AllowableJobs>
 			<NumberHands>One</NumberHands>
 			<Damage>8</Damage>
 			<HitPourc>85</HitPourc>

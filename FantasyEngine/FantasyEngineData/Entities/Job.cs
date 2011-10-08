@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
 
-namespace FantasyEngineData
+namespace FantasyEngineData.Entities
 {
     public enum Status
     {
@@ -258,8 +258,9 @@ namespace FantasyEngineData
 
         public void LevelUp()
         {
-            // If the total exp is smaller than ExpForNextLevel, it don't need to level up.
-            if (TotalExp < ExpForLevel(Level))
+            // If the total exp is smaller than ExpForNextLevel
+            // or it is already at the max level, it don't need to level up.
+            if (TotalExp < ExpForLevel(Level) || Level >= MAX_LEVEL)
                 return;
 
             int oldMaxHp = MaxHp;

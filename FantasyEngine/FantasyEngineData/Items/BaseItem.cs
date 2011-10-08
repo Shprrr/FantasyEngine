@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using FantasyEngineData.Entities;
 
 namespace FantasyEngineData.Items
 {
@@ -36,6 +38,13 @@ namespace FantasyEngineData.Items
             get { return type; }
             set { type = value; }
         }
+
+        [ContentSerializerIgnore()]
+        public Texture2D Icon { get; set; }
+
+        [ContentSerializer(ElementName = "Icon")]
+        public string IconName { get; set; }
+
         public int Price
         {
             get { return price; }
@@ -46,6 +55,8 @@ namespace FantasyEngineData.Items
             get { return weight; }
             protected set { weight = value; }
         }
+
+        public string Description { get; set; }
 
         public string AllowableJobs { get; set; }
 
@@ -66,12 +77,14 @@ namespace FantasyEngineData.Items
 
         }
 
-        public BaseItem(string name, string type, int price, float weight, string allowableJobs, Effect effect)
+        public BaseItem(string name, string type, Texture2D icon, int price, float weight, string description, string allowableJobs, Effect effect)
         {
             Name = name;
             Type = type;
+            Icon = icon;
             Price = price;
             Weight = weight;
+            Description = description;
             AllowableJobs = allowableJobs;
             Effect = effect;
         }
@@ -128,9 +141,37 @@ namespace FantasyEngineData.Items
         {
             if (((object)item1) == null)
                 return ((object)item2) == null;
+            if (((object)item2) == null)
+                return ((object)item1) == null;
             return item1.Equals(item2);
         }
 
         public static bool operator !=(BaseItem item1, BaseItem item2) { return !(item1 == item2); }
+    }
+
+    public class BaseItemContentReader : ContentTypeReader<BaseItem>
+    {
+        protected override BaseItem Read(ContentReader input, BaseItem existingInstance)
+        {
+            BaseItem baseItem = existingInstance;
+
+            if (baseItem == null)
+            {
+                //baseItem = new BaseItem();
+            }
+
+            baseItem.Name = input.ReadString();
+            baseItem.Type = input.ReadString();
+            string iconName = input.ReadString();
+            baseItem.Price = input.ReadInt32();
+            //baseItem.Weight = input.ReadInt32();
+            baseItem.Description = input.ReadString();
+            baseItem.AllowableJobs = input.ReadString();
+            baseItem.Effect = input.ReadObject<Effect>();
+
+            baseItem.Icon = input.ContentManager.Load<Texture2D>(@"Images\Menus\" + iconName);
+
+            return baseItem;
+        }
     }
 }

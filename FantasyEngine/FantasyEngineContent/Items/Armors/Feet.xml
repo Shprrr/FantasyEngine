@@ -4,7 +4,9 @@
 		<Item>
 			<Name>Leather Boots</Name>
 			<Type>Boots</Type>
+			<Icon>feet_icon</Icon>
 			<Price>20</Price>
+			<Description>Boots in leather.</Description>
 			<AllowableJobs>*</AllowableJobs>
 			<Location>Feet</Location>
 			<DefenseValue>1</DefenseValue>

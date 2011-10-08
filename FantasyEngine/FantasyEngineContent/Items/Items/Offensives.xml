@@ -4,7 +4,9 @@
 		<Item>
 			<Name>Ultima Scroll</Name>
 			<Type>Offensive</Type>
+			<Icon>item_icon</Icon>
 			<Price>1000</Price>
+			<Description>Casts one time the spell Ultima.</Description>
 			<AllowableJobs>*</AllowableJobs>
 			<Effect>
 				<Type>Flare</Type>

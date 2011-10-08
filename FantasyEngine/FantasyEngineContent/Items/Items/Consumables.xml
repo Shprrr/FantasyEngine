@@ -4,7 +4,9 @@
 		<Item>
 			<Name>Potion</Name>
 			<Type>Consumable</Type>
+			<Icon>item_icon</Icon>
 			<Price>10</Price>
+			<Description>Restores 50 HP.</Description>
 			<AllowableJobs>*</AllowableJobs>
 			<Effect>
 				<Type>RecoveryHP</Type>
@@ -15,7 +17,9 @@
 		<Item>
 			<Name>Antidote</Name>
 			<Type>Consumable</Type>
+			<Icon>item_icon</Icon>
 			<Price>15</Price>
+			<Description>Cures poison.</Description>
 			<AllowableJobs>*</AllowableJobs>
 			<Effect>
 				<Type>Poisona</Type>
@@ -25,7 +29,9 @@
 		<Item>
 			<Name>Phoenix Down</Name>
 			<Type>Consumable</Type>
+			<Icon>item_icon</Icon>
 			<Price>100</Price>
+			<Description>Revives a fallen character.</Description>
 			<AllowableJobs>*</AllowableJobs>
 			<Effect>
 				<Type>Life</Type>

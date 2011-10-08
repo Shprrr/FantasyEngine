@@ -4,7 +4,9 @@
 		<Item>
 			<Name>Leather Helmet</Name>
 			<Type>Head</Type>
+			<Icon>head_icon</Icon>
 			<Price>15</Price>
+			<Description>An helmet in leather.</Description>
 			<AllowableJobs>*</AllowableJobs>
 			<Location>Head</Location>
 			<DefenseValue>1</DefenseValue>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FantasyEngineData
+namespace FantasyEngineData.Entities
 {
     public class Monster : BaseJob, ICloneable
     {

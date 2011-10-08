@@ -1,11 +1,11 @@
 ﻿using System;
-using FantasyEngine.Classes.Overworld;
-using FantasyEngineData;
-using FantasyEngineData.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using FantasyEngine.Classes.Overworld;
+using FantasyEngineData.Entities;
+using FantasyEngineData.Items;
 
 namespace FantasyEngine.Classes
 {
@@ -51,12 +51,11 @@ namespace FantasyEngine.Classes
             {
                 Player.GamePlayer.Actors[i] = new Character();
                 Player.GamePlayer.Actors[i].Name = "H" + (i + 1);
-                Player.GamePlayer.Actors[i].Jobs[0] = new Job(Game.Content.Load<BaseJob>(@"Jobs\OnionKid"));
+                Player.GamePlayer.Actors[i].Jobs[0] = new Job(JobManager.GetBaseJob("OnionKid"));
                 Player.GamePlayer.Actors[i].IndexCurrentJob = 0;
             }
 
             Vector2 startingPoint = new Vector2(64, 64);
-            //Player.GamePlayer.Hero = new Sprite(Game, "onionkid", startingPoint);
             Player.GamePlayer.Hero = new Sprite(Game, @"Characters\" + Player.GamePlayer.Actors[0].CurrentJob.JobName, startingPoint);
             Player.GamePlayer.Map = new MapObject(Game, MapObject.eMapNo.VILLAGE, startingPoint - new Vector2(304, 224));
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetItem("Potion"), 2));
@@ -109,9 +108,7 @@ namespace FantasyEngine.Classes
             spriteBatch.Draw(_BackTitle, Game.GraphicsDevice.ScissorRectangle, Color.White);
 
             //Title
-#if !DEBUG
             spriteBatch.Draw(_TitleText, new Vector2(264, 62), Color.White);
-#endif
 
             switch (state)
             {

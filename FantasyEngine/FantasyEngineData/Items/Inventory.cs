@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
+using FantasyEngineData.Entities;
 
 namespace FantasyEngineData.Items
 {
@@ -57,6 +58,10 @@ namespace FantasyEngineData.Items
 
             public static bool operator ==(InvItem invItem1, InvItem invItem2)
             {
+                if (((object)invItem1) == null)
+                    return ((object)invItem2) == null;
+                if (((object)invItem2) == null)
+                    return ((object)invItem1) == null;
                 return invItem1.Equals(invItem2);
             }
 

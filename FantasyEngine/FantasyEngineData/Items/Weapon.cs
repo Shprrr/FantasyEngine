@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FantasyEngineData.Items
 {
@@ -51,8 +52,10 @@ namespace FantasyEngineData.Items
         public Weapon(
                 string weaponName,
                 string weaponType,
+                Texture2D icon,
                 int price,
                 float weight,
+                string description,
                 Hands hands,
                 int damage,
             //int damageModifier,
@@ -60,7 +63,7 @@ namespace FantasyEngineData.Items
             //int attackModifier,
                 string allowableJobs,
                 Effect effect)
-            : base(weaponName, weaponType, price, weight, allowableJobs, effect)
+            : base(weaponName, weaponType, icon, price, weight, description, allowableJobs, effect)
         {
             NumberHands = hands;
             Damage = damage;
@@ -76,8 +79,10 @@ namespace FantasyEngineData.Items
             Weapon weapon = new Weapon(
                 Name,
                 Type,
+                Icon,
                 Price,
                 Weight,
+                Description,
                 NumberHands,
                 Damage,
                 //DamageModifier,

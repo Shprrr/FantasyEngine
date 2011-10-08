@@ -4,7 +4,9 @@
 		<Item>
 			<Name>Leather Gloves</Name>
 			<Type>Gloves</Type>
+			<Icon>arms_icon</Icon>
 			<Price>15</Price>
+			<Description>Gloves in leather.</Description>
 			<AllowableJobs>*</AllowableJobs>
 			<Location>Arms</Location>
 			<DefenseValue>1</DefenseValue>

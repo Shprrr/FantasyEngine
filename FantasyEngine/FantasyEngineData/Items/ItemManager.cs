@@ -37,7 +37,7 @@ namespace FantasyEngineData.Items
         }
         #endregion
 
-        public static void Load(BaseItem[] baseItems)
+        public static void Load(params BaseItem[] baseItems)
         {
             foreach (BaseItem baseItem in baseItems)
             {

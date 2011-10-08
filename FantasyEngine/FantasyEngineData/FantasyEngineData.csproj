@@ -97,11 +97,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Battles\Battle.cs" />
+    <Compile Include="Entities\JobManager.cs" />
     <Compile Include="Items\Armor.cs" />
     <Compile Include="Items\BaseItem.cs" />
-    <Compile Include="BaseJob.cs" />
-    <Compile Include="BattleSprite.cs" />
-    <Compile Include="Character.cs" />
+    <Compile Include="Entities\BaseJob.cs" />
+    <Compile Include="Entities\BattleSprite.cs" />
+    <Compile Include="Entities\Character.cs" />
     <Compile Include="Drop.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Items\Effect.cs" />
@@ -110,8 +111,8 @@
     <Compile Include="Items\ItemManager.cs" />
     <Compile Include="Items\Shield.cs" />
     <Compile Include="Items\Weapon.cs" />
-    <Compile Include="Job.cs" />
-    <Compile Include="Monster.cs" />
+    <Compile Include="Entities\Job.cs" />
+    <Compile Include="Entities\Monster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

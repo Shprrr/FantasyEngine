@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
 
-namespace FantasyEngineData
+namespace FantasyEngineData.Entities
 {
     public class BaseJob
     {

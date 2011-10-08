@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <XnaContent>
-	<Asset Type="FantasyEngineData.Monster">
+	<Asset Type="FantasyEngineData.Entities.Monster">
 		<JobName>Goblin</JobName>
 		<MaxHp>40</MaxHp>
 		<MaxMp>0</MaxMp>

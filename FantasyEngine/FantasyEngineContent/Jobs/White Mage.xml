@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <XnaContent>
 	<Asset Type="FantasyEngineData.Entities.BaseJob">
-		<JobAbbreviation>OK</JobAbbreviation>
-		<JobName>OnionKid</JobName>
+		<JobAbbreviation>WM</JobAbbreviation>
+		<JobName>White Mage</JobName>
 		<MaxHp>50</MaxHp>
 		<MaxMp>10</MaxMp>
 		<Strength>5</Strength>
@@ -10,7 +10,7 @@
 		<Accuracy>5</Accuracy>
 		<Agility>5</Agility>
 		<Intelligence>5</Intelligence>
-		<Wisdom>5</Wisdom>
+		<Wisdom>10</Wisdom>
 		<BattleSprite>
 			<SpriteName>onionkid_battle</SpriteName>
 			<IsTiled>true</IsTiled>

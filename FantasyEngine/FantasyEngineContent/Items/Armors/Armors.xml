@@ -4,7 +4,9 @@
 		<Item>
 			<Name>Leather Armor</Name>
 			<Type>Armor</Type>
+			<Icon>body_icon</Icon>
 			<Price>95</Price>
+			<Description>A body armor in leather.</Description>
 			<AllowableJobs>*</AllowableJobs>
 			<Location>Body</Location>
 			<DefenseValue>2</DefenseValue>

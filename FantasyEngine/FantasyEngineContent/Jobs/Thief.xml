@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <XnaContent>
 	<Asset Type="FantasyEngineData.Entities.BaseJob">
-		<JobAbbreviation>OK</JobAbbreviation>
-		<JobName>OnionKid</JobName>
+		<JobAbbreviation>Th</JobAbbreviation>
+		<JobName>Thief</JobName>
 		<MaxHp>50</MaxHp>
 		<MaxMp>10</MaxMp>
 		<Strength>5</Strength>
 		<Vitality>5</Vitality>
 		<Accuracy>5</Accuracy>
-		<Agility>5</Agility>
+		<Agility>10</Agility>
 		<Intelligence>5</Intelligence>
 		<Wisdom>5</Wisdom>
 		<BattleSprite>

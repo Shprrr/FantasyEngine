@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FantasyEngineData.Items
 {
@@ -57,8 +58,10 @@ namespace FantasyEngineData.Items
         public Armor(
                 string armorName,
                 string armorType,
+                Texture2D icon,
                 int price,
                 float weight,
+                string description,
                 ArmorLocation location,
                 int defenseValue,
             //int defenseModifier,
@@ -67,7 +70,7 @@ namespace FantasyEngineData.Items
                 int magicEvadePourc,
                 string allowableJobs,
                 Effect effect)
-            : base(armorName, armorType, price, weight, allowableJobs, effect)
+            : base(armorName, armorType, icon, price, weight, description, allowableJobs, effect)
         {
             Location = location;
             DefenseValue = defenseValue;
@@ -84,8 +87,10 @@ namespace FantasyEngineData.Items
             Armor armor = new Armor(
                 Name,
                 Type,
+                Icon,
                 Price,
                 Weight,
+                Description,
                 Location,
                 DefenseValue,
                 //DefenseModifier,
