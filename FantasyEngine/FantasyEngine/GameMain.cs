@@ -71,6 +71,7 @@ namespace FantasyEngine
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 640;
             graphics.PreferredBackBufferHeight = 480;
+            graphics.ApplyChanges();
 
             rastState.ScissorTestEnable = true;
 
@@ -128,15 +129,15 @@ namespace FantasyEngine
             JobManager.Load(Content.Load<BaseJob>(@"Jobs\White Mage"));
 
             // Load all items in the ItemManager
-           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Items\Consumables"));
-           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Items\Offensives"));
-           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Weapons\Knives"));
-           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Weapons\Swords"));
-           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Heads"));
-           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Armors"));
-           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Arms"));
-           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Feet"));
-           ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Shields"));
+            ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Items\Consumables"));
+            ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Items\Offensives"));
+            ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Weapons\Knives"));
+            ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Weapons\Swords"));
+            ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Heads"));
+            ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Armors"));
+            ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Arms"));
+            ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Feet"));
+            ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Shields"));
         }
 
         /// <summary>

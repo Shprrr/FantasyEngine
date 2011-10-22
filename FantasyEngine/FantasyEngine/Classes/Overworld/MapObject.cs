@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
 using TiledLib;
+using FantasyEngine.Classes.Menus;
 using FantasyEngineData.Entities;
 
 namespace FantasyEngine.Classes.Overworld
@@ -89,30 +90,65 @@ namespace FantasyEngine.Classes.Overworld
 
         void npc_Talk(EventArgs e, NPC npc)
         {
+            Thread thr;
             switch (_MapNo)
             {
                 case eMapNo.VILLAGE:
                     switch (npc.Name)
                     {
                         case "boy1":
-                            npc.Talk(npc.Name + ": Loaded succesfully.");
+                            thr = new Thread(
+                                delegate(object Data)
+                                {
+                                    npc.Talk(npc.Name + ": Loaded succesfully.");
+                                });
+                            thr.Start(npc);
                             break;
 
                         case "Claudia":
-                            npc.Talk(npc.Name + ": The fountain is pretty.");
+                            thr = new Thread(
+                                delegate(object Data)
+                                {
+                                    npc.Talk(npc.Name + ": The fountain is pretty.");
+                                });
+                            thr.Start(npc);
                             break;
 
                         case "Woman":
-                            npc.Talk(npc.Name + ": I don't have time to talk.  RUN!!");
+                            thr = new Thread(
+                                delegate(object Data)
+                                {
+                                    npc.Talk(npc.Name + ": I don't have time to talk.  RUN!!");
+                                });
+                            thr.Start(npc);
                             break;
 
                         case "Griswold":
-                            //npc.Talk(npc.Name + ": Hello. What can I do for you ?");
-                            List<FantasyEngineData.Items.BaseItem> shopBuy = new List<FantasyEngineData.Items.BaseItem>();
-                            shopBuy.Add(FantasyEngineData.Items.ItemManager.GetItem("Potion"));
-                            shopBuy.Add(FantasyEngineData.Items.ItemManager.GetWeapon("Dagger"));
-                            shopBuy.Add(FantasyEngineData.Items.ItemManager.GetWeapon("Long Sword"));
-                            Scene.AddSubScene(new FantasyEngine.Classes.Menus.ShopScene(Game, shopBuy));
+                            thr = new Thread(
+                                delegate(object Data)
+                                {
+                                    npc.Talk(npc.Name + ": Hello. What can I do for you ?");
+                                    List<FantasyEngineData.Items.BaseItem> shopBuy = new List<FantasyEngineData.Items.BaseItem>();
+                                    shopBuy.Add(FantasyEngineData.Items.ItemManager.GetItem("Potion"));
+                                    shopBuy.Add(FantasyEngineData.Items.ItemManager.GetWeapon("Dagger"));
+                                    shopBuy.Add(FantasyEngineData.Items.ItemManager.GetWeapon("Long Sword"));
+                                    Scene.AddSubScene(new ShopScene(Game, shopBuy));
+                                });
+                            thr.Start(npc);
+                            break;
+
+                        case "Inn":
+                            Scene.AddSubScene(new InnScene(Game, 10));
+                            break;
+
+                        case "Steve":
+                            thr = new Thread(
+                                delegate(object Data)
+                                {
+                                    npc.Talk(npc.Name + ": People think I talk too much, but I don't think so. I really don't know why they think that.");
+                                    npc.Talk(npc.Name + ": It's not like I'm talking and I'm talking and it seems to have no end to what I'm saying and on top of that, there's no purpose to what I'm saying because I only fill space with inutile dialog...");
+                                });
+                            thr.Start(npc);
                             break;
                     }
                     break;
@@ -193,7 +229,12 @@ namespace FantasyEngine.Classes.Overworld
 
         void boy1_Talking(EventArgs e, NPC npc)
         {
-            npc.Talk(npc.Name + ": Test to position " + npc.Position);
+            Thread thr = new Thread(
+                delegate(object Data)
+                {
+                    npc.Talk(npc.Name + ": Test to position " + npc.Position);
+                });
+            thr.Start(npc);
         }
 
         public override void Draw(GameTime gameTime)

@@ -1,4 +1,7 @@
 using System;
+using System.Reflection;
+using System.Windows.Forms;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FantasyEngine
 {
@@ -10,20 +13,35 @@ namespace FantasyEngine
         /// </summary>
         static void Main(string[] args)
         {
-            using (GameMain game = new GameMain())
+            try
             {
-#if !DEBUG
-                try
+                using (GameMain game = new GameMain())
                 {
-#endif
                     game.Run();
+                }
+            }
 #if !DEBUG
-                }
-                catch (NotImplementedException)
-                {
-                    System.Windows.Forms.MessageBox.Show("Sorry, this feature is not implemented yet.");
-                }
+            catch (NotImplementedException)
+            {
+                MessageBox.Show("Sorry, this feature is not implemented yet.", Assembly.GetEntryAssembly().GetName().Name);
+            }
 #endif
+            catch (NoSuitableGraphicsDeviceException exc)
+            {
+#if DEBUG
+                MessageBox.Show(exc.ToString(), exc.GetType().Name);
+#endif
+
+                if (GraphicsAdapter.UseReferenceDevice)
+                    MessageBox.Show("No suitable graphics are found." + Environment.NewLine + "You can't play this game.",
+                        Assembly.GetEntryAssembly().GetName().Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    if (MessageBox.Show("No suitable graphics are found." + Environment.NewLine + "Do you still want to play this game ?",
+                        Assembly.GetEntryAssembly().GetName().Name, MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                    {
+                        GraphicsAdapter.UseReferenceDevice = true;
+                        Main(args);
+                    }
             }
         }
     }

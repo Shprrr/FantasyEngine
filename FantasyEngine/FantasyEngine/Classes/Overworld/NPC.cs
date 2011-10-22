@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using TiledLib;
@@ -20,6 +19,7 @@ namespace FantasyEngine.Classes.Overworld
         private Window _MessageWindow;
         private int _MessageWindowBottomY;
         private string _Message = "";
+        private Thread _MessageThread;
         private eDirection _InitialDirection;
 
         public string Name { get; set; }
@@ -74,7 +74,8 @@ namespace FantasyEngine.Classes.Overworld
 
             GameMain.Scissor(_MessageWindow.InsideBound);
 
-            GameMain.spriteBatch.DrawString(GameMain.font, _Message, new Vector2(_MessageWindow.InsideBound.X, _MessageWindow.InsideBound.Y) + GameMain.CameraOffset, Color.White);
+            GameMain.spriteBatch.DrawString(GameMain.font, _Message,
+                new Vector2(_MessageWindow.InsideBound.X, _MessageWindow.InsideBound.Y) + GameMain.CameraOffset, Color.White);
 
             GameMain.ScissorReset();
 
@@ -96,6 +97,7 @@ namespace FantasyEngine.Classes.Overworld
                 if (RegainDirectionAfterTalk)
                     Direction = _InitialDirection;
                 Player.GamePlayer.Hero.Enabled = true;
+                _MessageThread.Interrupt();
                 Action = eAction.Stay;
                 Input.CatchKeys(Keys.Enter);
             }
@@ -113,6 +115,14 @@ namespace FantasyEngine.Classes.Overworld
             _MessageWindow.Visible = true;
             Player.GamePlayer.Hero.Enabled = false;
             Action = eAction.Talking;
+            _MessageThread = Thread.CurrentThread;
+            try
+            {
+                Thread.Sleep(Timeout.Infinite);
+            }
+            catch (ThreadInterruptedException)
+            {
+            }
         }
 
         public void Move(eDirection direction)

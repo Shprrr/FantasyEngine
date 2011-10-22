@@ -13,7 +13,7 @@
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
-    <XnaProfile>HiDef</XnaProfile>
+    <XnaProfile>Reach</XnaProfile>
     <XnaCrossPlatformGroupID>152c6c15-dcbc-4573-8134-f8d0198e1414</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
     <ApplicationIcon>Game.ico</ApplicationIcon>
@@ -122,6 +122,7 @@
     <Compile Include="Classes\Battles\ItemSelection.cs" />
     <Compile Include="Classes\Command.cs" />
     <Compile Include="Classes\Input.cs" />
+    <Compile Include="Classes\Menus\InnScene.cs" />
     <Compile Include="Classes\Menus\ShopScene.cs" />
     <Compile Include="Classes\NumericDropDown.cs" />
     <Compile Include="Classes\Overworld\MapObject.cs" />
