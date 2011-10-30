@@ -31,22 +31,22 @@ namespace FantasyEngine.Classes
             if (!Visible)
                 return;
 
-            GameMain.Scissor(InsideBound);
-            GameMain.spriteBatch.DrawString(GameMain.font, Text, new Vector2(InsideBound.X, InsideBound.Y) + Offset, Color.White);
+            _SpriteBatch.Scissor(InsideBound);
+            _SpriteBatch.DrawString(GameMain.font, Text, new Vector2(InsideBound.X, InsideBound.Y) + Offset, Color.White);
 
             SpriteFont font = _CursorIndex == 0 ? GameMain.font : GameMain.font8;
-            GameMain.spriteBatch.DrawString(font, "+",
+            _SpriteBatch.DrawString(font, "+",
                 new Vector2(InsideBound.Center.X - font.MeasureString("+").X, InsideBound.Y + GameMain.font.LineSpacing) + Offset, Color.White);
 
             Vector2 valueSize = GameMain.font.MeasureString(Value.ToString());
-            GameMain.spriteBatch.DrawString(GameMain.font, Value.ToString(),
+            _SpriteBatch.DrawString(GameMain.font, Value.ToString(),
                 new Vector2(InsideBound.Center.X - valueSize.X, InsideBound.Y + GameMain.font.LineSpacing * 2) + Offset, Color.White);
 
             font = _CursorIndex == 1 ? GameMain.font : GameMain.font8;
-            GameMain.spriteBatch.DrawString(font, "-",
+            _SpriteBatch.DrawString(font, "-",
                 new Vector2(InsideBound.Center.X - font.MeasureString("-").X, InsideBound.Y + GameMain.font.LineSpacing * 3) + Offset, Color.White);
 
-            GameMain.ScissorReset();
+            _SpriteBatch.ScissorReset();
         }
 
         public override void Update(GameTime gameTime)

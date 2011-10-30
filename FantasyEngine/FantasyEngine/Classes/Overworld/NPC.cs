@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -18,7 +20,8 @@ namespace FantasyEngine.Classes.Overworld
 
         private Window _MessageWindow;
         private int _MessageWindowBottomY;
-        private string _Message = "";
+        private string[] _Message = new string[0];
+        private int _MessageIndex;
         private Thread _MessageThread;
         private eDirection _InitialDirection;
 
@@ -57,7 +60,10 @@ namespace FantasyEngine.Classes.Overworld
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+        }
 
+        public void DrawGUI(GameTime gameTime)
+        {
             DrawTalk(gameTime);
         }
 
@@ -69,20 +75,20 @@ namespace FantasyEngine.Classes.Overworld
 
             frame = (byte)((frame + 1) % 16);
 
-            _MessageWindow.Offset = GameMain.CameraOffset;
+            _MessageWindow.Offset = GameMain.spriteBatchGUI.CameraOffset;
             _MessageWindow.Draw(gameTime);
 
-            GameMain.Scissor(_MessageWindow.InsideBound);
+            GameMain.spriteBatchGUI.Scissor(_MessageWindow.InsideBound);
 
-            GameMain.spriteBatch.DrawString(GameMain.font, _Message,
-                new Vector2(_MessageWindow.InsideBound.X, _MessageWindow.InsideBound.Y) + GameMain.CameraOffset, Color.White);
+            GameMain.spriteBatchGUI.DrawString(GameMain.font, _Message[_MessageIndex],
+                new Vector2(_MessageWindow.InsideBound.X, _MessageWindow.InsideBound.Y) + GameMain.spriteBatchGUI.CameraOffset, Color.White);
 
-            GameMain.ScissorReset();
+            GameMain.spriteBatchGUI.ScissorReset();
 
             if (frame < 12)
-                GameMain.spriteBatch.Draw(Window.NextDialog,
+                GameMain.spriteBatchGUI.Draw(Window.NextDialog,
                     new Vector2(_MessageWindow.InsideBound.Right - Window.NextDialog.Width,
-                        _MessageWindow.Rectangle.Bottom - Window.NextDialog.Height * 2) + GameMain.CameraOffset,
+                        _MessageWindow.Rectangle.Bottom - Window.NextDialog.Height * 2) + GameMain.spriteBatchGUI.CameraOffset,
                     Color.White);
         }
 
@@ -92,13 +98,17 @@ namespace FantasyEngine.Classes.Overworld
 
             if (_MessageWindow.Enabled && Input.keyStateDown.IsKeyDown(Keys.Enter))
             {
-                _MessageWindow.Enabled = false;
-                _MessageWindow.Visible = false;
-                if (RegainDirectionAfterTalk)
-                    Direction = _InitialDirection;
-                Player.GamePlayer.Hero.Enabled = true;
-                _MessageThread.Interrupt();
-                Action = eAction.Stay;
+                _MessageIndex++;
+                if (_MessageIndex >= _Message.Length)
+                {
+                    _MessageWindow.Enabled = false;
+                    _MessageWindow.Visible = false;
+                    if (RegainDirectionAfterTalk)
+                        Direction = _InitialDirection;
+                    Player.GamePlayer.Hero.Enabled = true;
+                    _MessageThread.Interrupt();
+                    Action = eAction.Stay;
+                }
                 Input.CatchKeys(Keys.Enter);
             }
         }
@@ -110,7 +120,39 @@ namespace FantasyEngine.Classes.Overworld
 
         public void Talk(string message)
         {
-            _Message = message;
+            List<string> messages = new List<string>();
+            string messageFit = string.Empty;
+            int nbLines = 0;
+            string[] words = message.Split(' ');
+            string lastLine = string.Empty;
+            StringBuilder line = new StringBuilder(500);
+
+            // Format the message to fit in the screen.
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (i != 0)
+                    line.Append(" ");
+                line.Append(words[i]);
+                if (GameMain.font.MeasureString(line).X > _MessageWindow.InsideBound.Width)
+                {
+                    nbLines++;
+                    messageFit += lastLine + (nbLines != 4 ? Environment.NewLine : string.Empty);
+                    if (nbLines == 4)
+                    {
+                        messages.Add(messageFit);
+                        messageFit = string.Empty;
+                        nbLines = 0;
+                    }
+                    line.Length = 0;
+                    line.Append(words[i]);
+                }
+                lastLine = line.ToString();
+            }
+            messageFit += lastLine;
+            messages.Add(messageFit);
+
+            _Message = messages.ToArray();
+            _MessageIndex = 0;
             _MessageWindow.Enabled = true;
             _MessageWindow.Visible = true;
             Player.GamePlayer.Hero.Enabled = false;

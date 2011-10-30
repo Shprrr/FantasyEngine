@@ -23,36 +23,36 @@ namespace FantasyEngine.Classes.Menus
             ActiveCharacter = activeCharacter;
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void DrawGUI(GameTime gameTime)
         {
-            base.Draw(gameTime);
+            base.DrawGUI(gameTime);
 
-            _EquipWindow.Offset = GameMain.CameraOffset;
+            _EquipWindow.Offset = spriteBatchGUI.CameraOffset;
             _EquipWindow.Draw(gameTime);
-            GameMain.Scissor(_EquipWindow.InsideBound);
+            spriteBatchGUI.Scissor(_EquipWindow.InsideBound);
 
-            spriteBatch.DrawString(GameMain.font, "Equipment", new Vector2(260, 68) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Name, new Vector2(90, 96) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "Equipment", new Vector2(260, 68) + spriteBatchGUI.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Name, new Vector2(90, 96) + spriteBatchGUI.CameraOffset, Color.White);
 
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.RightHand != null ? ActiveCharacter.RightHand.Name : "Right Hand",
-                new Vector2(110, 126) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.LeftHand != null ? ActiveCharacter.LeftHand.Name : "Left Hand",
-                new Vector2(110, 148) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.RightHand != null ? ActiveCharacter.RightHand.Name : "Right Hand",
+                new Vector2(110, 126) + spriteBatchGUI.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.LeftHand != null ? ActiveCharacter.LeftHand.Name : "Left Hand",
+                new Vector2(110, 148) + spriteBatchGUI.CameraOffset, Color.White);
 
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Head != null ? ActiveCharacter.Head.Name : "Head",
-                new Vector2(347, 126) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Body != null ? ActiveCharacter.Body.Name : "Body",
-                new Vector2(347, 148) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Arms != null ? ActiveCharacter.Arms.Name : "Arms",
-                new Vector2(110, 170) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, ActiveCharacter.Feet != null ? ActiveCharacter.Feet.Name : "Feet",
-                new Vector2(347, 170) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Head != null ? ActiveCharacter.Head.Name : "Head",
+                new Vector2(347, 126) + spriteBatchGUI.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Body != null ? ActiveCharacter.Body.Name : "Body",
+                new Vector2(347, 148) + spriteBatchGUI.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Arms != null ? ActiveCharacter.Arms.Name : "Arms",
+                new Vector2(110, 170) + spriteBatchGUI.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Feet != null ? ActiveCharacter.Feet.Name : "Feet",
+                new Vector2(347, 170) + spriteBatchGUI.CameraOffset, Color.White);
 
             // Draw cursor
             CursorWindow.Position = new Vector2((CursorWindow.CursorIndex % 2 == 0 ? 90 : 327), 126 + CursorWindow.CursorIndex / 2 * 22);
             CursorWindow.Draw(gameTime);
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         public override void Update(GameTime gameTime)

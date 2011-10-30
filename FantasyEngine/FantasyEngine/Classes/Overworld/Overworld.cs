@@ -36,8 +36,15 @@ namespace FantasyEngine.Classes.Overworld
 
             Player.GamePlayer.Map.Draw(gameTime);
             Player.GamePlayer.Hero.Draw(gameTime);
+        }
 
-            _Menu.Offset = GameMain.CameraOffset;
+        public override void DrawGUI(GameTime gameTime)
+        {
+            base.DrawGUI(gameTime);
+
+            Player.GamePlayer.Map.DrawGUI(gameTime);
+
+            _Menu.Offset = spriteBatchGUI.CameraOffset;
             _Menu.Draw(gameTime);
 
             if (_ShowPosition)
@@ -47,10 +54,10 @@ namespace FantasyEngine.Classes.Overworld
                 Vector2 hero2 = new Vector2(heroRect.Right, heroRect.Bottom);
                 Point tile1 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(hero1);
                 Point tile2 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(hero2);
-                GameMain.spriteBatch.DrawString(GameMain.font,
+                spriteBatchGUI.DrawString(GameMain.font,
                     "X:" + tile1.X + ", Y:" + tile1.Y + " (" + hero1 + ")" + Environment.NewLine +
                     "X:" + tile2.X + ", Y:" + tile2.Y + " (" + hero2 + ")",
-                    new Vector2(8, 16) + GameMain.CameraOffset, Color.White);
+                    new Vector2(8, 16) + spriteBatchGUI.CameraOffset, Color.White);
             }
         }
 

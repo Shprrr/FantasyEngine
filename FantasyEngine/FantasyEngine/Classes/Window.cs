@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using FantasyEngine.Xna;
 
 namespace FantasyEngine.Classes
 {
@@ -18,7 +19,7 @@ namespace FantasyEngine.Classes
             HA_RIGHT
         };
 
-        private SpriteBatch _SpriteBatch;
+        protected FantasyEngine.Xna.SpriteBatch _SpriteBatch;
         public Rectangle Rectangle;
         public Vector2 Offset;
 
@@ -38,7 +39,7 @@ namespace FantasyEngine.Classes
             : base(game)
         {
             Rectangle = new Rectangle(x, y, width, height);
-            _SpriteBatch = GameMain.spriteBatch;
+            _SpriteBatch = GameMain.spriteBatchGUI;
         }
 
         public override void Draw(GameTime gameTime)
@@ -124,7 +125,7 @@ namespace FantasyEngine.Classes
 
                     //window.Draw();
 
-                    SpriteBatch spriteBatch = new SpriteBatch(game.GraphicsDevice);
+                    FantasyEngine.Xna.SpriteBatch spriteBatch = new FantasyEngine.Xna.SpriteBatch(game.GraphicsDevice);
 
                     spriteBatch.Begin();
 

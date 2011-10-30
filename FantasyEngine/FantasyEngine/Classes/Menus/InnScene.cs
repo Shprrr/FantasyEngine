@@ -30,20 +30,20 @@ namespace FantasyEngine.Classes.Menus
             _GoldWindow = new Window(game, 368, 436, 640 - 368, 44);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void DrawGUI(GameTime gameTime)
         {
-            base.Draw(gameTime);
+            base.DrawGUI(gameTime);
 
-            _DialogWindow.Offset = GameMain.CameraOffset;
+            _DialogWindow.Offset = spriteBatchGUI.CameraOffset;
             _DialogWindow.Draw(gameTime);
-            GameMain.Scissor(_DialogWindow.InsideBound);
+            spriteBatchGUI.Scissor(_DialogWindow.InsideBound);
 
-            spriteBatch.DrawString(GameMain.font, "It will cost " + _Price + " gold to rest. Will you stay ?",
-                new Vector2(16, 16) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "It will cost " + _Price + " gold to rest. Will you stay ?",
+                new Vector2(16, 16) + spriteBatchGUI.CameraOffset, Color.White);
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
 
-            _MainCommand.Offset = GameMain.CameraOffset;
+            _MainCommand.Offset = spriteBatchGUI.CameraOffset;
             _MainCommand.Draw(gameTime);
 
             DrawGold(gameTime);
@@ -51,14 +51,14 @@ namespace FantasyEngine.Classes.Menus
 
         private void DrawGold(GameTime gameTime)
         {
-            _GoldWindow.Offset = GameMain.CameraOffset;
+            _GoldWindow.Offset = spriteBatchGUI.CameraOffset;
             _GoldWindow.Draw(gameTime);
-            GameMain.Scissor(_GoldWindow.InsideBound);
+            spriteBatchGUI.Scissor(_GoldWindow.InsideBound);
 
-            spriteBatch.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold.ToString("### ##0").Trim(),
-                new Vector2(382, 450) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold.ToString("### ##0").Trim(),
+                new Vector2(382, 450) + spriteBatchGUI.CameraOffset, Color.White);
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         public override void Update(GameTime gameTime)

@@ -54,7 +54,7 @@ namespace FantasyEngine.Classes
             int cursory = _Index / _Column_max * GameMain.font.LineSpacing - oy;
 
             // Update cursor rectangle
-            GameMain.spriteBatch.Draw(GameMain.cursor,
+            _SpriteBatch.Draw(GameMain.cursor,
                 new Vector2(Rectangle.Left + Tileset.TileWidth + cursorx,
                     Rectangle.Top + Tileset.TileHeight + cursory) + Offset,
                 Color.White);
@@ -220,7 +220,7 @@ namespace FantasyEngine.Classes
             int cursor_width = Rectangle.Width / _Column_max - 32;
 
             for (int i = 0; i < _Choices.Length; i++)
-                GameMain.spriteBatch.DrawString(GameMain.font, _Choices[i],
+                _SpriteBatch.DrawString(GameMain.font, _Choices[i],
                     new Vector2(Rectangle.Left + Tileset.TileWidth + GameMain.cursor.Width * 1.5f + i % _Column_max * (cursor_width + 32),
                         Rectangle.Top + Tileset.TileHeight + i / _Column_max * GameMain.font.LineSpacing - oy) + Offset,
                     Color.White);

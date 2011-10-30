@@ -84,7 +84,7 @@ namespace FantasyEngine.Classes
             cursorIndex = eCursor.CUR_NEW_GAME; //TODO: Détecter si ya au moins un save pour changer le default
             cursorIndexSelection = 0; //TODO: Détecter le dernier save utilisé
 
-            GameMain.cameraMatrix = Matrix.Identity;
+            GameMain.spriteBatch.cameraMatrix = Matrix.Identity;
         }
 
         protected override void LoadContent()
@@ -109,6 +109,11 @@ namespace FantasyEngine.Classes
 
             //Title
             spriteBatch.Draw(_TitleText, new Vector2(264, 62), Color.White);
+        }
+
+        public override void DrawGUI(GameTime gameTime)
+        {
+            base.DrawGUI(gameTime);
 
             switch (state)
             {
@@ -117,12 +122,12 @@ namespace FantasyEngine.Classes
                     _Menu.Draw(gameTime);
 
                     //Text
-                    spriteBatch.DrawString(GameMain.font, "New Game", new Vector2(268, 278), Color.White);
-                    spriteBatch.DrawString(GameMain.font, "Continue", new Vector2(268, 310), Color.White);
-                    spriteBatch.DrawString(GameMain.font, "Quit", new Vector2(268, 342), Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "New Game", new Vector2(268, 278), Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "Continue", new Vector2(268, 310), Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "Quit", new Vector2(268, 342), Color.White);
 
                     //Cursor
-                    spriteBatch.Draw(GameMain.cursor, new Vector2(244, 278 + (int)cursorIndex * 32), Color.White);
+                    spriteBatchGUI.Draw(GameMain.cursor, new Vector2(244, 278 + (int)cursorIndex * 32), Color.White);
                     break;
 
                 case eState.STATE_SELECTION:
@@ -132,11 +137,11 @@ namespace FantasyEngine.Classes
                         _SaveSlots[i].Draw(gameTime);
 
                         //Text
-                        spriteBatch.DrawString(GameMain.font, "No Game", new Vector2(152, 176 + i * 80), Color.White);
+                        spriteBatchGUI.DrawString(GameMain.font, "No Game", new Vector2(152, 176 + i * 80), Color.White);
                     }
 
                     //Cursor
-                    spriteBatch.Draw(GameMain.cursor, new Vector2(128, 176 + cursorIndexSelection * 80), Color.White);
+                    spriteBatchGUI.Draw(GameMain.cursor, new Vector2(128, 176 + cursorIndexSelection * 80), Color.White);
                     break;
             }
         }

@@ -42,7 +42,7 @@ namespace FantasyEngine.Classes.Battles
             {
                 case eTargetType.SINGLE_ENEMY:
                     //Dessiner un cursor sur l'enemy sélectionné
-                    GameMain.spriteBatch.Draw(GameMain.cursor,
+                    GameMain.spriteBatchGUI.Draw(GameMain.cursor,
                         new Vector2(_Enemies[_Index].BattlerPosition.X + _Enemies[_Index].BattlerSprite.TileWidth + 8,
                             _Enemies[_Index].BattlerPosition.Y + (_Enemies[_Index].BattlerSprite.TileHeight / 2)),
                         null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, 0);
@@ -52,7 +52,7 @@ namespace FantasyEngine.Classes.Battles
                     //Dessiner un cursor en alpha sur chacun des ennemis
                     for (int i = 0; i < Battle.MAX_ENEMY; i++)
                         if (_Enemies[i] != null)
-                            GameMain.spriteBatch.Draw(GameMain.cursor,
+                            GameMain.spriteBatchGUI.Draw(GameMain.cursor,
                                 new Vector2(_Enemies[i].BattlerPosition.X + _Enemies[i].BattlerSprite.TileWidth + 8,
                                     _Enemies[i].BattlerPosition.Y + (_Enemies[i].BattlerSprite.TileHeight / 2)),
                                 null, alpha, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, 0);
@@ -60,7 +60,7 @@ namespace FantasyEngine.Classes.Battles
 
                 case eTargetType.SINGLE_PARTY:
                     //Dessiner un cursor sur l'actor sélectionné
-                    GameMain.spriteBatch.Draw(GameMain.cursor, new Vector2(_Actors[_Index].BattlerPosition.X - 8,
+                    GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[_Index].BattlerPosition.X - 8,
                         _Actors[_Index].BattlerPosition.Y + (_Actors[_Index].BattlerSprite.TileHeight / 2)), Color.White);
                     break;
 
@@ -68,17 +68,17 @@ namespace FantasyEngine.Classes.Battles
                     //Dessiner un cursor en alpha sur chacun des actors
                     for (int i = 0; i < Player.MAX_ACTOR; i++)
                         if (_Actors[i] != null)
-                            GameMain.spriteBatch.Draw(GameMain.cursor, new Vector2(_Actors[i].BattlerPosition.X - 8,
+                            GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[i].BattlerPosition.X - 8,
                                 _Actors[i].BattlerPosition.Y + (_Actors[i].BattlerSprite.TileHeight / 2)), alpha);
                     break;
 
                 case eTargetType.SELF:
                     //Dessiner un cursor sur l'actor courant
                     if (_IndexCourant < Player.MAX_ACTOR)
-                        GameMain.spriteBatch.Draw(GameMain.cursor, new Vector2(_Actors[_IndexCourant].BattlerPosition.X - 8,
+                        GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[_IndexCourant].BattlerPosition.X - 8,
                             _Actors[_IndexCourant].BattlerPosition.Y + (_Actors[_IndexCourant].BattlerSprite.TileHeight / 2)), Color.White);
                     else
-                        GameMain.spriteBatch.Draw(GameMain.cursor,
+                        GameMain.spriteBatchGUI.Draw(GameMain.cursor,
                             new Vector2(_Enemies[_IndexCourant].BattlerPosition.X + _Enemies[_IndexCourant].BattlerSprite.TileWidth + 8,
                                 _Enemies[_IndexCourant].BattlerPosition.Y + (_Enemies[_IndexCourant].BattlerSprite.TileHeight / 2)),
                             null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, 0);
@@ -88,12 +88,12 @@ namespace FantasyEngine.Classes.Battles
                     //Dessiner un cursor en alpha sur chacun des actors et des ennemis
                     for (int i = 0; i < Player.MAX_ACTOR; i++)
                         if (_Actors[i] != null)
-                            GameMain.spriteBatch.Draw(GameMain.cursor, new Vector2(_Actors[i].BattlerPosition.X - 8,
+                            GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[i].BattlerPosition.X - 8,
                                 _Actors[i].BattlerPosition.Y + (_Actors[i].BattlerSprite.TileHeight / 2)), alpha);
 
                     for (int i = 0; i < Battle.MAX_ENEMY; i++)
                         if (_Enemies[i] != null)
-                            GameMain.spriteBatch.Draw(GameMain.cursor,
+                            GameMain.spriteBatchGUI.Draw(GameMain.cursor,
                                 new Vector2(_Enemies[i].BattlerPosition.X + _Enemies[i].BattlerSprite.TileWidth + 8,
                                     _Enemies[i].BattlerPosition.Y + (_Enemies[i].BattlerSprite.TileHeight / 2)),
                                 null, alpha, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, 0);

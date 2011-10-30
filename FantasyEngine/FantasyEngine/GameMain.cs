@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using FantasyEngine.Classes;
+using FantasyEngine.Xna;
 using FantasyEngineData.Entities;
 using FantasyEngineData.Items;
 
@@ -19,34 +20,15 @@ namespace FantasyEngine
         // Réponse : SquareEnix
 
         #region Static fields
-        protected static Rectangle defaultScissor;
 
         /// <summary>
         /// SpriteBatch to draw.
         /// </summary>
-        public static SpriteBatch spriteBatch;
-        protected static RasterizerState rastState = new RasterizerState();
-        public static Matrix cameraMatrix = Matrix.Identity;
-        private static Matrix _OldCameraMatrix = Matrix.Identity;
+        public static FantasyEngine.Xna.SpriteBatch spriteBatch;
         /// <summary>
-        /// The Matrix for the camera when the SpriteBatch began.
+        /// SpriteBatch to draw all the Graphic User Interface;
         /// </summary>
-        public static Matrix OldCameraMatrix
-        {
-            get { return _OldCameraMatrix; }
-
-            protected set
-            {
-                _OldCameraMatrix = value;
-                _CameraOffset = new Vector2(-GameMain.OldCameraMatrix.Translation.X, -GameMain.OldCameraMatrix.Translation.Y);
-            }
-        }
-
-        private static Vector2 _CameraOffset;
-        /// <summary>
-        /// Offset to draw 0,0 in the current camera.
-        /// </summary>
-        public static Vector2 CameraOffset { get { return _CameraOffset; } }
+        public static FantasyEngine.Xna.SpriteBatch spriteBatchGUI;
 
         /// <summary>
         /// Default font at 12pt.
@@ -65,15 +47,12 @@ namespace FantasyEngine
         private bool showFps = false;
         private GraphicsDeviceManager graphics;
 
-
         public GameMain()
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 640;
             graphics.PreferredBackBufferHeight = 480;
             graphics.ApplyChanges();
-
-            rastState.ScissorTestEnable = true;
 
             Content.RootDirectory = "Content";
         }
@@ -87,9 +66,9 @@ namespace FantasyEngine
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            defaultScissor = GraphicsDevice.ScissorRectangle;
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new FantasyEngine.Xna.SpriteBatch(GraphicsDevice);
+            spriteBatchGUI = new FantasyEngine.Xna.SpriteBatch(GraphicsDevice);
 
 #if DEBUG
             showFps = true;
@@ -214,35 +193,20 @@ namespace FantasyEngine
             }
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin(0, null, null, null, rastState, null, cameraMatrix);
-            OldCameraMatrix = cameraMatrix;
-            //spriteBatch.Begin();
-            base.Draw(gameTime);
+            spriteBatch.Begin();
+            Scene.DrawAll(gameTime);
             spriteBatch.End();
+
+            spriteBatchGUI.Begin();
+            Scene.DrawAllGUI(gameTime);
+            spriteBatchGUI.End();
 
             if (showFps)
             {
-                spriteBatch.Begin();
-                spriteBatch.DrawString(font, drawString, new Vector2(10f, 10f), Color.White);
-                spriteBatch.End();
+                spriteBatchGUI.BaseBegin();
+                spriteBatchGUI.DrawString(font, drawString, new Vector2(10f, 10f), Color.White);
+                spriteBatchGUI.End();
             }
         }
-
-        /// <summary>
-        /// Change the region where the drawing can occur.
-        /// </summary>
-        /// <param name="rectangle">Region where the drawing can occur</param>
-        public static void Scissor(Rectangle rectangle)
-        {
-            spriteBatch.End();
-            spriteBatch.GraphicsDevice.ScissorRectangle = rectangle;
-            spriteBatch.Begin(0, null, null, null, rastState, null, cameraMatrix);
-            OldCameraMatrix = cameraMatrix;
-        }
-
-        /// <summary>
-        /// Return to default the region where the drawing can occur.
-        /// </summary>
-        public static void ScissorReset() { Scissor(defaultScissor); }
     }
 }

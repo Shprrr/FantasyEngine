@@ -146,7 +146,7 @@ namespace FantasyEngine.Classes.Overworld
                                 delegate(object Data)
                                 {
                                     npc.Talk(npc.Name + ": People think I talk too much, but I don't think so. I really don't know why they think that.");
-                                    npc.Talk(npc.Name + ": It's not like I'm talking and I'm talking and it seems to have no end to what I'm saying and on top of that, there's no purpose to what I'm saying because I only fill space with inutile dialog...");
+                                    npc.Talk(npc.Name + ": It's not like I'm talking and I'm talking and it seems to have no end to what I'm saying and on top of that, there's no purpose to what I'm saying because I only fill space with unnecessary dialog just to take to another screen to see that I continue to talk again and again...");
                                 });
                             thr.Start(npc);
                             break;
@@ -244,7 +244,7 @@ namespace FantasyEngine.Classes.Overworld
             // create a matrix for the camera to offset everything we draw, the map and our objects. since the
             // camera coordinates are where the camera is, we offset everything by the negative of that to simulate
             // a camera moving. we also cast to integers to avoid filtering artifacts
-            GameMain.cameraMatrix = Matrix.CreateTranslation((int)-Offset.X, (int)-Offset.Y, 0);
+            GameMain.spriteBatch.cameraMatrix = Matrix.CreateTranslation((int)-Offset.X, (int)-Offset.Y, 0);
 
             Rectangle visibleArea = new Rectangle(
                 (int)Offset.X,
@@ -257,6 +257,14 @@ namespace FantasyEngine.Classes.Overworld
             foreach (NPC npc in NPCs)
             {
                 npc.Draw(gameTime);
+            }
+        }
+
+        public void DrawGUI(GameTime gameTime)
+        {
+            foreach (NPC npc in NPCs)
+            {
+                npc.DrawGUI(gameTime);
             }
         }
 

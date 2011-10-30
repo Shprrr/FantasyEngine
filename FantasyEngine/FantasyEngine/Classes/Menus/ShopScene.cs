@@ -59,11 +59,11 @@ namespace FantasyEngine.Classes.Menus
                 640 - _ListItemWindow.Rectangle.Right, 44);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void DrawGUI(GameTime gameTime)
         {
-            base.Draw(gameTime);
+            base.DrawGUI(gameTime);
 
-            _MainCommand.Offset = GameMain.CameraOffset;
+            _MainCommand.Offset = spriteBatchGUI.CameraOffset;
             _MainCommand.Draw(gameTime);
 
             if (!_MainCommand.Visible)
@@ -97,14 +97,14 @@ namespace FantasyEngine.Classes.Menus
             if (!_DescriptionWindow.Visible)
                 return;
 
-            _DescriptionWindow.Offset = GameMain.CameraOffset;
+            _DescriptionWindow.Offset = spriteBatchGUI.CameraOffset;
             _DescriptionWindow.Draw(gameTime);
-            GameMain.Scissor(_DescriptionWindow.InsideBound);
+            spriteBatchGUI.Scissor(_DescriptionWindow.InsideBound);
 
-            spriteBatch.DrawString(GameMain.font, item.Description,
-                new Vector2(16, 16) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, item.Description,
+                new Vector2(16, 16) + spriteBatchGUI.CameraOffset, Color.White);
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         private void DrawListItem(GameTime gameTime)
@@ -112,28 +112,28 @@ namespace FantasyEngine.Classes.Menus
             if (!_ListItemWindow.Visible)
                 return;
 
-            _ListItemWindow.Offset = GameMain.CameraOffset;
+            _ListItemWindow.Offset = spriteBatchGUI.CameraOffset;
             _ListItemWindow.Draw(gameTime);
-            GameMain.Scissor(_ListItemWindow.InsideBound);
+            spriteBatchGUI.Scissor(_ListItemWindow.InsideBound);
 
             // Draw list of items
             int i = 0;
             if (_MainCommand.CursorPosition == 1)
                 foreach (var item in Player.GamePlayer.Inventory.Items)
                 {
-                    spriteBatch.DrawString(GameMain.font, item.Number.ToString().PadRight(3, '') + "" + item.Item.Name,
-                        new Vector2(34, 68 + i * 16) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, item.Item.Price.ToString().PadLeft(6, '').Insert(3, " "),
-                        new Vector2(252, 68 + i * 16) + GameMain.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, item.Number.ToString().PadRight(3, '') + "" + item.Item.Name,
+                        new Vector2(34, 68 + i * 16) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, item.Item.Price.ToString().PadLeft(6, '').Insert(3, " "),
+                        new Vector2(252, 68 + i * 16) + spriteBatchGUI.CameraOffset, Color.White);
                     i++;
                 }
             else
                 foreach (var item in _ShopBuy)
                 {
-                    spriteBatch.DrawString(GameMain.font, item.Name,
-                        new Vector2(34, 68 + i * 16) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, item.Price.ToString().PadLeft(6, '').Insert(3, " "),
-                        new Vector2(252, 68 + i * 16) + GameMain.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, item.Name,
+                        new Vector2(34, 68 + i * 16) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, item.Price.ToString().PadLeft(6, '').Insert(3, " "),
+                        new Vector2(252, 68 + i * 16) + spriteBatchGUI.CameraOffset, Color.White);
                     i++;
                 }
 
@@ -141,190 +141,190 @@ namespace FantasyEngine.Classes.Menus
             _CursorWindow.Position = new Vector2(14, 68 + _CursorWindow.CursorIndex * 16);
             _CursorWindow.Draw(gameTime);
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         private void DrawStats(GameTime gameTime, BaseItem item)
         {
-            _StatsWindow.Offset = GameMain.CameraOffset;
+            _StatsWindow.Offset = spriteBatchGUI.CameraOffset;
             _StatsWindow.Draw(gameTime);
-            GameMain.Scissor(_StatsWindow.InsideBound);
+            spriteBatchGUI.Scissor(_StatsWindow.InsideBound);
 
             Inventory.InvItem invItem = Player.GamePlayer.Inventory.Items.Find(i => i.Item == item);
 
-            spriteBatch.Draw(item.Icon, new Vector2(580, 74) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.Draw(item.Icon, new Vector2(580, 74) + spriteBatchGUI.CameraOffset, Color.White);
 
-            spriteBatch.DrawString(GameMain.font, "Stocked:",
-                new Vector2(382, 68) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, (invItem != null ? invItem.Number : 0).ToString().PadLeft(2, ''),
-                new Vector2(520, 68) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "Stocked:",
+                new Vector2(382, 68) + spriteBatchGUI.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, (invItem != null ? invItem.Number : 0).ToString().PadLeft(2, ''),
+                new Vector2(520, 68) + spriteBatchGUI.CameraOffset, Color.White);
 
             if (!(item is Item))
             {
-                spriteBatch.DrawString(GameMain.font, "Equipped:",
-                    new Vector2(382, 84) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "Equipped:",
+                    new Vector2(382, 84) + spriteBatchGUI.CameraOffset, Color.White);
                 //TODO: Redo the count when there's more than one character. (In InvItem ?)
-                spriteBatch.DrawString(GameMain.font, invItem != null ? (invItem.Item.IsEquiped ? "1" : "0") : "0",
-                    new Vector2(520, 84) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, invItem != null ? (invItem.Item.IsEquiped ? "1" : "0") : "0",
+                    new Vector2(520, 84) + spriteBatchGUI.CameraOffset, Color.White);
             }
 
             if (item is Weapon)
             {
                 Weapon weapon = (Weapon)item;
-                spriteBatch.DrawString(GameMain.font, "Damage:",
-                    new Vector2(382, 104) + GameMain.CameraOffset, Color.White);
-                //spriteBatch.DrawString(GameMain.font, (weapon + "x").PadLeft(3, ''),
-                //    new Vector2(520, 104) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, weapon.Damage.ToString().PadLeft(3, ''),
-                    new Vector2(580, 104) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "Damage:",
+                    new Vector2(382, 104) + spriteBatchGUI.CameraOffset, Color.White);
+                //spriteBatchGUI.DrawString(GameMain.font, (weapon + "x").PadLeft(3, ''),
+                //    new Vector2(520, 104) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, weapon.Damage.ToString().PadLeft(3, ''),
+                    new Vector2(580, 104) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatch.DrawString(GameMain.font, "Hit %:",
-                    new Vector2(382, 120) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, (weapon.HitPourc + "%").PadLeft(3, ''),
-                    new Vector2(580, 120) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "Hit %:",
+                    new Vector2(382, 120) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, (weapon.HitPourc + "%").PadLeft(3, ''),
+                    new Vector2(580, 120) + spriteBatchGUI.CameraOffset, Color.White);
             }
 
             if (item is Armor)
             {
                 Armor armor = (Armor)item;
-                spriteBatch.DrawString(GameMain.font, "Defense:",
-                    new Vector2(382, 104) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, armor.DefenseValue.ToString().PadLeft(3, ''),
-                    new Vector2(580, 104) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "Defense:",
+                    new Vector2(382, 104) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, armor.DefenseValue.ToString().PadLeft(3, ''),
+                    new Vector2(580, 104) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatch.DrawString(GameMain.font, "Evade:",
-                    new Vector2(382, 120) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, (armor.EvadePourc + "%").PadLeft(3, ''),
-                    new Vector2(580, 120) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "Evade:",
+                    new Vector2(382, 120) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, (armor.EvadePourc + "%").PadLeft(3, ''),
+                    new Vector2(580, 120) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatch.DrawString(GameMain.font, "M.Defense:",
-                    new Vector2(382, 136) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, armor.MagicDefenseValue.ToString().PadLeft(3, ''),
-                    new Vector2(580, 136) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "M.Defense:",
+                    new Vector2(382, 136) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, armor.MagicDefenseValue.ToString().PadLeft(3, ''),
+                    new Vector2(580, 136) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatch.DrawString(GameMain.font, "M.Evade:",
-                    new Vector2(382, 152) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, (armor.MagicEvadePourc + "%").PadLeft(3, ''),
-                    new Vector2(580, 152) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "M.Evade:",
+                    new Vector2(382, 152) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, (armor.MagicEvadePourc + "%").PadLeft(3, ''),
+                    new Vector2(580, 152) + spriteBatchGUI.CameraOffset, Color.White);
             }
 
             if (item is Shield)
             {
                 Shield shield = (Shield)item;
-                spriteBatch.DrawString(GameMain.font, "Defense:",
-                    new Vector2(382, 104) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, shield.DefenseValue.ToString().PadLeft(3, ''),
-                    new Vector2(580, 104) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "Defense:",
+                    new Vector2(382, 104) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, shield.DefenseValue.ToString().PadLeft(3, ''),
+                    new Vector2(580, 104) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatch.DrawString(GameMain.font, "Evade:",
-                    new Vector2(382, 120) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, (shield.EvadePourc + "%").PadLeft(3, ''),
-                    new Vector2(580, 120) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "Evade:",
+                    new Vector2(382, 120) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, (shield.EvadePourc + "%").PadLeft(3, ''),
+                    new Vector2(580, 120) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatch.DrawString(GameMain.font, "M.Defense:",
-                    new Vector2(382, 136) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, shield.MagicDefenseValue.ToString().PadLeft(3, ''),
-                    new Vector2(580, 136) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "M.Defense:",
+                    new Vector2(382, 136) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, shield.MagicDefenseValue.ToString().PadLeft(3, ''),
+                    new Vector2(580, 136) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatch.DrawString(GameMain.font, "M.Evade:",
-                    new Vector2(382, 152) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font, (shield.MagicEvadePourc + "%").PadLeft(3, ''),
-                    new Vector2(580, 152) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, "M.Evade:",
+                    new Vector2(382, 152) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, (shield.MagicEvadePourc + "%").PadLeft(3, ''),
+                    new Vector2(580, 152) + spriteBatchGUI.CameraOffset, Color.White);
             }
 
             if (item.Effect != null)
-                spriteBatch.DrawString(GameMain.font, item.Effect.ToString(),
-                    new Vector2(382, 172) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, item.Effect.ToString(),
+                    new Vector2(382, 172) + spriteBatchGUI.CameraOffset, Color.White);
 
             #region AllowedJobs
             BaseJob baseJob = JobManager.GetBaseJob("OnionKid");
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(384, 188) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(384, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = JobManager.GetBaseJob("Soldier");
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(420, 188) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(420, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = JobManager.GetBaseJob("Warrior");
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(456, 188) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(456, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = JobManager.GetBaseJob("Archer");
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(492, 188) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(492, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = JobManager.GetBaseJob("Thief");
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(528, 188) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(528, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = JobManager.GetBaseJob("Black Mage");
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(564, 188) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(564, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = JobManager.GetBaseJob("White Mage");
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(600, 188) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(600, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
 
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Bs";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(420, 204) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(420, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Kn";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(456, 204) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(456, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Gu";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(492, 204) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(492, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Ni";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(528, 204) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(528, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "BW";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(564, 204) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(564, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "WW";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(600, 204) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(600, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
 
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Sc";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(384, 220) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(384, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "DK";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(420, 220) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(420, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Pa";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(456, 220) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(456, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "BD";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(492, 220) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(492, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Al";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(528, 220) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(528, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Ga";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(564, 220) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(564, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Bl";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(600, 220) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(600, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
 
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Bk";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(420, 236) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(420, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Dr";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(456, 236) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(456, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "GM";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(492, 236) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(492, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Mk";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(528, 236) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(528, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             baseJob = new BaseJob(); baseJob.JobAbbreviation = "Su";
-            spriteBatch.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(600, 236) + GameMain.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                new Vector2(600, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
             #endregion AllowedJobs
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         private void DrawCompare(GameTime gameTime, BaseItem item)
         {
-            _CompareWindow.Offset = GameMain.CameraOffset;
+            _CompareWindow.Offset = spriteBatchGUI.CameraOffset;
             _CompareWindow.Draw(gameTime);
-            GameMain.Scissor(_CompareWindow.InsideBound);
+            spriteBatchGUI.Scissor(_CompareWindow.InsideBound);
 
             if (!(item is Item))
             {
@@ -355,50 +355,50 @@ namespace FantasyEngine.Classes.Menus
                         }
                 }
 
-                spriteBatch.DrawString(GameMain.font, actor.Name,
-                    new Vector2(382, 276) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, actor.Name,
+                    new Vector2(382, 276) + spriteBatchGUI.CameraOffset, Color.White);
 
                 if (item.IsAllowed(actor.CurrentJob.BaseJob))
                 {
-                    spriteBatch.DrawString(GameMain.font, "Attack:", new Vector2(382, 298) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, (actor.getAttackMultiplier() + "x").PadLeft(3, ''),
-                       new Vector2(534, 298) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, actor.getBaseDamage(Character.ePhysicalDamageOption.BOTH).ToString().PadLeft(3, ''),
-                        new Vector2(580, 298) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, "Hit %:", new Vector2(382, 314) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, (actor.getHitPourc(Character.ePhysicalDamageOption.BOTH) + "%").PadLeft(3, ''),
-                        new Vector2(580, 314) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, "Defense:", new Vector2(382, 330) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, (actor.getDefenseMultiplier() + "x").PadLeft(3, ''),
-                        new Vector2(534, 330) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, actor.getDefenseDamage().ToString().PadLeft(3, ''),
-                        new Vector2(580, 330) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, "Evade:", new Vector2(382, 346) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, (actor.getEvadePourc() + "%").PadLeft(3, ''),
-                        new Vector2(580, 346) + GameMain.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "Attack:", new Vector2(382, 298) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, (actor.getAttackMultiplier() + "x").PadLeft(3, ''),
+                       new Vector2(534, 298) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, actor.getBaseDamage(Character.ePhysicalDamageOption.BOTH).ToString().PadLeft(3, ''),
+                        new Vector2(580, 298) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "Hit %:", new Vector2(382, 314) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, (actor.getHitPourc(Character.ePhysicalDamageOption.BOTH) + "%").PadLeft(3, ''),
+                        new Vector2(580, 314) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "Defense:", new Vector2(382, 330) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, (actor.getDefenseMultiplier() + "x").PadLeft(3, ''),
+                        new Vector2(534, 330) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, actor.getDefenseDamage().ToString().PadLeft(3, ''),
+                        new Vector2(580, 330) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "Evade:", new Vector2(382, 346) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, (actor.getEvadePourc() + "%").PadLeft(3, ''),
+                        new Vector2(580, 346) + spriteBatchGUI.CameraOffset, Color.White);
 
-                    spriteBatch.DrawString(GameMain.font, "M.Attack:", new Vector2(382, 362) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, (actor.getMagicAttackMultiplier(Character.eMagicalDamageOption.NONE) + "x").PadLeft(3, ''),
-                        new Vector2(534, 362) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, actor.getMagicBaseDamage(Character.eMagicalDamageOption.NONE, 1).ToString().PadLeft(3, ''),
-                        new Vector2(580, 362) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, "M.Hit %:", new Vector2(382, 378) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, (actor.getMagicHitPourc(Character.eMagicalDamageOption.NONE, 80) + "%").PadLeft(3, ''),
-                        new Vector2(580, 378) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, "M.Defense:", new Vector2(382, 394) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, (actor.getMagicDefenseMultiplier() + "x").PadLeft(3, ''),
-                        new Vector2(534, 394) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, actor.getMagicDefenseDamage().ToString().PadLeft(3, ''),
-                        new Vector2(580, 394) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, "M.Evade:", new Vector2(382, 410) + GameMain.CameraOffset, Color.White);
-                    spriteBatch.DrawString(GameMain.font, (actor.getMagicEvadePourc() + "%").PadLeft(3, ''),
-                        new Vector2(580, 410) + GameMain.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "M.Attack:", new Vector2(382, 362) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, (actor.getMagicAttackMultiplier(Character.eMagicalDamageOption.NONE) + "x").PadLeft(3, ''),
+                        new Vector2(534, 362) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, actor.getMagicBaseDamage(Character.eMagicalDamageOption.NONE, 1).ToString().PadLeft(3, ''),
+                        new Vector2(580, 362) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "M.Hit %:", new Vector2(382, 378) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, (actor.getMagicHitPourc(Character.eMagicalDamageOption.NONE, 80) + "%").PadLeft(3, ''),
+                        new Vector2(580, 378) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "M.Defense:", new Vector2(382, 394) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, (actor.getMagicDefenseMultiplier() + "x").PadLeft(3, ''),
+                        new Vector2(534, 394) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, actor.getMagicDefenseDamage().ToString().PadLeft(3, ''),
+                        new Vector2(580, 394) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, "M.Evade:", new Vector2(382, 410) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font, (actor.getMagicEvadePourc() + "%").PadLeft(3, ''),
+                        new Vector2(580, 410) + spriteBatchGUI.CameraOffset, Color.White);
                 }
                 else
-                    spriteBatch.DrawString(GameMain.font, "Cannot equip", new Vector2(382, 298) + GameMain.CameraOffset, Color.Gray);
+                    spriteBatchGUI.DrawString(GameMain.font, "Cannot equip", new Vector2(382, 298) + spriteBatchGUI.CameraOffset, Color.Gray);
             }
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         private void DrawHowMany(GameTime gameTime, BaseItem item)
@@ -406,30 +406,30 @@ namespace FantasyEngine.Classes.Menus
             if (!_HowManyWindow.Visible)
                 return;
 
-            _HowManyWindow.Offset = GameMain.CameraOffset;
+            _HowManyWindow.Offset = spriteBatchGUI.CameraOffset;
             _HowManyWindow.Draw(gameTime);
-            GameMain.Scissor(_HowManyWindow.InsideBound);
+            spriteBatchGUI.Scissor(_HowManyWindow.InsideBound);
 
-            spriteBatch.DrawString(GameMain.font, item.Name,
-                new Vector2(382, 276) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, _HowMany.ToString(),
-                new Vector2(580, 292) + GameMain.CameraOffset, Color.White);
-            spriteBatch.DrawString(GameMain.font, "Total:" + (item.Price * _HowMany).ToString("### ##0").Trim(),
-                new Vector2(382, 406) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, item.Name,
+                new Vector2(382, 276) + spriteBatchGUI.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, _HowMany.ToString(),
+                new Vector2(580, 292) + spriteBatchGUI.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "Total:" + (item.Price * _HowMany).ToString("### ##0").Trim(),
+                new Vector2(382, 406) + spriteBatchGUI.CameraOffset, Color.White);
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         private void DrawGold(GameTime gameTime)
         {
-            _GoldWindow.Offset = GameMain.CameraOffset;
+            _GoldWindow.Offset = spriteBatchGUI.CameraOffset;
             _GoldWindow.Draw(gameTime);
-            GameMain.Scissor(_GoldWindow.InsideBound);
+            spriteBatchGUI.Scissor(_GoldWindow.InsideBound);
 
-            spriteBatch.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold.ToString("### ##0").Trim(),
-                new Vector2(382, 450) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold.ToString("### ##0").Trim(),
+                new Vector2(382, 450) + spriteBatchGUI.CameraOffset, Color.White);
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         public override void Update(GameTime gameTime)

@@ -753,7 +753,7 @@ namespace FantasyEngine.Classes.Battles
             _ResultWindow = new Window(Game, 0, 0, 640, 480);
             _ResultWindow.Visible = false;
 
-            GameMain.cameraMatrix = Matrix.Identity;
+            spriteBatch.cameraMatrix = Matrix.Identity;
         }
 
         public override void Draw(GameTime gameTime)
@@ -790,21 +790,6 @@ namespace FantasyEngine.Classes.Battles
                 else
                     spriteBatch.Draw(_Enemies[i].BattlerSprite.texture, _Enemies[i].BattlerPosition, color);
             }
-
-            if (_Target != null)
-                _Target.Draw(gameTime);
-
-            _PartyCommand.Draw(gameTime);
-            _HelpWindow.Draw(gameTime);
-
-            DrawStatusWindow(gameTime);
-
-            _MessageWindow.Draw(gameTime);
-            _PlayerCommand.Draw(gameTime);
-
-            DrawCTBWindow(gameTime);
-
-            _ItemSelection.Draw(gameTime);
 
             if (_Phase == 4 && _PhaseStep == 3)
             {
@@ -943,11 +928,31 @@ namespace FantasyEngine.Classes.Battles
                         _PhaseStep = 2;
                     }
                 }
+            }
+        }
 
-                if (_PhaseStep == 2)
-                {
-                    DrawResultWindow(gameTime);
-                }
+        public override void DrawGUI(GameTime gameTime)
+        {
+            base.DrawGUI(gameTime);
+
+            if (_Target != null)
+                _Target.Draw(gameTime);
+
+            _PartyCommand.Draw(gameTime);
+            _HelpWindow.Draw(gameTime);
+
+            DrawStatusWindow(gameTime);
+
+            _MessageWindow.Draw(gameTime);
+            _PlayerCommand.Draw(gameTime);
+
+            DrawCTBWindow(gameTime);
+
+            _ItemSelection.Draw(gameTime);
+
+            if (_Phase == 5 && _PhaseStep == 2)
+            {
+                DrawResultWindow(gameTime);
             }
         }
 
@@ -955,7 +960,7 @@ namespace FantasyEngine.Classes.Battles
         {
             _StatusWindow.Draw(gameTime);
 
-            GameMain.Scissor(_StatusWindow.InsideBound);
+            spriteBatchGUI.Scissor(_StatusWindow.InsideBound);
 
             int x, y, right, height;
 
@@ -969,21 +974,21 @@ namespace FantasyEngine.Classes.Battles
             //height = _StatusWindow.Rectangle.Height;
 
             //Rectangle pos = new Rectangle(x, y, Window.Tileset.TileWidth, height);
-            //spriteBatch.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(3), Color.White);
+            //spriteBatchGUI.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(3), Color.White);
 
-            //spriteBatch.DrawString(GameMain.font, "ABCDEFGHIJ", new Vector2(x + 12, y + 8), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
-            //spriteBatch.DrawString(GameMain.font, "L100", new Vector2(x + 84, y + 20), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
-            //spriteBatch.DrawString(GameMain.font, "HP:", new Vector2(x + 12, y + 36), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
-            //spriteBatch.Draw(pixel, new Rectangle(x + 60, y + 38, 60, 8), new Color(0, 255, 0));
-            //spriteBatch.DrawString(GameMain.font, "9999/9999", new Vector2(x + 24, y + 48), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
-            //spriteBatch.DrawString(GameMain.font, "MP:", new Vector2(x + 12, y + 64), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
-            //spriteBatch.Draw(pixel, new Rectangle(x + 60, y + 66, 60, 8), new Color(0, 255, 0));
-            //spriteBatch.DrawString(GameMain.font, "9999/9999", new Vector2(x + 24, y + 76), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
-            ////spriteBatch.DrawString(GameMain.font, "Statut:", new Vector2(x +  12, y + 104), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
-            //spriteBatch.DrawString(GameMain.font, "NormalXY", new Vector2(x + 12, y + 96), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
+            //spriteBatchGUI.DrawString(GameMain.font, "ABCDEFGHIJ", new Vector2(x + 12, y + 8), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
+            //spriteBatchGUI.DrawString(GameMain.font, "L100", new Vector2(x + 84, y + 20), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
+            //spriteBatchGUI.DrawString(GameMain.font, "HP:", new Vector2(x + 12, y + 36), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
+            //spriteBatchGUI.Draw(pixel, new Rectangle(x + 60, y + 38, 60, 8), new Color(0, 255, 0));
+            //spriteBatchGUI.DrawString(GameMain.font, "9999/9999", new Vector2(x + 24, y + 48), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
+            //spriteBatchGUI.DrawString(GameMain.font, "MP:", new Vector2(x + 12, y + 64), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
+            //spriteBatchGUI.Draw(pixel, new Rectangle(x + 60, y + 66, 60, 8), new Color(0, 255, 0));
+            //spriteBatchGUI.DrawString(GameMain.font, "9999/9999", new Vector2(x + 24, y + 76), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
+            ////spriteBatchGUI.DrawString(GameMain.font, "Statut:", new Vector2(x +  12, y + 104), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
+            //spriteBatchGUI.DrawString(GameMain.font, "NormalXY", new Vector2(x + 12, y + 96), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 
             //pos = new Rectangle(right - Window.Tileset.TileWidth, y, Window.Tileset.TileWidth, height);
-            //spriteBatch.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(5), Color.White); //Bord Droite
+            //spriteBatchGUI.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(5), Color.White); //Bord Droite
 
 
             x = _StatusWindow.Rectangle.Left;
@@ -995,41 +1000,41 @@ namespace FantasyEngine.Classes.Battles
                 if (i != 0)
                 {
                     Rectangle pos = new Rectangle(x, y, Window.Tileset.TileWidth, height);
-                    spriteBatch.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(3), Color.White); //Bord Gauche
+                    spriteBatchGUI.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(3), Color.White); //Bord Gauche
                 }
 
                 if (_Actors[i] != null)
                 {
-                    spriteBatch.DrawString(GameMain.font,
+                    spriteBatchGUI.DrawString(GameMain.font,
                         _Actors[i].Name,
                         new Vector2(x + 12, y + 8), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
-                    spriteBatch.DrawString(GameMain.font,
+                    spriteBatchGUI.DrawString(GameMain.font,
                         _Actors[i].Level < 100 ? "Lv" + _Actors[i].Level : "L" + _Actors[i].Level,
                         new Vector2(x + 84, y + 20), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 
-                    spriteBatch.DrawString(GameMain.font,
+                    spriteBatchGUI.DrawString(GameMain.font,
                         "HP:",
                         new Vector2(x + 12, y + 36), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
                     //TODO: Changer la grandeur d'apres le ratio
                     float ratio = 1;
-                    spriteBatch.Draw(pixel, new Rectangle(x + 60, y + 38, (int)(60 * ratio), 8),
+                    spriteBatchGUI.Draw(pixel, new Rectangle(x + 60, y + 38, (int)(60 * ratio), 8),
                         new Color(255 - 255 * ratio, 255 * ratio, 0));
-                    spriteBatch.DrawString(GameMain.font,
+                    spriteBatchGUI.DrawString(GameMain.font,
                         _Actors[i].Hp + "/" + _Actors[i].MaxHp,
                         new Vector2(x + 24, y + 48), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 
-                    spriteBatch.DrawString(GameMain.font,
+                    spriteBatchGUI.DrawString(GameMain.font,
                         "MP:",
                         new Vector2(x + 12, y + 64), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
                     //TODO: Changer la grandeur d'apres le ratio
                     ratio = 1;
-                    spriteBatch.Draw(pixel, new Rectangle(x + 60, y + 66, (int)(60 * ratio), 8),
+                    spriteBatchGUI.Draw(pixel, new Rectangle(x + 60, y + 66, (int)(60 * ratio), 8),
                         new Color(255 - 255 * ratio, 255 * ratio, 0));
-                    spriteBatch.DrawString(GameMain.font,
+                    spriteBatchGUI.DrawString(GameMain.font,
                         _Actors[i].Mp + "/" + _Actors[i].MaxMp,
                         new Vector2(x + 24, y + 76), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 
-                    spriteBatch.DrawString(GameMain.font,
+                    spriteBatchGUI.DrawString(GameMain.font,
                         _Actors[i].Statut.ToString(),
                         new Vector2(x + 12, y + 96), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
                 }
@@ -1037,14 +1042,14 @@ namespace FantasyEngine.Classes.Battles
                 if (i != Player.MAX_ACTOR - 1)
                 {
                     Rectangle pos = new Rectangle(right - Window.Tileset.TileWidth, y, Window.Tileset.TileWidth, height);
-                    spriteBatch.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(5), Color.White); //Bord Droite
+                    spriteBatchGUI.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(5), Color.White); //Bord Droite
                 }
 
                 x += _StatusWindow.Rectangle.Width / 4;
                 right = x + (_StatusWindow.Rectangle.Width / 4);
             }
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         private void DrawCTBWindow(GameTime gameTime)
@@ -1052,7 +1057,7 @@ namespace FantasyEngine.Classes.Battles
             //TODO: Ajouter les flèches pour indiquer le scroll.
             _CTBWindow.Draw(gameTime);
 
-            GameMain.Scissor(_CTBWindow.InsideBound);
+            spriteBatchGUI.Scissor(_CTBWindow.InsideBound);
 
             for (int i = 0; i < MAX_CTB; i++)
             {
@@ -1060,36 +1065,36 @@ namespace FantasyEngine.Classes.Battles
                     160 - 16, 32, clrNormal, false);*/
 
                 //TODO: Dessiner le rectangle counter
-                spriteBatch.DrawString(GameMain.font, "C:" + _OrderBattle[i].counter,
+                spriteBatchGUI.DrawString(GameMain.font, "C:" + _OrderBattle[i].counter,
                     new Vector2(_CTBWindow.Rectangle.Left + 8,
                         _CTBWindow.Rectangle.Top + 8 + _CTBWindowScrollY + 32 * i),
                     Color.White);
 
                 //TODO: Dessiner la face
-                spriteBatch.DrawString(GameMain.font, _OrderBattle[i].battler.Name,
+                spriteBatchGUI.DrawString(GameMain.font, _OrderBattle[i].battler.Name,
                     new Vector2(_CTBWindow.Rectangle.Left + 8 + 6 * 16,
                         _CTBWindow.Rectangle.Top + 8 + _CTBWindowScrollY + 32 * i),
                     Color.White);
             }
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
         }
 
         private void DrawResultWindow(GameTime gameTime)
         {
             _ResultWindow.Draw(gameTime);
 
-            spriteBatch.DrawString(GameMain.font, "Exp. gained : " + _Exp, new Vector2(16, 16), Color.White);
-            spriteBatch.DrawString(GameMain.font, "Gold gained : " + _Gold, new Vector2(16, 16 + GameMain.font.LineSpacing), Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "Exp. gained : " + _Exp, new Vector2(16, 16), Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "Gold gained : " + _Gold, new Vector2(16, 16 + GameMain.font.LineSpacing), Color.White);
 
             Rectangle pos = new Rectangle(_ResultWindow.Rectangle.X + Window.Tileset.TileWidth, _ResultWindow.Rectangle.Y + 24 + (GameMain.font.LineSpacing * 2),
                 _ResultWindow.Rectangle.Width - (Window.Tileset.TileWidth * 2), Window.Tileset.TileHeight);
-            spriteBatch.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(1), Color.White); //Bord Haut
+            spriteBatchGUI.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(1), Color.White); //Bord Haut
 
             int x = 16;
             int y = 32 + (GameMain.font.LineSpacing * 2) + Window.Tileset.TileHeight;
             foreach (BaseItem item in _Treasure)
             {
-                spriteBatch.DrawString(GameMain.font, item.Name, new Vector2(x, y), Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, item.Name, new Vector2(x, y), Color.White);
                 y += GameMain.font.LineSpacing;
             }
         }

@@ -36,30 +36,30 @@ namespace FantasyEngine.Classes.Menus
             _EquipCommand.Visible = false;
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void DrawGUI(GameTime gameTime)
         {
-            base.Draw(gameTime);
+            base.DrawGUI(gameTime);
 
-            _InventoryWindow.Offset = GameMain.CameraOffset;
+            _InventoryWindow.Offset = spriteBatchGUI.CameraOffset;
             _InventoryWindow.Draw(gameTime);
-            GameMain.Scissor(_InventoryWindow.InsideBound);
+            spriteBatchGUI.Scissor(_InventoryWindow.InsideBound);
 
-            spriteBatch.DrawString(GameMain.font, "Inventory", new Vector2(260, 68) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "Inventory", new Vector2(260, 68) + spriteBatchGUI.CameraOffset, Color.White);
 
             // Draw list of items
             int i = 0;
             foreach (var item in Player.GamePlayer.Inventory.Items)
             {
-                spriteBatch.DrawString(GameMain.font, item.Item.Name,
-                    new Vector2((i % 2 == 0 ? 110 : 347), 96 + i / 2 * 16) + GameMain.CameraOffset, Color.White);
-                spriteBatch.DrawString(GameMain.font8, item.Number.ToString().PadLeft(3, ''),
-                    new Vector2((i % 2 == 0 ? 277 : 514), 99 + i / 2 * 16) + GameMain.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font, item.Item.Name,
+                    new Vector2((i % 2 == 0 ? 110 : 347), 96 + i / 2 * 16) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font8, item.Number.ToString().PadLeft(3, ''),
+                    new Vector2((i % 2 == 0 ? 277 : 514), 99 + i / 2 * 16) + spriteBatchGUI.CameraOffset, Color.White);
                 i++;
             }
 
             // Draw Gold
-            spriteBatch.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold.ToString("### ##0").Trim(),
-                new Vector2(110, 390) + GameMain.CameraOffset, Color.White);
+            spriteBatchGUI.DrawString(GameMain.font, "Gold:" + Player.GamePlayer.Inventory.Gold.ToString("### ##0").Trim(),
+                new Vector2(110, 390) + spriteBatchGUI.CameraOffset, Color.White);
 
             // Draw cursor
             _CursorWindow.Position = new Vector2((_CursorWindow.CursorIndex % 2 == 0 ? 90 : 327), 96 + _CursorWindow.CursorIndex / 2 * 16);
@@ -68,12 +68,12 @@ namespace FantasyEngine.Classes.Menus
             if (_CursorSortBeginIndex >= 0)
                 Cursor.DrawShadow(gameTime, new Vector2((_CursorSortBeginIndex % 2 == 0 ? 90 : 327), 96 + _CursorSortBeginIndex / 2 * 16));
 
-            GameMain.ScissorReset();
+            spriteBatchGUI.ScissorReset();
 
-            _UseCommand.Offset = GameMain.CameraOffset;
+            _UseCommand.Offset = spriteBatchGUI.CameraOffset;
             _UseCommand.Draw(gameTime);
 
-            _EquipCommand.Offset = GameMain.CameraOffset;
+            _EquipCommand.Offset = spriteBatchGUI.CameraOffset;
             _EquipCommand.Draw(gameTime);
         }
 

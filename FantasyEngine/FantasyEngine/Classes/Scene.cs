@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using FantasyEngine.Xna;
 
 namespace FantasyEngine.Classes
 {
@@ -11,6 +11,7 @@ namespace FantasyEngine.Classes
         private static Stack<Scene> CurrentsScenes = new Stack<Scene>();
 
         protected SpriteBatch spriteBatch;
+        protected SpriteBatch spriteBatchGUI;
 
         public Scene(Game game)
             : base(game)
@@ -22,6 +23,27 @@ namespace FantasyEngine.Classes
         {
             base.LoadContent();
             spriteBatch = GameMain.spriteBatch;
+            spriteBatchGUI = GameMain.spriteBatchGUI;
+        }
+
+        public virtual void DrawGUI(GameTime gameTime)
+        {
+        }
+
+        public static void DrawAll(GameTime gameTime)
+        {
+            foreach (Scene scene in CurrentsScenes.OrderBy(s => s.DrawOrder))
+            {
+                scene.Draw(gameTime);
+            }
+        }
+
+        public static void DrawAllGUI(GameTime gameTime)
+        {
+            foreach (Scene scene in CurrentsScenes.OrderBy(s => s.DrawOrder))
+            {
+                scene.DrawGUI(gameTime);
+            }
         }
 
         /// <summary>
