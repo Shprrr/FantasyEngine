@@ -148,5 +148,10 @@ namespace FantasyEngineData.Entities
         {
 
         }
+
+        public override string ToString()
+        {
+            return JobName;
+        }
     }
 }

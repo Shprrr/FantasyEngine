@@ -18,17 +18,22 @@ namespace FantasyEngineData.Entities
 
         public static void AddBaseJob(BaseJob baseJob)
         {
-            if (!baseJobs.ContainsKey(baseJob.JobName))
+            if (!baseJobs.ContainsKey(baseJob.JobAbbreviation))
             {
-                baseJobs.Add(baseJob.JobName, baseJob);
+                baseJobs.Add(baseJob.JobAbbreviation, baseJob);
             }
         }
 
-        public static BaseJob GetBaseJob(string jobName)
+        public static BaseJob[] GetAllBaseJob()
         {
-            if (baseJobs.ContainsKey(jobName))
+            return baseJobs.Values.ToArray();
+        }
+
+        public static BaseJob GetBaseJob(string jobAbbreviation)
+        {
+            if (baseJobs.ContainsKey(jobAbbreviation))
             {
-                return (BaseJob)baseJobs[jobName];
+                return (BaseJob)baseJobs[jobAbbreviation];
             }
             return null;
         }

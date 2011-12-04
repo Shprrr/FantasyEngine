@@ -59,6 +59,9 @@ namespace FantasyEngine.Classes.Menus
         {
             base.Draw(gameTime);
 
+            if (ItemMax == 0)
+                return;
+
             GameMain.spriteBatchGUI.Draw(GameMain.cursor, Position + GameMain.spriteBatchGUI.CameraOffset,
                 null, Color.White, 0, Vector2.Zero, 1, Effects, 0);
         }
@@ -72,6 +75,9 @@ namespace FantasyEngine.Classes.Menus
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
+            if (ItemMax == 0)
+                return;
 
             if (Input.keyStateHeld.IsKeyDown(Keys.Up))
             {

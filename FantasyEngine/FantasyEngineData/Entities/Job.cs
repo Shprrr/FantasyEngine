@@ -76,10 +76,10 @@ namespace FantasyEngineData.Entities
         /// </summary>
         public int Exp
         {
-            get { return _TotalExp - ExpForLevel(Level - 1); }
+            get { return _TotalExp - TotalExpForLevel(Level - 1); }
             set
             {
-                _TotalExp = value + ExpForLevel(Level - 1);
+                _TotalExp = value + TotalExpForLevel(Level - 1);
                 LevelUp();
             }
         }
@@ -248,12 +248,43 @@ namespace FantasyEngineData.Entities
         /// </summary>
         /// <param name="level">Current level to calculate the exp for the next level.</param>
         /// <returns>Amount of experience to have to get from level to the next.</returns>
-        static public int ExpForLevel(int level)
+        public static int ExpForLevel(int level)
         {
             if (level == 0)
                 return 0;
 
             return (int)(39 * Math.Pow(level, 2));
+        }
+
+        /// <summary>
+        /// Give the amount of experience to have to get from level to the next.
+        /// </summary>
+        /// <returns>Amount of experience to have to get from level to the next.</returns>
+        public int ExpForLevel()
+        {
+            return ExpForLevel(Level);
+        }
+
+        /// <summary>
+        /// Give the amount of total experience to have to get from level to the next.
+        /// </summary>
+        /// <param name="level">Current level to calculate the total exp for the next level.</param>
+        /// <returns>Amount of total experience to have to get from level to the next.</returns>
+        public static int TotalExpForLevel(int level)
+        {
+            if (level == 0)
+                return 0;
+
+            return TotalExpForLevel(level - 1) + (int)(39 * Math.Pow(level, 2));
+        }
+
+        /// <summary>
+        /// Give the amount of total experience to have to get from level to the next.
+        /// </summary>
+        /// <returns>Amount of total experience to have to get from level to the next.</returns>
+        public int TotalExpForLevel()
+        {
+            return TotalExpForLevel(Level);
         }
 
         public void LevelUp()

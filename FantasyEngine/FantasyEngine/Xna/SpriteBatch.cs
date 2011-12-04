@@ -52,6 +52,22 @@ namespace FantasyEngine.Xna
         }
 
         /// <summary>
+        /// Adds a outline rectangle to a batch of sprites for rendering using the specified texture,
+        /// outline rectangle, and color.
+        /// </summary>
+        /// <param name="texture">A texture.</param>
+        /// <param name="outlineRectangle">A rectangle that specifies (in screen coordinates) the destination for drawing the outline rectangle.</param>
+        /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
+        /// <param name="borderWidth">The width of the outline.</param>
+        public void DrawOutlineRectangle(Texture2D texture, Rectangle outlineRectangle, Color color, int borderWidth = 1)
+        {
+            Draw(texture, new Rectangle(outlineRectangle.Left, outlineRectangle.Top, borderWidth, outlineRectangle.Height), color);
+            Draw(texture, new Rectangle(outlineRectangle.Right, outlineRectangle.Top, borderWidth, outlineRectangle.Height), color);
+            Draw(texture, new Rectangle(outlineRectangle.Left, outlineRectangle.Top, outlineRectangle.Width, borderWidth), color);
+            Draw(texture, new Rectangle(outlineRectangle.Left, outlineRectangle.Bottom, outlineRectangle.Width, borderWidth), color);
+        }
+
+        /// <summary>
         /// Change the region where the drawing can occur.
         /// </summary>
         /// <param name="rectangle">Region where the drawing can occur</param>

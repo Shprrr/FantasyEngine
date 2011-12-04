@@ -12,7 +12,7 @@ namespace FantasyEngine.Classes.Overworld
 {
     public class Overworld : Scene
     {
-        private readonly string[] MENU_COMMANDS = { "Character", "Equipment", "Inventory", "Quit game" };
+        private readonly string[] MENU_COMMANDS = { "Character", "Equipment", "Inventory", "Skills", "Quit game" };
 
         private bool _ShowPosition = false;
         private Command _Menu;
@@ -204,6 +204,11 @@ namespace FantasyEngine.Classes.Overworld
                 AddSubScene(new InventoryScene(Game));
             }
 
+            if (Input.keyStateDown.IsKeyDown(Keys.K))
+            {
+                AddSubScene(new SkillScene(Game));
+            }
+
             if (Input.keyStateDown.IsKeyDown(Keys.B))
             {
                 MapObject.Encounter mob = Player.GamePlayer.Map.Encounters[0];
@@ -212,6 +217,11 @@ namespace FantasyEngine.Classes.Overworld
                 battle._Enemies[0].Name = battle._Enemies[0].CurrentJob.JobName + "1";
                 battle.StartPhase1();
                 Scene.ChangeMainScene(battle);
+            }
+
+            if (Input.keyStateDown.IsKeyDown(Keys.L))
+            {
+                Player.GamePlayer.Actors[0].Exp += Player.GamePlayer.Actors[0].CurrentJob.ExpForLevel();
             }
 
             if (Input.keyStateDown.IsKeyDown(Keys.N))
@@ -254,6 +264,10 @@ namespace FantasyEngine.Classes.Overworld
                             break;
 
                         case 3:
+                            AddSubScene(new SkillScene(Game));
+                            break;
+
+                        case 4:
                             ChangeMainScene(new Title(Game));
                             break;
                     }

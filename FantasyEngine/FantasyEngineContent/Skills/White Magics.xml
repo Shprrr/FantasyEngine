@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+	<Asset Type="FantasyEngineData.Skills.BaseSkill[]">
+		<Item>
+			<Name>Cure</Name>
+			<Description>A weak cure spell.</Description>
+			<BaseCostMP>4</BaseCostMP>
+			<AddByLevelCostMP>0.5</AddByLevelCostMP>
+			<QuadraticCoefficientLevelCostMP>0.05</QuadraticCoefficientLevelCostMP>
+			<AllowableJobs>
+				<Item>
+					<Job>OK</Job>
+					<Level>2</Level>
+					<MaxLevel>10</MaxLevel>
+				</Item>
+				<Item>
+					<Job>WM</Job>
+				</Item>
+			</AllowableJobs>
+			<Effect>
+				<Type>RecoveryHP</Type>
+				<Value>24</Value>
+				<HitPourc>95</HitPourc>
+				<AddValueByLevel>1</AddValueByLevel>
+				<QuadraticCoefficientValueLevel>0.15</QuadraticCoefficientValueLevel>
+			</Effect>
+			<DefaultTarget>SINGLE_PARTY</DefaultTarget>
+			<MenuUsable>true</MenuUsable>
+			<ExpToLearn>39</ExpToLearn>
+		</Item>
+	</Asset>
+</XnaContent>

@@ -11,6 +11,7 @@
 			<Effect>
 				<Type>RecoveryHP</Type>
 				<Value>50</Value>
+				<HitPourc>100</HitPourc>
 			</Effect>
 			<DefaultTarget>SINGLE_PARTY</DefaultTarget>
 		</Item>
@@ -23,6 +24,7 @@
 			<AllowableJobs>*</AllowableJobs>
 			<Effect>
 				<Type>Poisona</Type>
+				<HitPourc>100</HitPourc>
 			</Effect>
 			<DefaultTarget>SINGLE_PARTY</DefaultTarget>
 		</Item>
@@ -36,6 +38,7 @@
 			<Effect>
 				<Type>Life</Type>
 				<Multiplier>0.25</Multiplier>
+				<HitPourc>100</HitPourc>
 			</Effect>
 			<DefaultTarget>SINGLE_PARTY</DefaultTarget>
 		</Item>

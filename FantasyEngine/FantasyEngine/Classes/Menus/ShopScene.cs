@@ -101,8 +101,9 @@ namespace FantasyEngine.Classes.Menus
             _DescriptionWindow.Draw(gameTime);
             spriteBatchGUI.Scissor(_DescriptionWindow.InsideBound);
 
-            spriteBatchGUI.DrawString(GameMain.font, item.Description,
-                new Vector2(16, 16) + spriteBatchGUI.CameraOffset, Color.White);
+            if (item != null)
+                spriteBatchGUI.DrawString(GameMain.font, item.Description,
+                    new Vector2(16, 16) + spriteBatchGUI.CameraOffset, Color.White);
 
             spriteBatchGUI.ScissorReset();
         }
@@ -152,7 +153,8 @@ namespace FantasyEngine.Classes.Menus
 
             Inventory.InvItem invItem = Player.GamePlayer.Inventory.Items.Find(i => i.Item == item);
 
-            spriteBatchGUI.Draw(item.Icon, new Vector2(580, 74) + spriteBatchGUI.CameraOffset, Color.White);
+            if (item != null)
+                spriteBatchGUI.Draw(item.Icon, new Vector2(580, 74) + spriteBatchGUI.CameraOffset, Color.White);
 
             spriteBatchGUI.DrawString(GameMain.font, "Stocked:",
                 new Vector2(382, 68) + spriteBatchGUI.CameraOffset, Color.White);
@@ -232,90 +234,93 @@ namespace FantasyEngine.Classes.Menus
                     new Vector2(580, 152) + spriteBatchGUI.CameraOffset, Color.White);
             }
 
-            if (item.Effect != null)
-                spriteBatchGUI.DrawString(GameMain.font, item.Effect.ToString(),
-                    new Vector2(382, 172) + spriteBatchGUI.CameraOffset, Color.White);
+            if (item != null)
+            {
+                if (item.Effect != null)
+                    spriteBatchGUI.DrawString(GameMain.font8, item.Effect.ToString(),
+                        new Vector2(382, 172) + spriteBatchGUI.CameraOffset, Color.White);
 
-            #region AllowedJobs
-            BaseJob baseJob = JobManager.GetBaseJob("OnionKid");
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(384, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = JobManager.GetBaseJob("Soldier");
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(420, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = JobManager.GetBaseJob("Warrior");
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(456, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = JobManager.GetBaseJob("Archer");
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(492, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = JobManager.GetBaseJob("Thief");
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(528, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = JobManager.GetBaseJob("Black Mage");
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(564, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = JobManager.GetBaseJob("White Mage");
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(600, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                #region AllowedJobs
+                BaseJob baseJob = JobManager.GetBaseJob("OK");
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(384, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = JobManager.GetBaseJob("So");
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(420, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = JobManager.GetBaseJob("Wa");
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(456, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = JobManager.GetBaseJob("Ar");
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(492, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = JobManager.GetBaseJob("Th");
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(528, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = JobManager.GetBaseJob("BM");
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(564, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = JobManager.GetBaseJob("WM");
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(600, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
 
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Bs";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(420, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Kn";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(456, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Gu";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(492, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Ni";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(528, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "BW";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(564, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "WW";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(600, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Bs";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(420, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Kn";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(456, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Gu";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(492, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Ni";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(528, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "BW";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(564, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "WW";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(600, 204) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
 
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Sc";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(384, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "DK";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(420, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Pa";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(456, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "BD";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(492, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Al";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(528, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Ga";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(564, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Bl";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(600, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Sc";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(384, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "DK";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(420, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Pa";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(456, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "BD";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(492, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Al";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(528, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Ga";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(564, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Bl";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(600, 220) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
 
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Bk";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(420, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Dr";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(456, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "GM";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(492, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Mk";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(528, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            baseJob = new BaseJob(); baseJob.JobAbbreviation = "Su";
-            spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
-                new Vector2(600, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-            #endregion AllowedJobs
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Bk";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(420, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Dr";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(456, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "GM";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(492, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Mk";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(528, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                baseJob = new BaseJob(); baseJob.JobAbbreviation = "Su";
+                spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
+                    new Vector2(600, 236) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
+                #endregion AllowedJobs
+            }
 
             spriteBatchGUI.ScissorReset();
         }
@@ -326,7 +331,7 @@ namespace FantasyEngine.Classes.Menus
             _CompareWindow.Draw(gameTime);
             spriteBatchGUI.Scissor(_CompareWindow.InsideBound);
 
-            if (!(item is Item))
+            if (item != null && !(item is Item))
             {
                 // Try to equip a clone to see what it does.
                 Character actor = (Character)Player.GamePlayer.Actors[0].Clone();

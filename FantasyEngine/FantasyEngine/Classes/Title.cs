@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Media;
 using FantasyEngine.Classes.Overworld;
 using FantasyEngineData.Entities;
 using FantasyEngineData.Items;
+using FantasyEngineData.Skills;
 
 namespace FantasyEngine.Classes
 {
@@ -51,7 +52,6 @@ namespace FantasyEngine.Classes
             {
                 Player.GamePlayer.Actors[i] = new Character();
                 Player.GamePlayer.Actors[i].Name = "H" + (i + 1);
-                Player.GamePlayer.Actors[i].Jobs[0] = new Job(JobManager.GetBaseJob("OnionKid"));
                 Player.GamePlayer.Actors[i].IndexCurrentJob = 0;
             }
 
@@ -68,6 +68,17 @@ namespace FantasyEngine.Classes
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetItem("Phoenix Down"), 3));
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetItem("Ultima Scroll"), 1));
             Player.GamePlayer.Inventory.Gold = 20;
+
+            Player.GamePlayer.Actors[0].Skills.Add(new Skill(SkillManager.GetBaseSkill("Fire")));
+            Player.GamePlayer.Actors[0].Skills.Add(new Skill(SkillManager.GetBaseSkill("Ice")));
+            Player.GamePlayer.Actors[0].Skills[1].Exp += 70;
+            Player.GamePlayer.Actors[0].Skills.Add(new Skill(SkillManager.GetBaseSkill("Fira")));
+            Player.GamePlayer.Actors[0].Skills[2].Exp += 60;
+            Player.GamePlayer.Actors[0].Skills.Add(new Skill(SkillManager.GetBaseSkill("Firaga")));
+            Player.GamePlayer.Actors[0].Skills.Add(new Skill(SkillManager.GetBaseSkill("Thunder")));
+            Player.GamePlayer.Actors[0].Skills[4].Exp += 17075;
+            Player.GamePlayer.Actors[0].Skills.Add(new Skill(SkillManager.GetBaseSkill("Cure")));
+            Player.GamePlayer.Actors[0].Skills[5].Exp += 70;
 
             Scene.ChangeMainScene(new Overworld.Overworld(Game));
         }

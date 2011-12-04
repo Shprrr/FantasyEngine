@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using FantasyEngineData.Items;
+using FantasyEngineData.Skills;
 
 namespace FantasyEngineData.Entities
 {
     public class Character : ICloneable
     {
         public const int NAME_LENGTH = 32;
-        public const int MAX_JOB = 4;
+        public const int MAX_JOB = 8;
 
         //TODO: Transferer dans les Weapons
         public enum ePhysicalDamageOption
@@ -26,12 +27,15 @@ namespace FantasyEngineData.Entities
 
         #region Fields
         private string _Name;
+        private Job[] _Jobs = new Job[MAX_JOB];
+        private List<Skill> _Skills = new List<Skill>();
 
-        public Job[] Jobs = new Job[MAX_JOB];
         public int IndexCurrentJob = -1;
         #endregion Fields
 
         #region Properties
+        public Job[] Jobs { get { return _Jobs; } }
+
         /// <summary>
         /// Job currently active for this character.
         /// </summary>
@@ -39,6 +43,8 @@ namespace FantasyEngineData.Entities
         {
             get { return IndexCurrentJob > -1 && IndexCurrentJob < MAX_JOB ? Jobs[IndexCurrentJob] : null; }
         }
+
+        public List<Skill> Skills { get { return _Skills; } }
 
         /// <summary>
         /// Get the name of the character.
@@ -306,6 +312,11 @@ namespace FantasyEngineData.Entities
 
         public Character()
         {
+            BaseJob[] baseJobs = JobManager.GetAllBaseJob();
+            for (int i = 0; i < baseJobs.Length; i++)
+            {
+                Jobs[i] = new Job(baseJobs[i]);
+            }
         }
 
         #region Battle Stats

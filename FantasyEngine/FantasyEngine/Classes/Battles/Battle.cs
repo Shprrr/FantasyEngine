@@ -796,16 +796,15 @@ namespace FantasyEngine.Classes.Battles
                 switch (_CurrentAction.Kind)
                 {
                     case BattleAction.eKind.ATTACK:
-                        //spriteBatch.DrawString(GameMain.font, "Sword swing !", new Vector2(0, 200), Color.White);
-                        if (getActiveBattler().RightHand != null)
+                        if (getActiveBattler().RightHand is Weapon)
                             spriteBatch.DrawString(GameMain.font,
                                 getActiveBattler().RightHand.Name + " swing !", new Vector2(0, 200), Color.White);
 
-                        if (getActiveBattler().LeftHand != null)
+                        if (getActiveBattler().LeftHand is Weapon)
                             spriteBatch.DrawString(GameMain.font,
                                 getActiveBattler().LeftHand.Name + " swing !", new Vector2(0, 220), Color.White);
 
-                        if (getActiveBattler().RightHand == null && getActiveBattler().LeftHand == null)
+                        if (!(getActiveBattler().RightHand is Weapon || getActiveBattler().LeftHand is Weapon))
                             spriteBatch.DrawString(GameMain.font, "Barehand swing !", new Vector2(0, 200), Color.White);
                         break;
 
@@ -836,16 +835,15 @@ namespace FantasyEngine.Classes.Battles
                 switch (_CurrentAction.Kind)
                 {
                     case BattleAction.eKind.ATTACK:
-                        //spriteBatch.DrawString(GameMain.font, "Sword hitted !", new Vector2(0, 220), Color.White);
-                        if (getActiveBattler().RightHand != null)
+                        if (getActiveBattler().RightHand is Weapon)
                             spriteBatch.DrawString(GameMain.font,
                                 getActiveBattler().RightHand.Name + " hitted !", new Vector2(0, 200), Color.White);
 
-                        if (getActiveBattler().LeftHand != null)
+                        if (getActiveBattler().LeftHand is Weapon)
                             spriteBatch.DrawString(GameMain.font,
                                 getActiveBattler().LeftHand.Name + " hitted !", new Vector2(0, 220), Color.White);
 
-                        if (getActiveBattler().RightHand == null && getActiveBattler().LeftHand == null)
+                        if (!(getActiveBattler().RightHand is Weapon || getActiveBattler().LeftHand is Weapon))
                             spriteBatch.DrawString(GameMain.font, "Barehand hitted !", new Vector2(0, 200), Color.White);
                         break;
 

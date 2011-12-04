@@ -77,6 +77,7 @@ namespace FantasyEngineData.Items
         public int Value { get; set; }
         [ContentSerializer(Optional = true)]
         public float Multiplier { get; set; }
+        public int HitPourc { get; set; }
 
         public Effect()
         {
@@ -202,7 +203,12 @@ namespace FantasyEngineData.Items
                 case eType.Soft:
                     break;
                 case eType.Fire:
-                    break;
+                    {
+                        int multiplier = (int)Multiplier;
+                        target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
+                        target.Hp -= damage;
+                        return true;
+                    }
                 case eType.Ice:
                     break;
                 case eType.Thunder:
@@ -218,10 +224,12 @@ namespace FantasyEngineData.Items
                 case eType.Dark:
                     break;
                 case eType.Flare:
-                    int multiplier = (int)Multiplier;
-                    target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
-                    target.Hp -= damage;
-                    return true;
+                    {
+                        int multiplier = (int)Multiplier;
+                        target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
+                        target.Hp -= damage;
+                        return true;
+                    }
                 case eType.Protect:
                     break;
                 case eType.Shell:
@@ -278,143 +286,140 @@ namespace FantasyEngineData.Items
             return false;
         }
 
-        public override string ToString()
+        public static string TypeToString(eType type)
         {
-            string retour = string.Empty;
-
-            #region Add Type to the string
-            switch (Type)
+            switch (type)
             {
                 case eType.DrainHP:
-                    retour = "Absorbs HP";
-                    break;
+                    return "Absorbs HP";
                 case eType.DrainMP:
-                    retour = "Absorbs MP";
-                    break;
+                    return "Absorbs MP";
                 case eType.ImbueFire:
-                    break;
+                    return "";
                 case eType.ImbueIce:
-                    break;
+                    return "";
                 case eType.ImbueThunder:
-                    break;
+                    return "";
                 case eType.ImbueWater:
-                    break;
+                    return "";
                 case eType.ImbueAero:
-                    break;
+                    return "";
                 case eType.ImbueQuake:
-                    break;
+                    return "";
                 case eType.ImbueLight:
-                    break;
+                    return "";
                 case eType.ImbueDark:
-                    break;
+                    return "";
                 case eType.RecoveryHP:
-                    retour = "Recovers HP";
-                    break;
+                    return "Recovers HP";
                 case eType.RecoveryMP:
-                    retour = "Recovers MP";
-                    break;
+                    return "Recovers MP";
                 case eType.Life:
-                    retour = "Revives";
-                    break;
+                    return "Revives";
                 case eType.Esuna:
-                    break;
+                    return "";
                 case eType.Poisona:
-                    break;
+                    return "";
                 case eType.Confusena:
-                    break;
+                    return "";
                 case eType.Blindna:
-                    break;
+                    return "";
                 case eType.Silencena:
-                    break;
+                    return "";
                 case eType.WakeUp:
-                    break;
+                    return "";
                 case eType.HolyWater:
-                    break;
+                    return "";
                 case eType.Soft:
-                    break;
+                    return "";
                 case eType.Fire:
-                    retour = "Casts Fire";
-                    break;
+                    return "Casts Fire";
                 case eType.Ice:
-                    retour = "Casts Ice";
-                    break;
+                    return "Casts Ice";
                 case eType.Thunder:
-                    retour = "Casts Thunder";
-                    break;
+                    return "Casts Thunder";
                 case eType.Water:
-                    retour = "Casts Water";
-                    break;
+                    return "Casts Water";
                 case eType.Aero:
-                    retour = "Casts Aero";
-                    break;
+                    return "Casts Aero";
                 case eType.Quake:
-                    retour = "Casts Quake";
-                    break;
+                    return "Casts Quake";
                 case eType.Holy:
-                    retour = "Casts Holy";
-                    break;
+                    return "Casts Holy";
                 case eType.Dark:
-                    retour = "Casts Dark";
-                    break;
+                    return "Casts Dark";
                 case eType.Flare:
-                    retour = "Casts Flare";
-                    break;
+                    return "Casts Flare";
                 case eType.Protect:
-                    break;
+                    return "Casts Protect";
                 case eType.Shell:
-                    break;
+                    return "Casts Shell";
                 case eType.Reflect:
-                    break;
+                    return "Casts Reflect";
                 case eType.Haste:
-                    break;
+                    return "Casts Haste";
                 case eType.Regen:
-                    break;
+                    return "Casts Regen";
                 case eType.NullAll:
-                    break;
+                    return "";
                 case eType.NullFire:
-                    break;
+                    return "";
                 case eType.NullIce:
-                    break;
+                    return "";
                 case eType.NullThunder:
-                    break;
+                    return "";
                 case eType.NullWater:
-                    break;
+                    return "";
                 case eType.NullAero:
-                    break;
+                    return "";
                 case eType.NullQuake:
-                    break;
+                    return "";
                 case eType.NullLight:
-                    break;
+                    return "";
                 case eType.NullDark:
-                    break;
+                    return "";
                 case eType.Poison:
-                    break;
+                    return "";
                 case eType.Confuse:
-                    break;
+                    return "";
                 case eType.Blind:
-                    break;
+                    return "";
                 case eType.Silence:
-                    break;
+                    return "";
                 case eType.Sleep:
-                    break;
+                    return "";
                 case eType.Berserk:
-                    break;
+                    return "";
                 case eType.Zombie:
-                    break;
+                    return "";
                 case eType.Slow:
-                    break;
+                    return "";
                 case eType.Dispel:
-                    break;
+                    return "";
                 case eType.Stone:
-                    break;
+                    return "";
                 case eType.KO:
-                    break;
+                    return "";
+                default:
+                    return string.Empty;
             }
-            #endregion Add Type to the string
+        }
+
+        public string TypeToString()
+        {
+            return TypeToString(Type);
+        }
+
+        public override string ToString()
+        {
+            string retour = TypeToString();
+
+            if (Multiplier != 1) retour += " " + Multiplier + "x";
 
             if (Value != 0) retour += " " + Value;
 
-            if (Multiplier != 1) retour += " " + Multiplier + "x";
+            if (HitPourc != 100)
+                retour += " " + HitPourc + "%";
 
             return retour;
         }

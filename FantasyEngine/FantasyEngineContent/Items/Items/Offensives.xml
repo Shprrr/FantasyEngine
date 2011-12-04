@@ -12,6 +12,7 @@
 				<Type>Flare</Type>
 				<Value>5</Value>
 				<Multiplier>3</Multiplier>
+				<HitPourc>100</HitPourc>
 			</Effect>
 			<DefaultTarget>MULTI_ENEMY</DefaultTarget>
 		</Item>

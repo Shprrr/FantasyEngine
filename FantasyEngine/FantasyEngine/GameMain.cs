@@ -7,6 +7,7 @@ using FantasyEngine.Classes;
 using FantasyEngine.Xna;
 using FantasyEngineData.Entities;
 using FantasyEngineData.Items;
+using FantasyEngineData.Skills;
 
 namespace FantasyEngine
 {
@@ -106,6 +107,7 @@ namespace FantasyEngine
             JobManager.Load(Content.Load<BaseJob>(@"Jobs\Thief"));
             JobManager.Load(Content.Load<BaseJob>(@"Jobs\Black Mage"));
             JobManager.Load(Content.Load<BaseJob>(@"Jobs\White Mage"));
+            JobManager.Load(Content.Load<BaseJob>(@"Jobs\Black Wizard"));
 
             // Load all items in the ItemManager
             ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Items\Consumables"));
@@ -117,6 +119,10 @@ namespace FantasyEngine
             ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Arms"));
             ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Feet"));
             ItemManager.Load(Content.Load<BaseItem[]>(@"Items\Armors\Shields"));
+
+            // Load all skills in the SkillManager
+            SkillManager.Load(Content.Load<BaseSkill[]>(@"Skills\White Magics"));
+            SkillManager.Load(Content.Load<BaseSkill[]>(@"Skills\Black Magics"));
         }
 
         /// <summary>
