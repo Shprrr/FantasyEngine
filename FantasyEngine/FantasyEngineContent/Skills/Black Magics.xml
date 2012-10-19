@@ -4,6 +4,7 @@
 		<Item>
 			<Name>Fire</Name>
 			<Description>A weak fire spell.</Description>
+			<Rank>3</Rank>
 			<BaseCostMP>4</BaseCostMP>
 			<AddByLevelCostMP>0.5</AddByLevelCostMP>
 			<QuadraticCoefficientLevelCostMP>0.05</QuadraticCoefficientLevelCostMP>
@@ -31,6 +32,7 @@
 		<Item>
 			<Name>Ice</Name>
 			<Description>A weak ice spell.</Description>
+			<Rank>3</Rank>
 			<BaseCostMP>4</BaseCostMP>
 			<AddByLevelCostMP>0.5</AddByLevelCostMP>
 			<QuadraticCoefficientLevelCostMP>0.05</QuadraticCoefficientLevelCostMP>
@@ -58,6 +60,7 @@
 		<Item>
 			<Name>Thunder</Name>
 			<Description>A weak thunder spell.</Description>
+			<Rank>3</Rank>
 			<BaseCostMP>4</BaseCostMP>
 			<AddByLevelCostMP>0.5</AddByLevelCostMP>
 			<QuadraticCoefficientLevelCostMP>0.05</QuadraticCoefficientLevelCostMP>
@@ -85,6 +88,7 @@
 		<Item>
 			<Name>Water</Name>
 			<Description>A weak water spell.</Description>
+			<Rank>3</Rank>
 			<BaseCostMP>4</BaseCostMP>
 			<AddByLevelCostMP>0.5</AddByLevelCostMP>
 			<QuadraticCoefficientLevelCostMP>0.05</QuadraticCoefficientLevelCostMP>
@@ -112,10 +116,16 @@
 		<Item>
 			<Name>Fira</Name>
 			<Description>A stronger fire spell.</Description>
+			<Rank>4</Rank>
 			<BaseCostMP>16</BaseCostMP>
 			<AddByLevelCostMP>0.5</AddByLevelCostMP>
 			<QuadraticCoefficientLevelCostMP>0.15</QuadraticCoefficientLevelCostMP>
 			<AllowableJobs>
+				<Item>
+					<Job>OK</Job>
+					<Level>2</Level>
+					<MaxLevel>1</MaxLevel>
+				</Item>
 				<Item>
 					<Job>BM</Job>
 					<Level>10</Level>
@@ -144,6 +154,7 @@
 		<Item>
 			<Name>Firaga</Name>
 			<Description>A strong fire spell.</Description>
+			<Rank>5</Rank>
 			<BaseCostMP>64</BaseCostMP>
 			<AddByLevelCostMP>0.5</AddByLevelCostMP>
 			<QuadraticCoefficientLevelCostMP>0.15</QuadraticCoefficientLevelCostMP>

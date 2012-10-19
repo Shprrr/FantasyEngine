@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Media;
 using FantasyEngineData.Battles;
 using FantasyEngineData.Entities;
 using FantasyEngineData.Items;
+using FantasyEngineData.Skills;
 
 namespace FantasyEngine.Classes.Battles
 {
@@ -24,14 +25,14 @@ namespace FantasyEngine.Classes.Battles
 
         public eKind Kind;
         public Cursor Target;
-        public int skillId;
+        public Skill Skill;
         public BaseItem Item;
 
-        public BattleAction(Game game, eKind kind = eKind.WAIT, int skillId = -1, BaseItem item = null)
+        public BattleAction(eKind kind = eKind.WAIT, Skill skill = null, BaseItem item = null)
         {
             this.Kind = kind;
             this.Target = null;
-            this.skillId = skillId;
+            this.Skill = skill;
             this.Item = item;
         }
     }
@@ -106,6 +107,7 @@ namespace FantasyEngine.Classes.Battles
         private Window _CTBWindow;
         private Window _ResultWindow;
         private ItemSelection _ItemSelection;
+        private SkillSelection _SkillSelection;
 
         private int _CTBWindowScrollY;
 
@@ -435,6 +437,24 @@ namespace FantasyEngine.Classes.Battles
                 StartTargetSelection(((Item)_CurrentAction.Item).DefaultTarget);
         }
 
+        private void StartSkillSelection()
+        {
+            _SkillSelection.Enabled = true;
+            _SkillSelection.Visible = true;
+            _SkillSelection.Actor = _Actors[_ActiveBattlerIndex];
+
+            _PlayerCommand.Enabled = false;
+        }
+
+        private void EndSkillSelection()
+        {
+            _SkillSelection.Enabled = false;
+            _SkillSelection.Visible = false;
+
+            if (_CurrentAction.Skill != null)
+                StartTargetSelection(_CurrentAction.Skill.DefaultTarget);
+        }
+
         /// <summary>
         /// Start Main phase.
         /// </summary>
@@ -489,25 +509,40 @@ namespace FantasyEngine.Classes.Battles
                     break;
 
                 case BattleAction.eKind.MAGIC:
+                    {
+                        //Set animation id
+
+                        int nbTarget = 0;
+                        _CurrentAction.Target.getTargetBattler(_TargetBattler);
+                        for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
+                            if (_TargetBattler[i] != null)
+                                nbTarget++;
+
+                        for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
+                            if (_TargetBattler[i] != null)
+                                _TargetBattler[i].Used(getActiveBattler(), _CurrentAction.Skill, nbTarget);
+                    }
                     break;
 
                 case BattleAction.eKind.ITEM:
-                    //Set animation id
-
-                    int nbTarget = 0;
-                    _CurrentAction.Target.getTargetBattler(_TargetBattler);
-                    for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
-                        if (_TargetBattler[i] != null)
-                            nbTarget++;
-
-                    for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
-                        if (_TargetBattler[i] != null)
-                            _TargetBattler[i].Used(getActiveBattler(), _CurrentAction.Item, nbTarget);
-
-                    if (getActiveBattler().IsActor)
                     {
-                        Player.GamePlayer.Inventory.Drop(_CurrentAction.Item);
-                        _ItemSelection.RefreshChoices();
+                        //Set animation id
+
+                        int nbTarget = 0;
+                        _CurrentAction.Target.getTargetBattler(_TargetBattler);
+                        for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
+                            if (_TargetBattler[i] != null)
+                                nbTarget++;
+
+                        for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
+                            if (_TargetBattler[i] != null)
+                                _TargetBattler[i].Used(getActiveBattler(), _CurrentAction.Item, nbTarget);
+
+                        if (getActiveBattler().IsActor)
+                        {
+                            Player.GamePlayer.Inventory.Drop(_CurrentAction.Item);
+                            _ItemSelection.RefreshChoices();
+                        }
                     }
                     break;
 
@@ -750,6 +785,11 @@ namespace FantasyEngine.Classes.Battles
             _ItemSelection.Enabled = false;
             _ItemSelection.Visible = false;
 
+            _SkillSelection = new SkillSelection(Game, 480, 160);
+            _SkillSelection.ChangeOffset(80, 320);
+            _SkillSelection.Enabled = false;
+            _SkillSelection.Visible = false;
+
             _ResultWindow = new Window(Game, 0, 0, 640, 480);
             _ResultWindow.Visible = false;
 
@@ -809,6 +849,7 @@ namespace FantasyEngine.Classes.Battles
                         break;
 
                     case BattleAction.eKind.MAGIC:
+                        spriteBatch.DrawString(GameMain.font, _CurrentAction.Skill.Name + " is used !", new Vector2(0, 200), Color.White);
                         break;
 
                     case BattleAction.eKind.ITEM:
@@ -848,6 +889,7 @@ namespace FantasyEngine.Classes.Battles
                         break;
 
                     case BattleAction.eKind.MAGIC:
+                        spriteBatch.DrawString(GameMain.font, _CurrentAction.Skill.Name + " hitted !", new Vector2(0, 200), Color.White);
                         break;
 
                     case BattleAction.eKind.ITEM:
@@ -947,6 +989,8 @@ namespace FantasyEngine.Classes.Battles
             DrawCTBWindow(gameTime);
 
             _ItemSelection.Draw(gameTime);
+
+            _SkillSelection.Draw(gameTime);
 
             if (_Phase == 5 && _PhaseStep == 2)
             {
@@ -1113,6 +1157,8 @@ namespace FantasyEngine.Classes.Battles
 
             _ItemSelection.Update(gameTime);
 
+            _SkillSelection.Update(gameTime);
+
             if (_Phase == 6 && CurrentScene == this) //WaitEnd
             {
                 // Return to map
@@ -1146,25 +1192,30 @@ namespace FantasyEngine.Classes.Battles
                             {
                                 case 0: //Attack
                                     //Set current action
-                                    _CurrentAction = new BattleAction(Game, BattleAction.eKind.ATTACK);
+                                    _CurrentAction = new BattleAction(BattleAction.eKind.ATTACK);
 
                                     //Select the target
                                     StartTargetSelection(eTargetType.SINGLE_ENEMY);
                                     return;
 
                                 case 1: //Magic
+                                    //Set current action
+                                    _CurrentAction = new BattleAction(BattleAction.eKind.MAGIC);
+
+                                    //Select the magic
+                                    StartSkillSelection();
                                     return;
 
                                 case 2: //Item
                                     //Set current action
-                                    _CurrentAction = new BattleAction(Game, BattleAction.eKind.ITEM);
+                                    _CurrentAction = new BattleAction(BattleAction.eKind.ITEM);
 
                                     //Select the item
                                     StartItemSelection();
                                     return;
 
                                 case 3: //Guard
-                                    _CurrentAction = new BattleAction(Game, BattleAction.eKind.GUARD);
+                                    _CurrentAction = new BattleAction(BattleAction.eKind.GUARD);
 
                                     StartPhase4();
                                     return;
@@ -1172,7 +1223,7 @@ namespace FantasyEngine.Classes.Battles
                                 case 4: //Run
                                     if (_CanEscape)
                                     {
-                                        _CurrentAction = new BattleAction(Game, BattleAction.eKind.WAIT);
+                                        _CurrentAction = new BattleAction(BattleAction.eKind.WAIT);
                                         Escape();
                                     }
                                     return;
@@ -1191,6 +1242,11 @@ namespace FantasyEngine.Classes.Battles
                         {
                             _CurrentAction.Item = _ItemSelection.ItemSelected;
                             EndItemSelection();
+                        }
+                        else if (_SkillSelection.Enabled)
+                        {
+                            _CurrentAction.Skill = _SkillSelection.SkillSelected;
+                            EndSkillSelection();
                         }
                         break;
 
@@ -1224,6 +1280,13 @@ namespace FantasyEngine.Classes.Battles
                         {
                             _CurrentAction.Item = null;
                             EndItemSelection();
+                            _PlayerCommand.Enabled = true;
+                            return;
+                        }
+                        else if (_SkillSelection.Enabled)
+                        {
+                            _CurrentAction.Skill = null;
+                            EndSkillSelection();
                             _PlayerCommand.Enabled = true;
                             return;
                         }

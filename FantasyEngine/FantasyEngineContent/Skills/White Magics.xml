@@ -4,6 +4,7 @@
 		<Item>
 			<Name>Cure</Name>
 			<Description>A weak cure spell.</Description>
+			<Rank>3</Rank>
 			<BaseCostMP>4</BaseCostMP>
 			<AddByLevelCostMP>0.5</AddByLevelCostMP>
 			<QuadraticCoefficientLevelCostMP>0.05</QuadraticCoefficientLevelCostMP>

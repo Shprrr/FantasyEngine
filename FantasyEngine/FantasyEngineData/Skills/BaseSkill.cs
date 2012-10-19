@@ -12,22 +12,39 @@ namespace FantasyEngineData.Skills
         public const int NAME_LENGTH = 14;
 
         #region Field Region
-        private string name;
+        private string _Name;
+        private int _Rank = 3;
         #endregion
 
         #region Property Region
         public string Name
         {
-            get { return name; }
+            get { return _Name; }
             set
             {
                 if (value.Length >= NAME_LENGTH)
                     value = value.Remove(NAME_LENGTH);
-                name = value;
+                _Name = value;
             }
         }
 
         public string Description { get; set; }
+
+        /// <summary>
+        /// Speed factor of the skill. 3 is a normal attack and 1 is the quickest.
+        /// </summary>
+        public int Rank
+        {
+            get { return _Rank; }
+            set
+            {
+                if (value < 1)
+                    value = 1;
+                if (value > 7)
+                    value = 7;
+                _Rank = value;
+            }
+        }
 
         /// <summary>
         /// Minimum MP cost to cast the skill.

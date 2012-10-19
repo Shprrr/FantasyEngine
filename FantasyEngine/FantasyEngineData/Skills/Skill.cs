@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FantasyEngineData;
 using FantasyEngineData.Entities;
 
 namespace FantasyEngineData.Skills
 {
-    public class Skill : BaseSkill
+    public class Skill : BaseSkill, ICloneable
     {
         public const int MAX_LEVEL = 20;
 
@@ -60,10 +61,16 @@ namespace FantasyEngineData.Skills
         public int MPCost { get { return MPCostForLevel(Level); } }
         #endregion Properties
 
+        public Skill()
+        {
+
+        }
+
         public Skill(BaseSkill baseSkill)
         {
             Name = baseSkill.Name;
             Description = baseSkill.Description;
+            Rank = baseSkill.Rank;
             BaseCostMP = baseSkill.BaseCostMP;
             AddByLevelCostMP = baseSkill.AddByLevelCostMP;
             QuadraticCoefficientLevelCostMP = baseSkill.QuadraticCoefficientLevelCostMP;
@@ -142,14 +149,34 @@ namespace FantasyEngineData.Skills
             return true;
         }
 
-        public void Use(Character attacker, Character defender)
+        public bool Use(Character attacker, Character defender, out int damage, int nbTarget = 1)
         {
             int skillLevel;
+            damage = 0;
             if (attacker.Mp < MPCost || !IsUsable(attacker, out skillLevel))
-                return;
+                return false;
 
             attacker.Mp -= MPCost;
-            Effect.EffectForLevel(skillLevel).Use(attacker, defender);
+            return Effect.EffectForLevel(skillLevel).Use(attacker, defender, out damage, nbTarget);
         }
+
+        public bool Use(Character attacker, Character defender)
+        {
+            int damage;
+            return Use(attacker, defender, out damage);
+        }
+
+        #region ICloneable Membres
+
+        public object Clone()
+        {
+            // Manual clone
+            Skill skill = new Skill(this);
+            skill._Level = this._Level;
+            skill._TotalExp = this._TotalExp;
+            return skill;
+        }
+
+        #endregion
     }
 }

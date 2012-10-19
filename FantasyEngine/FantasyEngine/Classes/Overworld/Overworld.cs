@@ -226,7 +226,7 @@ namespace FantasyEngine.Classes.Overworld
 
             if (Input.keyStateDown.IsKeyDown(Keys.N))
             {
-                int i = 0;
+                return;
             }
         }
 

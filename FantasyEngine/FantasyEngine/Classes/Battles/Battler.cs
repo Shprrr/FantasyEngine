@@ -7,6 +7,7 @@ using FantasyEngineData;
 using FantasyEngineData.Battles;
 using FantasyEngineData.Entities;
 using FantasyEngineData.Items;
+using FantasyEngineData.Skills;
 
 namespace FantasyEngine.Classes.Battles
 {
@@ -55,6 +56,8 @@ namespace FantasyEngine.Classes.Battles
             Body = character.Body;
             Arms = character.Arms;
             Feet = character.Feet;
+
+            Skills.AddRange(character.Skills);
 
             BattleSprite? battleSprite = character.CurrentJob.BattleSprite;
             if (battleSprite.HasValue)
@@ -199,6 +202,17 @@ namespace FantasyEngine.Classes.Battles
                 multiplierRH = item.Effect.Use(attacker, this, out damageRH, nbTarget) ? 1 : 0;
         }
 
+        public void Used(Battler attacker, Skill skill, int nbTarget)
+        {
+            multiplierRH = 0;
+            multiplierLH = 0;
+            damageRH = 0;
+            damageLH = 0;
+
+            if (skill.Effect != null)
+                multiplierRH = skill.Use(attacker, this, out damageRH, nbTarget) ? 1 : 0;
+        }
+
         public void GiveDamage()
         {
             if (multiplierRH > 0)
@@ -227,7 +241,7 @@ namespace FantasyEngine.Classes.Battles
         /// <returns></returns>
         public BattleAction AIChooseAction(Game game, Battler[] actors, Battler[] enemies)
         {
-            BattleAction action = new BattleAction(game);
+            BattleAction action = new BattleAction();
             List<int> indexTargetPotential = new List<int>();
 
             //TODO: Si aucun skill appris, attack obligatoirement physique.
