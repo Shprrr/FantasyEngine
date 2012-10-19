@@ -73,6 +73,7 @@ namespace FantasyEngine
 
 #if DEBUG
             showFps = true;
+            MediaPlayer.IsMuted = true;
 #endif
 
             Scene.ChangeMainScene(new Title(this));

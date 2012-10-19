@@ -9,7 +9,7 @@ namespace FantasyEngine.Xna
 {
     public class SpriteBatch : Microsoft.Xna.Framework.Graphics.SpriteBatch
     {
-        protected Rectangle defaultScissor;
+                protected Rectangle defaultScissor;
         protected RasterizerState rastState = new RasterizerState();
         public Matrix cameraMatrix = Matrix.Identity;
         private Matrix _OldCameraMatrix = Matrix.Identity;
@@ -33,11 +33,19 @@ namespace FantasyEngine.Xna
         /// </summary>
         public Vector2 CameraOffset { get { return _CameraOffset; } }
 
+        /// <summary>
+        /// Texture for a pixel.
+        /// </summary>
+        public Texture2D pixel;
+
         public SpriteBatch(GraphicsDevice graphicsDevice)
             : base(graphicsDevice)
         {
             rastState.ScissorTestEnable = true;
             defaultScissor = graphicsDevice.ScissorRectangle;
+
+            pixel = new Texture2D(GraphicsDevice, 1, 1);
+            pixel.SetData(new Color[1] { Color.White });
         }
 
         public void BaseBegin()

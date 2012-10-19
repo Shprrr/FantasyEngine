@@ -1,14 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using FantasyEngineData.Entities;
 using FantasyEngineData.Skills;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace FantasyEngine.Classes.Menus
 {
     public class SkillScene : Scene
     {
+        private struct SkillDraw
+        {
+            public Color color;
+            public string name;
+            public string level;
+            public float expRatio;
+            public string exp;
+            public string mpCost;
+        }
+
         private readonly string[] USE_COMMANDS = { "Use", "Sort" };
 
         private readonly Color COLOR_NORMAL = Color.White;
@@ -26,12 +36,15 @@ namespace FantasyEngine.Classes.Menus
         private Window _JobAvailableWindow;
         private Command _UseCommand;
 
+        private List<SkillDraw> skillDraws = new List<SkillDraw>();
+
         public Character CurrentActor
         {
             get { return _CurrentActor; }
             set
             {
                 _CurrentActor = value;
+                UpdateSkills();
                 _CursorWindow = new Cursor(Game, _CurrentActor.Skills.Count);
             }
         }
@@ -53,6 +66,44 @@ namespace FantasyEngine.Classes.Menus
             _UseCommand.ChangeOffset(84, _SkillsWindow.Rectangle.Bottom - _UseCommand.Rectangle.Height - Window.Tileset.TileHeight);
             _UseCommand.Enabled = false;
             _UseCommand.Visible = false;
+        }
+
+        public void UpdateSkills()
+        {
+            skillDraws.Clear();
+
+            foreach (var skill in CurrentActor.Skills)
+            {
+                SkillDraw skillDraw = new SkillDraw();
+
+                var jobAllowed = skill.IsAllowed(CurrentActor.CurrentJob.BaseJob);
+                skillDraw.color = jobAllowed != null ? COLOR_NORMAL : COLOR_UNUSUABLE;
+                if (jobAllowed != null)
+                    if ((jobAllowed.Level != 0 && CurrentActor.Level < jobAllowed.Level)
+                        || (jobAllowed.Skill.Name != null && CurrentActor.Skills.Find(s => s.Name == jobAllowed.Skill.Name).Level < jobAllowed.Skill.Level))
+                        skillDraw.color = COLOR_UNUSUABLE;
+                    else if (jobAllowed.MaxLevel != 0 && skill.Level >= jobAllowed.MaxLevel)
+                        skillDraw.color = COLOR_OVERLEVEL;
+
+                skillDraw.name = skill.Name;
+                skillDraw.level = "L" + skill.Level.ToString().PadLeft(2, '');
+
+                int skillExp = skill.Exp;
+                int skillExpForLevel = skill.ExpForLevel(skill.Level);
+                skillDraw.expRatio = (float)skillExp / skillExpForLevel;
+
+                skillDraw.exp = skillExp.ToString().PadLeft(5, '') + "/" + skillExpForLevel.ToString().PadLeft(5, '');
+
+                if (skill.Level != 0)
+                    if (jobAllowed != null && jobAllowed.MaxLevel != 0 && skill.Level >= jobAllowed.MaxLevel)
+                        skillDraw.mpCost = skill.MPCostForLevel(jobAllowed.MaxLevel).ToString().PadLeft(3, '');
+                    else
+                        skillDraw.mpCost = skill.MPCost.ToString().PadLeft(3, '');
+                else
+                    skillDraw.mpCost = string.Empty;
+
+                skillDraws.Add(skillDraw);
+            }
         }
 
         public override void DrawGUI(GameTime gameTime)
@@ -102,41 +153,21 @@ namespace FantasyEngine.Classes.Menus
             spriteBatchGUI.DrawString(GameMain.font, "Skills", new Vector2(275, 61) + spriteBatchGUI.CameraOffset, Color.White);
 
             // Draw list of items
-            int i = 0;
-            foreach (var skill in CurrentActor.Skills)
+            for (int i = 0; i < skillDraws.Count; i++)
             {
-                var jobAllowed = skill.IsAllowed(CurrentActor.CurrentJob.BaseJob);
-                Color color = jobAllowed != null ? COLOR_NORMAL : COLOR_UNUSUABLE;
-                if (jobAllowed != null)
-                    if ((jobAllowed.Level != 0 && CurrentActor.Level < jobAllowed.Level)
-                        || (jobAllowed.Skill.Name != null && CurrentActor.Skills.Find(s => s.Name == jobAllowed.Skill.Name).Level < jobAllowed.Skill.Level))
-                        color = COLOR_UNUSUABLE;
-                    else if (jobAllowed.MaxLevel != 0 && skill.Level >= jobAllowed.MaxLevel)
-                        color = COLOR_OVERLEVEL;
+                spriteBatchGUI.DrawString(GameMain.font8, skillDraws[i].name,
+                    new Vector2(34, 89 + i * 16) + spriteBatchGUI.CameraOffset, skillDraws[i].color);
+                spriteBatchGUI.DrawString(GameMain.font8, skillDraws[i].level,
+                    new Vector2(212, 89 + i * 16) + spriteBatchGUI.CameraOffset, skillDraws[i].color);
 
-                spriteBatchGUI.DrawString(GameMain.font8, skill.Name,
-                    new Vector2(34, 89 + i * 16) + spriteBatchGUI.CameraOffset, color);
-                spriteBatchGUI.DrawString(GameMain.font8, "L" + skill.Level.ToString().PadLeft(2, ''),
-                    new Vector2(212, 89 + i * 16) + spriteBatchGUI.CameraOffset, color);
+                spriteBatchGUI.DrawOutlineRectangle(spriteBatchGUI.pixel, new Rectangle(254, 86 + i * 16, 140, 16), Color.White);
+                spriteBatchGUI.Draw(spriteBatchGUI.pixel, new Rectangle(255, 87 + i * 16, (int)(138 * skillDraws[i].expRatio), 15), COLOR_EXP_BAR);
 
-                Texture2D pixel = new Texture2D(Game.GraphicsDevice, 1, 1);
-                pixel.SetData(new Color[1] { Color.White });
+                spriteBatchGUI.DrawString(GameMain.font8, skillDraws[i].exp,
+                    new Vector2(258, 89 + i * 16) + spriteBatchGUI.CameraOffset, skillDraws[i].color);
 
-                float ratio = (float)skill.Exp / skill.ExpForLevel(skill.Level);
-                spriteBatchGUI.DrawOutlineRectangle(pixel, new Rectangle(254, 86 + i * 16, 140, 16), Color.White);
-                spriteBatchGUI.Draw(pixel, new Rectangle(255, 87 + i * 16, (int)(138 * ratio), 15), COLOR_EXP_BAR);
-
-                spriteBatchGUI.DrawString(GameMain.font8, skill.Exp.ToString().PadLeft(5, '') + "/" + skill.ExpForLevel(skill.Level).ToString().PadLeft(5, ''),
-                    new Vector2(258, 89 + i * 16) + spriteBatchGUI.CameraOffset, color);
-
-                if (skill.Level != 0)
-                    if (jobAllowed != null && jobAllowed.MaxLevel != 0 && skill.Level >= jobAllowed.MaxLevel)
-                        spriteBatchGUI.DrawString(GameMain.font8, skill.MPCostForLevel(jobAllowed.MaxLevel).ToString().PadLeft(3, ''),
-                            new Vector2(404, 89 + i * 16) + spriteBatchGUI.CameraOffset, color);
-                    else
-                        spriteBatchGUI.DrawString(GameMain.font8, skill.MPCost.ToString().PadLeft(3, ''),
-                            new Vector2(404, 89 + i * 16) + spriteBatchGUI.CameraOffset, color);
-                i++;
+                spriteBatchGUI.DrawString(GameMain.font8, skillDraws[i].mpCost,
+                    new Vector2(404, 89 + i * 16) + spriteBatchGUI.CameraOffset, skillDraws[i].color);
             }
 
             // Draw cursor
@@ -308,6 +339,7 @@ namespace FantasyEngine.Classes.Menus
 
                     CurrentActor.Skills.Remove(skillToMove);
                     CurrentActor.Skills.Insert(index, skillToMove);
+                    UpdateSkills();
 
                     _CursorSortBeginIndex = -1;
                     _UseCommand.Enabled = false;
