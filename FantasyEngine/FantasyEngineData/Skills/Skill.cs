@@ -170,10 +170,8 @@ namespace FantasyEngineData.Skills
 
         public object Clone()
         {
-            // Manual clone
-            Skill skill = new Skill(this);
-            skill._Level = this._Level;
-            skill._TotalExp = this._TotalExp;
+            Skill skill = (Skill)this.CloneExt();
+            skill.AllowableJobs.AddRange(AllowableJobs);
             return skill;
         }
 

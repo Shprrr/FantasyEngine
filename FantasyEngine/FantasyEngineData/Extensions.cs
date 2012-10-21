@@ -21,11 +21,24 @@ namespace FantasyEngineData
         {
             //First we create an instance of this specific type.
             object newObject = Activator.CreateInstance(o.GetType());
+            newObject = o.CloneType(newObject, o.GetType());
+            return newObject;
+        }
+
+        /// <summary>
+        /// Clone the object, and returning a reference to a cloned object.
+        /// </summary>
+        /// <returns>Reference to the new cloned object.</returns>
+        private static object CloneType(this object o, object newObject, Type type)
+        {
+            if (type.BaseType != null)
+                newObject = o.CloneType(newObject, type.BaseType);
 
             //We get the array of fields for the new type instance.
-            FieldInfo[] fields = o.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (FieldInfo fi in fields)
             {
+                // Events
                 if (fi.FieldType.BaseType == typeof(MulticastDelegate))
                     continue;
 
