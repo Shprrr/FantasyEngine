@@ -512,6 +512,10 @@ namespace FantasyEngine.Classes.Battles
                     {
                         //Set animation id
 
+                        int skillLevel;
+                        if (!_CurrentAction.Skill.Casting(getActiveBattler(), out skillLevel))
+                            break;
+
                         int nbTarget = 0;
                         _CurrentAction.Target.getTargetBattler(_TargetBattler);
                         for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
@@ -520,7 +524,7 @@ namespace FantasyEngine.Classes.Battles
 
                         for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
                             if (_TargetBattler[i] != null)
-                                _TargetBattler[i].Used(getActiveBattler(), _CurrentAction.Skill, nbTarget);
+                                _TargetBattler[i].Used(getActiveBattler(), _CurrentAction.Skill, skillLevel, nbTarget);
                     }
                     break;
 

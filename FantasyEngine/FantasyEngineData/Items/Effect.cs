@@ -210,19 +210,54 @@ namespace FantasyEngineData.Items
                         return true;
                     }
                 case eType.Ice:
-                    break;
+                    {
+                        int multiplier = (int)Multiplier;
+                        target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
+                        target.Hp -= damage;
+                        return true;
+                    }
                 case eType.Thunder:
-                    break;
+                    {
+                        int multiplier = (int)Multiplier;
+                        target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
+                        target.Hp -= damage;
+                        return true;
+                    }
                 case eType.Water:
-                    break;
+                    {
+                        int multiplier = (int)Multiplier;
+                        target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
+                        target.Hp -= damage;
+                        return true;
+                    }
                 case eType.Aero:
-                    break;
+                    {
+                        int multiplier = (int)Multiplier;
+                        target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
+                        target.Hp -= damage;
+                        return true;
+                    }
                 case eType.Quake:
-                    break;
+                    {
+                        int multiplier = (int)Multiplier;
+                        target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
+                        target.Hp -= damage;
+                        return true;
+                    }
                 case eType.Holy:
-                    break;
+                    {
+                        int multiplier = (int)Multiplier;
+                        target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
+                        target.Hp -= damage;
+                        return true;
+                    }
                 case eType.Dark:
-                    break;
+                    {
+                        int multiplier = (int)Multiplier;
+                        target.CalculateMagicalDamage(user, Character.eMagicalDamageOption.BLACK, Value, 100, nbTarget, ref multiplier, out damage);
+                        target.Hp -= damage;
+                        return true;
+                    }
                 case eType.Flare:
                     {
                         int multiplier = (int)Multiplier;

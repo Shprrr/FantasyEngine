@@ -202,7 +202,7 @@ namespace FantasyEngine.Classes.Battles
                 multiplierRH = item.Effect.Use(attacker, this, out damageRH, nbTarget) ? 1 : 0;
         }
 
-        public void Used(Battler attacker, Skill skill, int nbTarget)
+        public void Used(Battler attacker, Skill skill, int skillLevel, int nbTarget)
         {
             multiplierRH = 0;
             multiplierLH = 0;
@@ -210,7 +210,7 @@ namespace FantasyEngine.Classes.Battles
             damageLH = 0;
 
             if (skill.Effect != null)
-                multiplierRH = skill.Use(attacker, this, out damageRH, nbTarget) ? 1 : 0;
+                multiplierRH = skill.Use(attacker, this, skillLevel, out damageRH, nbTarget) ? 1 : 0;
         }
 
         public void GiveDamage()

@@ -318,7 +318,9 @@ namespace FantasyEngine.Classes.Menus
                             if (skill.MenuUsable && skill.Level > 0)
                             {
                                 //TODO: Choose an Actor.
-                                skill.Use(CurrentActor, Player.GamePlayer.Actors[0]);
+                                int skillLevel;
+                                if (skill.Casting(CurrentActor, out skillLevel))
+                                    skill.Use(CurrentActor, Player.GamePlayer.Actors[0], skillLevel);
                             }
                             _UseCommand.Visible = false;
                             _UseCommand.Enabled = false;

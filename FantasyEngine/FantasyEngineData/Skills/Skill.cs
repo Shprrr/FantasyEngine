@@ -149,21 +149,26 @@ namespace FantasyEngineData.Skills
             return true;
         }
 
-        public bool Use(Character attacker, Character defender, out int damage, int nbTarget = 1)
+        public bool Casting(Character attacker, out int skillLevel)
         {
-            int skillLevel;
-            damage = 0;
+            skillLevel = 0;
             if (attacker.Mp < MPCost || !IsUsable(attacker, out skillLevel))
                 return false;
 
             attacker.Mp -= MPCost;
+            return true;
+        }
+
+        public bool Use(Character attacker, Character defender, int skillLevel, out int damage, int nbTarget = 1)
+        {
+            damage = 0;
             return Effect.EffectForLevel(skillLevel).Use(attacker, defender, out damage, nbTarget);
         }
 
-        public bool Use(Character attacker, Character defender)
+        public bool Use(Character attacker, Character defender, int skillLevel)
         {
             int damage;
-            return Use(attacker, defender, out damage);
+            return Use(attacker, defender, skillLevel, out damage);
         }
 
         #region ICloneable Membres
