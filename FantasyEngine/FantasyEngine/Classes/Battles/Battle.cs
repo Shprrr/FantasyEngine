@@ -92,6 +92,15 @@ namespace FantasyEngine.Classes.Battles
         public const int MAX_ENEMY = Player.MAX_ACTOR;
 
         private readonly string[] playerCommands = { "Attack", "Magic", "Item", "Guard", "Run" };
+        private enum ePlayerCommand
+        {
+            Attack,
+            Magic,
+            Item,
+            Guard,
+            Run
+        }
+
         private readonly string[] partyCommand = { "Fight", "Escape" };
         private const string MISS = "MISS";
 
@@ -227,14 +236,6 @@ namespace FantasyEngine.Classes.Battles
             foreach (Battler actor in _Actors)
             {
             }
-
-            /*
-                # Call battle callback
-                if $game_temp.battle_proc != nil
-                  $game_temp.battle_proc.call(result)
-                  $game_temp.battle_proc = nil
-                end
-            */
 
             _Phase = 6;
         }
@@ -670,7 +671,6 @@ namespace FantasyEngine.Classes.Battles
             }
 
             //Determine if escape is successful
-            //rand(100) < 50 * actors_agi / enemies_agi
             bool success = new Random().Next(0, 100) < 50 * actors_agi / enemies_agi;
 
             if (success)
@@ -1194,7 +1194,7 @@ namespace FantasyEngine.Classes.Battles
                         {
                             switch (_PlayerCommand.CursorPosition)
                             {
-                                case 0: //Attack
+                                case (int)ePlayerCommand.Attack:
                                     //Set current action
                                     _CurrentAction = new BattleAction(BattleAction.eKind.ATTACK);
 
@@ -1202,7 +1202,7 @@ namespace FantasyEngine.Classes.Battles
                                     StartTargetSelection(eTargetType.SINGLE_ENEMY);
                                     return;
 
-                                case 1: //Magic
+                                case (int)ePlayerCommand.Magic:
                                     //Set current action
                                     _CurrentAction = new BattleAction(BattleAction.eKind.MAGIC);
 
@@ -1210,7 +1210,7 @@ namespace FantasyEngine.Classes.Battles
                                     StartSkillSelection();
                                     return;
 
-                                case 2: //Item
+                                case (int)ePlayerCommand.Item:
                                     //Set current action
                                     _CurrentAction = new BattleAction(BattleAction.eKind.ITEM);
 
@@ -1218,13 +1218,13 @@ namespace FantasyEngine.Classes.Battles
                                     StartItemSelection();
                                     return;
 
-                                case 3: //Guard
+                                case (int)ePlayerCommand.Guard:
                                     _CurrentAction = new BattleAction(BattleAction.eKind.GUARD);
 
                                     StartPhase4();
                                     return;
 
-                                case 4: //Run
+                                case (int)ePlayerCommand.Run:
                                     if (_CanEscape)
                                     {
                                         _CurrentAction = new BattleAction(BattleAction.eKind.WAIT);
@@ -1258,7 +1258,7 @@ namespace FantasyEngine.Classes.Battles
                         BattleEnd(0);
                         break;
                 } // switch (_Phase)
-            } //if(wpaddown & CONTROL_ACCEPT)
+            } // if (Input.keyStateDown.IsKeyDown(Keys.Enter))
 
             if (Input.keyStateDown.IsKeyDown(Keys.Back))
             {
@@ -1271,10 +1271,13 @@ namespace FantasyEngine.Classes.Battles
 
                             switch (_PlayerCommand.CursorPosition)
                             {
-                                case 0: //Attack
+                                case (int)ePlayerCommand.Attack:
                                     _PlayerCommand.Enabled = true;
                                     break;
-                                case 2: //Item
+                                case (int)ePlayerCommand.Magic:
+                                    StartSkillSelection();
+                                    break;
+                                case (int)ePlayerCommand.Item:
                                     StartItemSelection();
                                     break;
                             }
