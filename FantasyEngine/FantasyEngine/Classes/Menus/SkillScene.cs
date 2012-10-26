@@ -34,6 +34,7 @@ namespace FantasyEngine.Classes.Menus
         private Window _EffectWindow;
         private Window _NextLevelWindow;
         private Window _JobAvailableWindow;
+        private Window[] _ActorsWindow;
         private Command _UseCommand;
 
         private List<SkillDraw> skillDraws = new List<SkillDraw>();
@@ -56,11 +57,18 @@ namespace FantasyEngine.Classes.Menus
             CurrentActor = Player.GamePlayer.Actors[0];
 
             _DescriptionWindow = new Window(game, 0, 0, 640, 48);
-            _SkillsWindow = new Window(Game, 0, _DescriptionWindow.Rectangle.Bottom, 640, 384);
+            _SkillsWindow = new Window(Game, 0, _DescriptionWindow.Rectangle.Bottom, 640, 348);
             _EffectWindow = new Window(game, 454, _DescriptionWindow.Rectangle.Bottom, 186, 84);
             _NextLevelWindow = new Window(game, _EffectWindow.Rectangle.X, _EffectWindow.Rectangle.Bottom, _EffectWindow.Rectangle.Width, 84);
             _JobAvailableWindow = new Window(game, _EffectWindow.Rectangle.X, _NextLevelWindow.Rectangle.Bottom,
                 _EffectWindow.Rectangle.Width, _SkillsWindow.Rectangle.Bottom - _NextLevelWindow.Rectangle.Bottom);
+
+            _ActorsWindow = new Window[Player.MAX_ACTOR];
+            for (int i = 0; i < Player.MAX_ACTOR; i++)
+            {
+                if (Player.GamePlayer.Actors[i] != null)
+                    _ActorsWindow[i] = new Window(game, 0, _SkillsWindow.Rectangle.Bottom, 160, 480 - _SkillsWindow.Rectangle.Bottom);
+            }
 
             _UseCommand = new Command(Game, 472, USE_COMMANDS, 2);
             _UseCommand.ChangeOffset(84, _SkillsWindow.Rectangle.Bottom - _UseCommand.Rectangle.Height - Window.Tileset.TileHeight);
@@ -123,6 +131,12 @@ namespace FantasyEngine.Classes.Menus
             DrawNextLevel(gameTime, skill);
 
             DrawJobAvailable(gameTime, skill);
+
+            for (int i = 0; i < Player.MAX_ACTOR; i++)
+            {
+                if (_ActorsWindow[i] != null)
+                    DrawActor(gameTime, _ActorsWindow[i], Player.GamePlayer.Actors[i]);
+            }
 
             _UseCommand.Offset = spriteBatchGUI.CameraOffset;
             _UseCommand.Draw(gameTime);
@@ -288,6 +302,28 @@ namespace FantasyEngine.Classes.Menus
 
                     i++;
                 }
+            }
+
+            spriteBatchGUI.ScissorReset();
+        }
+
+        private void DrawActor(GameTime gameTime, Window actorWindow, Character actor)
+        {
+            if (!actorWindow.Visible)
+                return;
+
+            actorWindow.Offset = spriteBatchGUI.CameraOffset;
+            actorWindow.Draw(gameTime);
+            spriteBatchGUI.Scissor(actorWindow.InsideBound);
+
+            if (actor != null)
+            {
+                spriteBatchGUI.DrawString(GameMain.font8, actor.Name, new Vector2(14, 410) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font8, "HP", new Vector2(14, 424) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font8, actor.Hp + "/" + actor.MaxHp, new Vector2(42, 424) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font8, "MP", new Vector2(14, 438) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font8, actor.Mp + "/" + actor.MaxMp, new Vector2(42, 438) + spriteBatchGUI.CameraOffset, Color.White);
+                spriteBatchGUI.DrawString(GameMain.font8, actor.Statut.ToString(), new Vector2(14, 452) + spriteBatchGUI.CameraOffset, Color.White);
             }
 
             spriteBatchGUI.ScissorReset();
