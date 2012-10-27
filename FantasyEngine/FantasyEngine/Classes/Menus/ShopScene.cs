@@ -244,10 +244,10 @@ namespace FantasyEngine.Classes.Menus
                 BaseJob baseJob = JobManager.GetBaseJob("OK");
                 spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
                     new Vector2(384, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-                baseJob = JobManager.GetBaseJob("So");
+                baseJob = JobManager.GetBaseJob("Wa");
                 spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
                     new Vector2(420, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
-                baseJob = JobManager.GetBaseJob("Wa");
+                baseJob = JobManager.GetBaseJob("So");
                 spriteBatchGUI.DrawString(GameMain.font8, baseJob.JobAbbreviation,
                     new Vector2(456, 188) + spriteBatchGUI.CameraOffset, item.IsAllowed(baseJob) ? Color.White : Color.Gray);
                 baseJob = JobManager.GetBaseJob("Ar");
