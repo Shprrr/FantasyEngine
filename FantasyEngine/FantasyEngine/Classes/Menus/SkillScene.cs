@@ -208,26 +208,29 @@ namespace FantasyEngine.Classes.Menus
                 int level = skill.Level;
 
                 var jobAllowed = skill.IsAllowed(CurrentActor.CurrentJob.BaseJob);
-                if (jobAllowed.MaxLevel != 0 && jobAllowed.MaxLevel <= skill.Level)
-                    level = jobAllowed.MaxLevel;
+                if (jobAllowed != null)
+                {
+                    if (jobAllowed.MaxLevel != 0 && jobAllowed.MaxLevel <= skill.Level)
+                        level = jobAllowed.MaxLevel;
 
-                spriteBatchGUI.DrawString(GameMain.font8, skill.Effect.EffectForLevel(level).TypeToString(),
-                    new Vector2(468, 62) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font8, skill.Effect.EffectForLevel(level).TypeToString(),
+                        new Vector2(468, 62) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "Power:",
-                    new Vector2(468, 76) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, skill.Effect.EffectForLevel(level).Value.ToString().PadLeft(3, ''),
-                    new Vector2(576, 76) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font8, "Power:",
+                        new Vector2(468, 76) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font8, skill.Effect.EffectForLevel(level).Value.ToString().PadLeft(3, ''),
+                        new Vector2(576, 76) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "Hit%:",
-                    new Vector2(468, 90) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, skill.Effect.EffectForLevel(level).HitPourc.ToString().PadLeft(2, '') + "%",
-                    new Vector2(576, 90) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font8, "Hit%:",
+                        new Vector2(468, 90) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font8, skill.Effect.EffectForLevel(level).HitPourc.ToString().PadLeft(2, '') + "%",
+                        new Vector2(576, 90) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "MP Cost:",
-                    new Vector2(468, 104) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, skill.MPCostForLevel(level).ToString().PadLeft(3, ''),
-                    new Vector2(576, 104) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font8, "MP Cost:",
+                        new Vector2(468, 104) + spriteBatchGUI.CameraOffset, Color.White);
+                    spriteBatchGUI.DrawString(GameMain.font8, skill.MPCostForLevel(level).ToString().PadLeft(3, ''),
+                        new Vector2(576, 104) + spriteBatchGUI.CameraOffset, Color.White);
+                }
             }
 
             spriteBatchGUI.ScissorReset();

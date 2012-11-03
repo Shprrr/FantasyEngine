@@ -166,6 +166,16 @@ namespace FantasyEngineData.Entities
         private Armor _Arms = null;
         private Armor _Feet = null;
 
+        public enum eEquipSlot
+        {
+            RightHand,
+            LeftHand,
+            Head,
+            Body,
+            Arms,
+            Feet
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -312,11 +322,46 @@ namespace FantasyEngineData.Entities
 
         public Character()
         {
+            //TODO: Seulement ajouter le job OnionKid.
             BaseJob[] baseJobs = JobManager.GetAllBaseJob();
             for (int i = 0; i < baseJobs.Length; i++)
             {
-                Jobs[i] = new Job(baseJobs[i]);
+                if (baseJobs[i].JobAbbreviation != "Ar")
+                    Jobs[i] = new Job(baseJobs[i]);
             }
+
+            JobSort();
+        }
+
+        /// <summary>
+        /// Permet de trier le tableau des jobs pour correspondre à l'ordre officiel suite à une manipulation (ajout ou supression).
+        /// </summary>
+        private void JobSort()
+        {
+            BaseJob[] baseJobs = JobManager.GetAllBaseJob();
+            Array.Sort(Jobs, delegate(Job x, Job y)
+               {
+                   if (x == null)
+                   {
+                       if (y == null)
+                           return 0;
+                       else
+                           return 1;
+                   }
+                   else
+                   {
+                       if (y == null)
+                           return -1;
+                       else
+                       {
+                           if (x.BaseJob == y.BaseJob)
+                               return 0;
+
+                           BaseJob firstBaseJob = baseJobs.First(bj => bj == x.BaseJob || bj == y.BaseJob);
+                           return firstBaseJob == x.BaseJob ? -1 : (firstBaseJob == y.BaseJob ? 1 : 0);
+                       }
+                   }
+               });
         }
 
         #region Battle Stats
@@ -684,6 +729,51 @@ namespace FantasyEngineData.Entities
 
             if (multiplier < 1) //Check s'il tape au moins une fois
                 damage = 0;
+        }
+
+        public void Unequip(eEquipSlot slot, Inventory inventory)
+        {
+            BaseItem lastItemEquiped = null;
+            switch (slot)
+            {
+                case eEquipSlot.RightHand:
+                    lastItemEquiped = RightHand;
+                    RightHand = null;
+                    break;
+                case eEquipSlot.LeftHand:
+                    lastItemEquiped = LeftHand;
+                    LeftHand = null;
+                    break;
+                case eEquipSlot.Head:
+                    lastItemEquiped = Head;
+                    Head = null;
+                    break;
+                case eEquipSlot.Body:
+                    lastItemEquiped = Body;
+                    Body = null;
+                    break;
+                case eEquipSlot.Arms:
+                    lastItemEquiped = Arms;
+                    Arms = null;
+                    break;
+                case eEquipSlot.Feet:
+                    lastItemEquiped = Feet;
+                    Feet = null;
+                    break;
+            }
+
+            if (lastItemEquiped != null)
+                inventory.Add(lastItemEquiped);
+        }
+
+        public void UnequipAll(Inventory inventory)
+        {
+            Unequip(eEquipSlot.RightHand, inventory);
+            Unequip(eEquipSlot.LeftHand, inventory);
+            Unequip(eEquipSlot.Head, inventory);
+            Unequip(eEquipSlot.Body, inventory);
+            Unequip(eEquipSlot.Arms, inventory);
+            Unequip(eEquipSlot.Feet, inventory);
         }
 
         public override string ToString()

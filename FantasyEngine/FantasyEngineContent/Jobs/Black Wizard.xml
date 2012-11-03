@@ -11,6 +11,16 @@
 		<Agility>5</Agility>
 		<Intelligence>20</Intelligence>
 		<Wisdom>5</Wisdom>
+		<PrerequisiteJobs>
+			<Item>
+				<Job>OK</Job>
+				<Level>3</Level>
+			</Item>
+			<Item>
+				<Job>BM</Job>
+				<Level>2</Level>
+			</Item>
+		</PrerequisiteJobs>
 		<BattleSprite>
 			<SpriteName>onionkid_battle</SpriteName>
 			<IsTiled>true</IsTiled>

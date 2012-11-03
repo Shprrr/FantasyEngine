@@ -98,6 +98,7 @@
   <ItemGroup>
     <Compile Include="Battles\Battle.cs" />
     <Compile Include="Entities\JobManager.cs" />
+    <Compile Include="Entities\JobPrerequisite.cs" />
     <Compile Include="Items\Armor.cs" />
     <Compile Include="Items\BaseItem.cs" />
     <Compile Include="Entities\BaseJob.cs" />

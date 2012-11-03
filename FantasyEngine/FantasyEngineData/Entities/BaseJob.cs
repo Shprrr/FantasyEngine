@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace FantasyEngineData.Entities
 {
-    public class BaseJob
+    public partial class BaseJob
     {
         public const int JOB_NAME_LENGTH = 16;
         public const int MAX_HP = 9999;
@@ -142,6 +142,10 @@ namespace FantasyEngineData.Entities
                 _Wisdom = value;
             }
         }
+
+        private List<JobPrerequisite> _PrerequisiteJobs = new List<JobPrerequisite>();
+        [ContentSerializer(Optional = true)]
+        public List<JobPrerequisite> PrerequisiteJobs { get { return _PrerequisiteJobs; } }
         #endregion Properties
 
         public BaseJob()
@@ -152,6 +156,25 @@ namespace FantasyEngineData.Entities
         public override string ToString()
         {
             return JobName;
+        }
+
+        /// <summary>
+        /// Determine if the character is allowed to use this job.
+        /// </summary>
+        /// <param name="character">Character who wants to use this job</param>
+        /// <returns></returns>
+        public bool IsAllowed(Character character)
+        {
+            foreach (var prerequisiteJob in PrerequisiteJobs)
+            {
+                foreach (var job in character.Jobs)
+                {
+                    if (job != null && job.BaseJob == prerequisiteJob.Job && job.Level < prerequisiteJob.Level)
+                        return false;
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -124,6 +124,7 @@
     <Compile Include="Classes\Command.cs" />
     <Compile Include="Classes\Input.cs" />
     <Compile Include="Classes\Menus\InnScene.cs" />
+    <Compile Include="Classes\Menus\JobChangeScene.cs" />
     <Compile Include="Classes\Menus\ShopScene.cs" />
     <Compile Include="Classes\Menus\SkillScene.cs" />
     <Compile Include="Classes\NumericDropDown.cs" />

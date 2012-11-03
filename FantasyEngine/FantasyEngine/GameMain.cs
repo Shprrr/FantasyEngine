@@ -21,7 +21,6 @@ namespace FantasyEngine
         // Réponse : SquareEnix
 
         #region Static fields
-
         /// <summary>
         /// SpriteBatch to draw.
         /// </summary>
@@ -66,7 +65,6 @@ namespace FantasyEngine
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new FantasyEngine.Xna.SpriteBatch(GraphicsDevice);
             spriteBatchGUI = new FantasyEngine.Xna.SpriteBatch(GraphicsDevice);
@@ -87,7 +85,6 @@ namespace FantasyEngine
         /// </summary>
         protected override void LoadContent()
         {
-            // TODO: use this.Content to load your game content here
             font = Content.Load<SpriteFont>(@"Images\Menus\font_normal");
             font.LineSpacing += 2;
 
@@ -102,8 +99,8 @@ namespace FantasyEngine
 
             // Load all jobs in the JobManager
             JobManager.Load(Content.Load<BaseJob>(@"Jobs\OnionKid"));
-            JobManager.Load(Content.Load<BaseJob>(@"Jobs\Soldier"));
             JobManager.Load(Content.Load<BaseJob>(@"Jobs\Warrior"));
+            JobManager.Load(Content.Load<BaseJob>(@"Jobs\Soldier"));
             JobManager.Load(Content.Load<BaseJob>(@"Jobs\Archer"));
             JobManager.Load(Content.Load<BaseJob>(@"Jobs\Thief"));
             JobManager.Load(Content.Load<BaseJob>(@"Jobs\Black Mage"));
@@ -132,11 +129,7 @@ namespace FantasyEngine
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
-
-        //int fps = 0;
-        //float total = 0;
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -157,19 +150,6 @@ namespace FantasyEngine
 
             if (Input.keyStateDown.IsKeyDown(Keys.F9))
                 MediaPlayer.IsMuted = !MediaPlayer.IsMuted;
-
-            //// The time since Update was called last
-            //float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //total += elapsed;
-            //if (total >= 1)
-            //{
-            //    System.Diagnostics.Debug.WriteLine(fps.ToString());
-            //    fps = 0;
-            //    total = 0;
-            //}
-            //fps += 1;
-
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -199,7 +179,6 @@ namespace FantasyEngine
                 drawCount = 0;
             }
 
-            // TODO: Add your drawing code here
             spriteBatch.Begin();
             Scene.DrawAll(gameTime);
             spriteBatch.End();
