@@ -41,6 +41,7 @@
   </object>
   <object name="Inn" x="480" y="256" width="32" height="32">
    <properties>
+    <property name="direction" value="UP"/>
     <property name="sprite" value="woman4"/>
    </properties>
   </object>
@@ -48,6 +49,11 @@
    <properties>
     <property name="direction" value="UP"/>
     <property name="sprite" value="man4"/>
+   </properties>
+  </object>
+  <object name="JobMaster" x="128" y="192" width="32" height="32">
+   <properties>
+    <property name="sprite" value="man8"/>
    </properties>
   </object>
  </objectgroup>

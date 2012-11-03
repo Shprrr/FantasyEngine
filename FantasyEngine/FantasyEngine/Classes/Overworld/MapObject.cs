@@ -141,6 +141,10 @@ namespace FantasyEngine.Classes.Overworld
                             Scene.AddSubScene(new InnScene(Game, 10));
                             break;
 
+                        case "JobMaster":
+                            Scene.AddSubScene(new JobChangeScene(Game));
+                            break;
+
                         case "Steve":
                             thr = new Thread(
                                 delegate(object Data)
