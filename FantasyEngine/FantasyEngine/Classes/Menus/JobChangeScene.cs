@@ -302,6 +302,7 @@ namespace FantasyEngine.Classes.Menus
                             }
 
                             CurrentActor.UnequipAll(Player.GamePlayer.Inventory);
+                            Player.GamePlayer.Hero.ChangeSprite(@"Characters\" + CurrentActor.CurrentJob.JobName);
 
                             _MessageWindow.Enabled = true;
                             _MessageWindow.Visible = true;

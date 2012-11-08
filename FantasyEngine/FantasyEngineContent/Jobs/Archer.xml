@@ -18,8 +18,8 @@
 			</Item>
 		</PrerequisiteJobs>
 		<BattleSprite>
-			<SpriteName>onionkid_battle</SpriteName>
-			<IsTiled>true</IsTiled>
+			<SpriteName>archer_battle</SpriteName>
+			<IsTiled>false</IsTiled>
 			<TileWidth>56</TileWidth>
 			<TileHeight>56</TileHeight>
 		</BattleSprite>

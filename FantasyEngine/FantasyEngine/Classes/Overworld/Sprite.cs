@@ -54,8 +54,7 @@ namespace FantasyEngine.Classes.Overworld
         public Sprite(Game game, string charsetName, Vector2 position)
             : base(game)
         {
-            Texture2D texture = Game.Content.Load<Texture2D>(@"Images\" + charsetName);
-            _SpriteImage = new Tileset(texture, texture.Width / (nbFrameAnimation * 4), texture.Height);
+            ChangeSprite(charsetName);
             Position = position;
         }
 
@@ -161,6 +160,12 @@ namespace FantasyEngine.Classes.Overworld
         public Rectangle getRectangle()
         {
             return new Rectangle((int)Position.X, (int)Position.Y, _SpriteImage.TileWidth - 1, _SpriteImage.TileHeight - 1);
+        }
+
+        public void ChangeSprite(string charsetName)
+        {
+            Texture2D texture = Game.Content.Load<Texture2D>(@"Images\" + charsetName);
+            _SpriteImage = new Tileset(texture, texture.Width / (nbFrameAnimation * 4), texture.Height);
         }
     }
 }
