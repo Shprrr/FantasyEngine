@@ -31,7 +31,7 @@ namespace FantasyEngine.Classes.Overworld
         public int Step { get; set; }
 
         public NPC(Game game, string name, string charsetName, Vector2 position)
-            : base(game, charsetName, position)
+            : base(game, charsetName, Rectangle.Empty, position, OVERWORLD_SIZE)
         {
             Name = name;
             RegainDirectionAfterTalk = false;
@@ -55,6 +55,11 @@ namespace FantasyEngine.Classes.Overworld
             : this(game, name, charsetName, position, direction)
         {
             RegainDirectionAfterTalk = regainDirection;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
 
         public override void Draw(GameTime gameTime)
@@ -193,7 +198,7 @@ namespace FantasyEngine.Classes.Overworld
         public bool CheckCollision(eDirection direction, out Vector2 newOffset)
         {
             int step = 2; //TODO: Constante
-            Rectangle npcRect = getRectangle();
+            Rectangle npcRect = getCollisionRectangle();
 
             Vector2 npc1 = Vector2.Zero;
             Vector2 npc2 = Vector2.Zero;
@@ -248,18 +253,18 @@ namespace FantasyEngine.Classes.Overworld
             if (this != Player.GamePlayer.Hero)
             {
                 Vector2 vect = npc1 + newOffset;
-                npcCollision = npcCollision | Player.GamePlayer.Hero.getRectangle().Contains((int)vect.X, (int)vect.Y);
+                npcCollision = npcCollision | Player.GamePlayer.Hero.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
                 vect = npc2 + newOffset;
-                npcCollision = npcCollision | Player.GamePlayer.Hero.getRectangle().Contains((int)vect.X, (int)vect.Y);
+                npcCollision = npcCollision | Player.GamePlayer.Hero.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
             }
 
             // Check collision with other npcs.
             foreach (NPC npc in Player.GamePlayer.Map.NPCs)
             {
                 Vector2 vect = npc1 + newOffset;
-                npcCollision = npcCollision | npc.getRectangle().Contains((int)vect.X, (int)vect.Y);
+                npcCollision = npcCollision | npc.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
                 vect = npc2 + newOffset;
-                npcCollision = npcCollision | npc.getRectangle().Contains((int)vect.X, (int)vect.Y);
+                npcCollision = npcCollision | npc.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
             }
 
             return layer.Tiles[tile1.X, tile1.Y] == null

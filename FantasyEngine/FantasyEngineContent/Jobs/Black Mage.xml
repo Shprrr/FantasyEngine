@@ -17,6 +17,7 @@
 				<Level>2</Level>
 			</Item>
 		</PrerequisiteJobs>
+		<OverworldSpriteSize>0 80 128 16</OverworldSpriteSize>
 		<BattleSprite>
 			<SpriteName>black mage_battle</SpriteName>
 			<IsTiled>false</IsTiled>

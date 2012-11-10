@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using FantasyEngine.Classes.Overworld;
 using FantasyEngineData.Entities;
 
 namespace FantasyEngine.Classes.Menus
@@ -302,7 +302,7 @@ namespace FantasyEngine.Classes.Menus
                             }
 
                             CurrentActor.UnequipAll(Player.GamePlayer.Inventory);
-                            Player.GamePlayer.Hero.ChangeSprite(@"Characters\" + CurrentActor.CurrentJob.JobName);
+                            Player.GamePlayer.Hero.ChangeSprite(@"Characters\characters", CurrentActor.CurrentJob.BaseJob.OverworldSpriteSize, Sprite.OVERWORLD_SIZE);
 
                             _MessageWindow.Enabled = true;
                             _MessageWindow.Visible = true;

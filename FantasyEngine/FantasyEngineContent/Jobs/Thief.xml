@@ -17,6 +17,7 @@
 				<Level>2</Level>
 			</Item>
 		</PrerequisiteJobs>
+		<OverworldSpriteSize>0 64 128 16</OverworldSpriteSize>
 		<BattleSprite>
 			<SpriteName>thief_battle</SpriteName>
 			<IsTiled>false</IsTiled>

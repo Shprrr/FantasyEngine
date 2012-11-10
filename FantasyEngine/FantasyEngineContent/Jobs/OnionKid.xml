@@ -11,6 +11,7 @@
 		<Agility>5</Agility>
 		<Intelligence>5</Intelligence>
 		<Wisdom>5</Wisdom>
+		<OverworldSpriteSize>0 0 128 16</OverworldSpriteSize>
 		<BattleSprite>
 			<SpriteName>onionkid_battle</SpriteName>
 			<IsTiled>true</IsTiled>

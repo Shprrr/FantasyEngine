@@ -86,7 +86,7 @@ namespace FantasyEngine.Classes.Overworld
                         || Input.keyStateHeld.IsKeyDown(Keys.Left)
                         || Input.keyStateHeld.IsKeyDown(Keys.Right))
             {
-                Rectangle heroRect = Player.GamePlayer.Hero.getRectangle();
+                Rectangle heroRect = Player.GamePlayer.Hero.getCollisionRectangle();
 
                 Vector2 hero1 = Vector2.Zero;
                 Vector2 hero2 = Vector2.Zero;
@@ -140,9 +140,9 @@ namespace FantasyEngine.Classes.Overworld
                 foreach (NPC npc in Player.GamePlayer.Map.NPCs)
                 {
                     Vector2 vect = hero1 + newOffset;
-                    npcCollision = npcCollision | npc.getRectangle().Contains((int)vect.X, (int)vect.Y);
+                    npcCollision = npcCollision | npc.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
                     vect = hero2 + newOffset;
-                    npcCollision = npcCollision | npc.getRectangle().Contains((int)vect.X, (int)vect.Y);
+                    npcCollision = npcCollision | npc.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
                 }
 
                 if (layer.Tiles[tile1.X, tile1.Y] == null
@@ -159,7 +159,7 @@ namespace FantasyEngine.Classes.Overworld
 
             if (Input.keyStateDown.IsKeyDown(Keys.Enter))
             {
-                Rectangle heroRect = Player.GamePlayer.Hero.getRectangle();
+                Rectangle heroRect = Player.GamePlayer.Hero.getCollisionRectangle();
 
                 //If facing an NPC, talk to him.
                 switch (Player.GamePlayer.Hero.Direction)
@@ -181,7 +181,7 @@ namespace FantasyEngine.Classes.Overworld
                 foreach (NPC npc in Player.GamePlayer.Map.NPCs)
                 {
                     // If the hero is next to the npc
-                    if (heroRect.Intersects(npc.getRectangle()))
+                    if (heroRect.Intersects(npc.getCollisionRectangle()))
                     {
                         npc.OppositeDirection(Player.GamePlayer.Hero.Direction);
                         npc.RaiseOnTalking();

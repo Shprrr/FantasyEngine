@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
 namespace FantasyEngineData.Entities
@@ -146,11 +147,14 @@ namespace FantasyEngineData.Entities
         private List<JobPrerequisite> _PrerequisiteJobs = new List<JobPrerequisite>();
         [ContentSerializer(Optional = true)]
         public List<JobPrerequisite> PrerequisiteJobs { get { return _PrerequisiteJobs; } }
+
+        [ContentSerializer(Optional = true)]
+        public Rectangle OverworldSpriteSize { get; set; }
         #endregion Properties
 
         public BaseJob()
         {
-
+            OverworldSpriteSize = Rectangle.Empty;
         }
 
         public override string ToString()

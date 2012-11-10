@@ -17,6 +17,8 @@ namespace FantasyEngine.Classes.Overworld
             RIGHT
         }
 
+        public static readonly Point OVERWORLD_SIZE = new Point(32, 32);
+
         private Tileset _SpriteImage;
         private uint _Frame = 0;
         private eDirection _Direction = eDirection.DOWN;
@@ -40,6 +42,7 @@ namespace FantasyEngine.Classes.Overworld
         /// Position in pixel on the screen.
         /// </summary>
         public Vector2 Position { get; set; }
+        public Point Size { get; set; }
 
         /// <summary>
         /// Image of the sprite.
@@ -51,10 +54,10 @@ namespace FantasyEngine.Classes.Overworld
         /// </summary>
         private const int nbFrameAnimation = 2;
 
-        public Sprite(Game game, string charsetName, Vector2 position)
+        public Sprite(Game game, string charsetName, Rectangle tileSize, Vector2 position, Point size)
             : base(game)
         {
-            ChangeSprite(charsetName);
+            ChangeSprite(charsetName, tileSize, size);
             Position = position;
         }
 
@@ -62,7 +65,7 @@ namespace FantasyEngine.Classes.Overworld
         {
             base.Draw(gameTime);
 
-            GameMain.spriteBatch.Draw(_SpriteImage.texture, Position, _SpriteImage.GetSourceRectangle(_Frame), Color.White);
+            GameMain.spriteBatch.Draw(_SpriteImage.texture, getRectangle(), _SpriteImage.GetSourceRectangle(_Frame), Color.White);
         }
 
         public override void Update(GameTime gameTime)
@@ -159,13 +162,35 @@ namespace FantasyEngine.Classes.Overworld
         /// <returns></returns>
         public Rectangle getRectangle()
         {
-            return new Rectangle((int)Position.X, (int)Position.Y, _SpriteImage.TileWidth - 1, _SpriteImage.TileHeight - 1);
+            return new Rectangle((int)Position.X, (int)Position.Y, Size.X, Size.Y);
+        }
+
+        /// <summary>
+        /// Get the collision zone of the sprite.
+        /// </summary>
+        /// <returns></returns>
+        public Rectangle getCollisionRectangle()
+        {
+            return new Rectangle((int)Position.X, (int)Position.Y, Size.X - 1, Size.Y - 1);
+        }
+
+        public void ChangeSprite(string charsetName, Rectangle tileSize, Point spriteSize)
+        {
+            Texture2D texture = Game.Content.Load<Texture2D>(@"Images\" + charsetName);
+            if (tileSize == Rectangle.Empty)
+                _SpriteImage = new Tileset(texture, texture.Width / (nbFrameAnimation * 4), texture.Height);
+            else
+                _SpriteImage = new Tileset(texture, tileSize, tileSize.Width / (nbFrameAnimation * 4), tileSize.Height);
+
+            if (spriteSize == Point.Zero)
+                Size = new Point(_SpriteImage.TileWidth, _SpriteImage.TileHeight);
+            else
+                Size = spriteSize;
         }
 
         public void ChangeSprite(string charsetName)
         {
-            Texture2D texture = Game.Content.Load<Texture2D>(@"Images\" + charsetName);
-            _SpriteImage = new Tileset(texture, texture.Width / (nbFrameAnimation * 4), texture.Height);
+            ChangeSprite(charsetName, Rectangle.Empty, Point.Zero);
         }
     }
 }

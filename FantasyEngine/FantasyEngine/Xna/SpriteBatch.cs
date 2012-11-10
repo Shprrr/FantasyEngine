@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,7 +6,7 @@ namespace FantasyEngine.Xna
 {
     public class SpriteBatch : Microsoft.Xna.Framework.Graphics.SpriteBatch
     {
-                protected Rectangle defaultScissor;
+        protected Rectangle defaultScissor;
         protected RasterizerState rastState = new RasterizerState();
         public Matrix cameraMatrix = Matrix.Identity;
         private Matrix _OldCameraMatrix = Matrix.Identity;
@@ -55,7 +52,7 @@ namespace FantasyEngine.Xna
 
         new public void Begin()
         {
-            base.Begin(0, null, null, null, rastState, null, cameraMatrix);
+            base.Begin(0, null, SamplerState.PointClamp, null, rastState, null, cameraMatrix);
             OldCameraMatrix = cameraMatrix;
         }
 

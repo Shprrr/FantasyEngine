@@ -10,14 +10,23 @@ namespace FantasyEngine.Classes
     {
         public Texture2D texture;
 
+        public Rectangle TileSize { get; set; }
         public int TileWidth { get; set; }
         public int TileHeight { get; set; }
 
-        public Tileset(Texture2D texture, int tileWidth, int tileHeight)
+        public int NbTileX { get { return (TileSize == Rectangle.Empty ? texture.Width : TileSize.Width) / TileWidth; } }
+
+        public Tileset(Texture2D texture, Rectangle tileSize, int tileWidth, int tileHeight)
         {
             this.texture = texture;
-            this.TileWidth = tileWidth;
-            this.TileHeight = tileHeight;
+            TileSize = tileSize;
+            TileWidth = tileWidth;
+            TileHeight = tileHeight;
+        }
+
+        public Tileset(Texture2D texture, int tileWidth, int tileHeight)
+            : this(texture, Rectangle.Empty, tileWidth, tileHeight)
+        {
         }
 
         public Rectangle? GetSourceRectangle(uint NoTile)
@@ -25,10 +34,9 @@ namespace FantasyEngine.Classes
             if (TileWidth == 0 || TileHeight == 0 || texture == null)
                 return null;
 
-            int nbTileX = texture.Width / TileWidth;
-            int tileX = (int)NoTile % nbTileX;
-            int tileY = (int)NoTile / nbTileX;
-            return new Rectangle(tileX * TileWidth, tileY * TileHeight, TileWidth, TileHeight);
+            int tileX = (int)NoTile % NbTileX;
+            int tileY = (int)NoTile / NbTileX;
+            return new Rectangle(tileX * TileWidth + TileSize.X, tileY * TileHeight + TileSize.Y, TileWidth, TileHeight);
         }
     }
 }

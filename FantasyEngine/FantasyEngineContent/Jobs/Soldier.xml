@@ -17,6 +17,7 @@
 				<Level>2</Level>
 			</Item>
 		</PrerequisiteJobs>
+		<OverworldSpriteSize>0 32 128 16</OverworldSpriteSize>
 		<BattleSprite>
 			<SpriteName>soldier_battle</SpriteName>
 			<IsTiled>false</IsTiled>
