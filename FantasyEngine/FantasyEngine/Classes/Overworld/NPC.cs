@@ -30,8 +30,8 @@ namespace FantasyEngine.Classes.Overworld
         public bool RegainDirectionAfterTalk { get; set; }
         public int Step { get; set; }
 
-        public NPC(Game game, string name, string charsetName, Vector2 position)
-            : base(game, charsetName, Rectangle.Empty, position, OVERWORLD_SIZE)
+        public NPC(Game game, string name, string charsetName, Rectangle tileSize, Vector2 position)
+            : base(game, charsetName, tileSize, position, OVERWORLD_SIZE)
         {
             Name = name;
             RegainDirectionAfterTalk = false;
@@ -44,15 +44,15 @@ namespace FantasyEngine.Classes.Overworld
             _MessageWindow.Visible = false;
         }
 
-        public NPC(Game game, string name, string charsetName, Vector2 position, eDirection direction)
-            : this(game, name, charsetName, position)
+        public NPC(Game game, string name, string charsetName, Rectangle tileSize, Vector2 position, eDirection direction)
+            : this(game, name, charsetName, tileSize, position)
         {
             _InitialDirection = direction;
             Direction = direction;
         }
 
-        public NPC(Game game, string name, string charsetName, Vector2 position, eDirection direction, bool regainDirection)
-            : this(game, name, charsetName, position, direction)
+        public NPC(Game game, string name, string charsetName, Rectangle tileSize, Vector2 position, eDirection direction, bool regainDirection)
+            : this(game, name, charsetName, tileSize, position, direction)
         {
             RegainDirectionAfterTalk = regainDirection;
         }

@@ -68,20 +68,28 @@ namespace FantasyEngine.Classes.Overworld
             foreach (TiledLib.MapObject obj in _MapData.GetAllObjects())
             {
                 NPC npc;
+                Rectangle tileSize = Rectangle.Empty;
+
+                if (obj.Properties["tileSize"] != null)
+                {
+                    string[] tileSizeString = obj.Properties["tileSize"].RawValue.Split(' ');
+                    tileSize = new Rectangle(int.Parse(tileSizeString[0]), int.Parse(tileSizeString[1]), int.Parse(tileSizeString[2]), int.Parse(tileSizeString[3]));
+                }
+
                 if (obj.Properties["direction"] != null)
                     if (obj.Properties["regainDirection"] != null)
                         npc = new NPC(Game, obj.Name,
-                            @"NPC\" + obj.Properties["sprite"].RawValue,
+                            @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize,
                             new Vector2(obj.Bounds.X, obj.Bounds.Y),
                             (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties["direction"].RawValue),
                             bool.Parse(obj.Properties["regainDirection"].RawValue));
                     else
                         npc = new NPC(Game, obj.Name,
-                            @"NPC\" + obj.Properties["sprite"].RawValue,
+                            @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize,
                             new Vector2(obj.Bounds.X, obj.Bounds.Y),
                             (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties["direction"].RawValue));
                 else
-                    npc = new NPC(Game, obj.Name, @"NPC\" + obj.Properties["sprite"].RawValue, new Vector2(obj.Bounds.X, obj.Bounds.Y));
+                    npc = new NPC(Game, obj.Name, @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize, new Vector2(obj.Bounds.X, obj.Bounds.Y));
                 npc.Talking += new NPC.TalkingHandler(npc_Talk);
                 npc.Moving += new NPC.MovingHandler(npc_Moving);
                 NPCs.Add(npc);
@@ -224,7 +232,7 @@ namespace FantasyEngine.Classes.Overworld
                     BackgroundMusic = Game.Content.Load<Song>(@"Audios\Musics\Village");
                     Encounters.Add(new Encounter(Game.Content.Load<Monster>(@"Monsters\Goblin"), 1, 100));
 
-                    NPC boy1 = new NPC(Game, "test", @"NPC\man2", new Vector2(256, 64));
+                    NPC boy1 = new NPC(Game, "test", @"Overworld\npc", new Rectangle(0, 16, 128, 16), new Vector2(256, 64));
                     boy1.Talking += new NPC.TalkingHandler(boy1_Talking);
                     NPCs.Add(boy1);
                     break;

@@ -19,41 +19,48 @@
  <objectgroup name="NPC" width="20" height="15">
   <object name="boy1" type="NPC" x="288" y="128" width="32" height="32">
    <properties>
-    <property name="sprite" value="man1"/>
+    <property name="sprite" value="npc"/>
+    <property name="tileSize" value="0 0 128 16"/>
    </properties>
   </object>
   <object name="Claudia" x="320" y="224" width="32" height="32">
    <properties>
     <property name="direction" value="LEFT"/>
     <property name="regainDirection" value="true"/>
-    <property name="sprite" value="lady1"/>
+    <property name="sprite" value="npc"/>
+    <property name="tileSize" value="128 32 128 16"/>
    </properties>
   </object>
   <object name="Woman" x="96" y="352" width="32" height="32">
    <properties>
-    <property name="sprite" value="woman8"/>
+    <property name="sprite" value="npc"/>
+    <property name="tileSize" value="0 240 128 16"/>
    </properties>
   </object>
   <object name="Griswold" x="480" y="192" width="32" height="32">
    <properties>
-    <property name="sprite" value="man7"/>
+    <property name="sprite" value="npc"/>
+    <property name="tileSize" value="0 96 128 16"/>
    </properties>
   </object>
   <object name="Inn" x="480" y="256" width="32" height="32">
    <properties>
     <property name="direction" value="UP"/>
-    <property name="sprite" value="woman4"/>
+    <property name="sprite" value="npc"/>
+    <property name="tileSize" value="0 176 128 16"/>
    </properties>
   </object>
   <object name="Steve" x="224" y="192" width="32" height="32">
    <properties>
     <property name="direction" value="UP"/>
-    <property name="sprite" value="man4"/>
+    <property name="sprite" value="npc"/>
+    <property name="tileSize" value="0 48 128 16"/>
    </properties>
   </object>
   <object name="JobMaster" x="128" y="192" width="32" height="32">
    <properties>
-    <property name="sprite" value="man8"/>
+    <property name="sprite" value="npc"/>
+    <property name="tileSize" value="0 112 128 16"/>
    </properties>
   </object>
  </objectgroup>

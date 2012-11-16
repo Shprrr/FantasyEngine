@@ -302,7 +302,7 @@ namespace FantasyEngine.Classes.Menus
                             }
 
                             CurrentActor.UnequipAll(Player.GamePlayer.Inventory);
-                            Player.GamePlayer.Hero.ChangeSprite(@"Characters\characters", CurrentActor.CurrentJob.BaseJob.OverworldSpriteSize, Sprite.OVERWORLD_SIZE);
+                            Player.GamePlayer.Hero.ChangeSprite(@"Overworld\characters", CurrentActor.CurrentJob.BaseJob.OverworldSpriteSize, Sprite.OVERWORLD_SIZE);
 
                             _MessageWindow.Enabled = true;
                             _MessageWindow.Visible = true;
