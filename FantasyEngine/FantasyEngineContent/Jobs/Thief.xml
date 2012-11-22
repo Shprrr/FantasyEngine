@@ -19,10 +19,11 @@
 		</PrerequisiteJobs>
 		<OverworldSpriteSize>0 64 128 16</OverworldSpriteSize>
 		<BattleSprite>
-			<SpriteName>thief_battle</SpriteName>
-			<IsTiled>false</IsTiled>
-			<TileWidth>56</TileWidth>
-			<TileHeight>56</TileHeight>
+			<SpriteName>battlers</SpriteName>
+			<IsTiled>true</IsTiled>
+			<TileWidth>26</TileWidth>
+			<TileHeight>26</TileHeight>
+			<SpriteSize>0 104 286 26</SpriteSize>
 		</BattleSprite>
 	</Asset>
 </XnaContent>

@@ -747,7 +747,7 @@ namespace FantasyEngine.Classes.Battles
             : base(game)
         {
             //Init textures
-            _BattleBack = Game.Content.Load<Texture2D>(@"Images\Battlebacks\" + battleBackName);
+            _BattleBack = Game.Content.Load<Texture2D>(@"Images\Battle\Battlebacks\" + battleBackName);
 
             _BattleMusic = Game.Content.Load<Song>(@"Audios\Musics\Battle");
             MediaPlayer.Stop();
@@ -818,7 +818,7 @@ namespace FantasyEngine.Classes.Battles
 
                 Color color = _Actors[i] == _TargetBattler[i] ? new Color(0xFF, 0, 0, 0xFF) : Color.White;
                 if (_Actors[i].BattlerSprite is Tileset)
-                    spriteBatch.Draw(_Actors[i].BattlerSprite.texture, _Actors[i].BattlerPosition, _Actors[i].BattlerSprite.GetSourceRectangle(0), color);
+                    spriteBatch.Draw(_Actors[i].BattlerSprite.texture, _Actors[i].GetRectangle(), _Actors[i].BattlerSprite.GetSourceRectangle(0), color);
                 else
                     spriteBatch.Draw(_Actors[i].BattlerSprite.texture, _Actors[i].BattlerPosition, color);
             }

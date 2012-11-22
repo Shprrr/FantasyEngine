@@ -13,10 +13,11 @@
 		<Wisdom>5</Wisdom>
 		<OverworldSpriteSize>0 0 128 16</OverworldSpriteSize>
 		<BattleSprite>
-			<SpriteName>onionkid_battle</SpriteName>
+			<SpriteName>battlers</SpriteName>
 			<IsTiled>true</IsTiled>
-			<TileWidth>56</TileWidth>
-			<TileHeight>56</TileHeight>
+			<TileWidth>26</TileWidth>
+			<TileHeight>26</TileHeight>
+			<SpriteSize>0 0 286 26</SpriteSize>
 		</BattleSprite>
 	</Asset>
 </XnaContent>

@@ -11,7 +11,7 @@
 		<Intelligence>2</Intelligence>
 		<Wisdom>2</Wisdom>
 		<BattleSprite>
-			<SpriteName>goblin</SpriteName>
+			<SpriteName>Monsters\goblin</SpriteName>
 			<IsTiled>false</IsTiled>
 		</BattleSprite>
 		<StrengthPlus>1.7</StrengthPlus>

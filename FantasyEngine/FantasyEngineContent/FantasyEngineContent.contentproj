@@ -116,21 +116,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\Battlebacks\battleback_grass.png">
+    <Compile Include="Images\Battle\Battlebacks\battleback_grass.png">
       <Name>battleback_grass</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\Characters\onionkid_battle.png">
-      <Name>onionkid_battle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Images\Monsters\goblin.png">
+    <Compile Include="Images\Battle\Monsters\goblin.png">
       <Name>goblin</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -376,45 +369,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\Characters\warrior_battle.png">
-      <Name>warrior_battle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Images\Characters\archer_battle.png">
-      <Name>archer_battle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Images\Characters\black mage_battle.png">
-      <Name>black mage_battle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Images\Characters\black wizard_battle.png">
-      <Name>black wizard_battle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Images\Characters\soldier_battle.png">
-      <Name>soldier_battle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Images\Characters\thief_battle.png">
-      <Name>thief_battle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Images\Characters\white mage_battle.png">
-      <Name>white mage_battle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Images\Overworld\characters.png">
       <Name>characters</Name>
       <Importer>TextureImporter</Importer>
@@ -424,6 +378,13 @@
   <ItemGroup>
     <Compile Include="Images\Overworld\npc.png">
       <Name>npc</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Battle\battlers.png">
+      <Name>battlers</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

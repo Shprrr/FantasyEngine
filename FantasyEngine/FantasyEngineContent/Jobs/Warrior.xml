@@ -19,10 +19,11 @@
 		</PrerequisiteJobs>
 		<OverworldSpriteSize>0 16 128 16</OverworldSpriteSize>
 		<BattleSprite>
-			<SpriteName>warrior_battle</SpriteName>
+			<SpriteName>battlers</SpriteName>
 			<IsTiled>true</IsTiled>
-			<TileWidth>56</TileWidth>
-			<TileHeight>56</TileHeight>
+			<TileWidth>26</TileWidth>
+			<TileHeight>26</TileHeight>
+			<SpriteSize>0 26 286 26</SpriteSize>
 		</BattleSprite>
 	</Asset>
 </XnaContent>

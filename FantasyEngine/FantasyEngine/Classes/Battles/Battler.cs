@@ -13,6 +13,8 @@ namespace FantasyEngine.Classes.Battles
 {
     public class Battler : Character
     {
+        public static readonly Point BATTLER_SIZE = new Point(52, 52);
+
         /// <summary>
         /// Counter for CTB.  Tell the number of tick to wait for the next action.
         /// </summary>
@@ -33,6 +35,11 @@ namespace FantasyEngine.Classes.Battles
         {
             get { return CurrentJob != null ? (BattleSprite?)CurrentJob.BattleSprite : null; }
             set { if (CurrentJob != null) CurrentJob.BattleSprite = value.Value; }
+        }
+
+        public Rectangle GetRectangle()
+        {
+            return new Rectangle((int)BattlerPosition.X, (int)BattlerPosition.Y, BATTLER_SIZE.X, BATTLER_SIZE.Y);
         }
 
         public bool IsActor { get; set; }
@@ -62,9 +69,9 @@ namespace FantasyEngine.Classes.Battles
             BattleSprite? battleSprite = character.CurrentJob.BattleSprite;
             if (battleSprite.HasValue)
             {
-                Texture2D texture = game.Content.Load<Texture2D>(@"Images\Characters\" + battleSprite.Value.SpriteName);
+                Texture2D texture = game.Content.Load<Texture2D>(@"Images\Battle\" + battleSprite.Value.SpriteName);
                 if (battleSprite.Value.IsTiled)
-                    BattlerSprite = new Tileset(texture, (int)BattleSprite.Value.TileWidth, (int)BattleSprite.Value.TileHeight);
+                    BattlerSprite = new Tileset(texture, BattleSprite.Value.SpriteSize, (int)BattleSprite.Value.TileWidth, (int)BattleSprite.Value.TileHeight);
                 else
                     BattlerSprite = new Tileset(texture, texture.Width, texture.Height);
             }
@@ -82,9 +89,9 @@ namespace FantasyEngine.Classes.Battles
             BattleSprite? battleSprite = monster.BattleSprite;
             if (battleSprite.HasValue)
             {
-                Texture2D texture = game.Content.Load<Texture2D>(@"Images\Monsters\" + battleSprite.Value.SpriteName);
+                Texture2D texture = game.Content.Load<Texture2D>(@"Images\Battle\" + battleSprite.Value.SpriteName);
                 if (battleSprite.Value.IsTiled)
-                    BattlerSprite = new Tileset(texture, (int)BattleSprite.Value.TileWidth, (int)BattleSprite.Value.TileHeight);
+                    BattlerSprite = new Tileset(texture, BattleSprite.Value.SpriteSize, (int)BattleSprite.Value.TileWidth, (int)BattleSprite.Value.TileHeight);
                 else
                     BattlerSprite = new Tileset(texture, texture.Width, texture.Height);
             }

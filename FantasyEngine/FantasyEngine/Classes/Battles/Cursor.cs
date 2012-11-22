@@ -61,7 +61,7 @@ namespace FantasyEngine.Classes.Battles
                 case eTargetType.SINGLE_PARTY:
                     //Dessiner un cursor sur l'actor sélectionné
                     GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[_Index].BattlerPosition.X - 8,
-                        _Actors[_Index].BattlerPosition.Y + (_Actors[_Index].BattlerSprite.TileHeight / 2)), Color.White);
+                        _Actors[_Index].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), Color.White);
                     break;
 
                 case eTargetType.MULTI_PARTY:
@@ -69,14 +69,14 @@ namespace FantasyEngine.Classes.Battles
                     for (int i = 0; i < Player.MAX_ACTOR; i++)
                         if (_Actors[i] != null)
                             GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[i].BattlerPosition.X - 8,
-                                _Actors[i].BattlerPosition.Y + (_Actors[i].BattlerSprite.TileHeight / 2)), alpha);
+                                _Actors[i].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), alpha);
                     break;
 
                 case eTargetType.SELF:
                     //Dessiner un cursor sur l'actor courant
                     if (_IndexCourant < Player.MAX_ACTOR)
                         GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[_IndexCourant].BattlerPosition.X - 8,
-                            _Actors[_IndexCourant].BattlerPosition.Y + (_Actors[_IndexCourant].BattlerSprite.TileHeight / 2)), Color.White);
+                            _Actors[_IndexCourant].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), Color.White);
                     else
                         GameMain.spriteBatchGUI.Draw(GameMain.cursor,
                             new Vector2(_Enemies[_IndexCourant].BattlerPosition.X + _Enemies[_IndexCourant].BattlerSprite.TileWidth + 8,
@@ -89,7 +89,7 @@ namespace FantasyEngine.Classes.Battles
                     for (int i = 0; i < Player.MAX_ACTOR; i++)
                         if (_Actors[i] != null)
                             GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[i].BattlerPosition.X - 8,
-                                _Actors[i].BattlerPosition.Y + (_Actors[i].BattlerSprite.TileHeight / 2)), alpha);
+                                _Actors[i].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), alpha);
 
                     for (int i = 0; i < Battle.MAX_ENEMY; i++)
                         if (_Enemies[i] != null)
