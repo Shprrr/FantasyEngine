@@ -21,6 +21,7 @@ namespace FantasyEngine.Classes.Overworld
 
         private Tileset _SpriteImage;
         private uint _Frame = 0;
+        private TimeSpan _MovingTime = TimeSpan.Zero;
         private eDirection _Direction = eDirection.DOWN;
 
         /// <summary>
@@ -64,6 +65,11 @@ namespace FantasyEngine.Classes.Overworld
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
+            if (_MovingTime != TimeSpan.Zero && ((gameTime.TotalGameTime - _MovingTime).TotalMilliseconds / (10 * 1000 / 60)) >= 1)
+            {
+                AnimateWalking();
+                _MovingTime += TimeSpan.FromMilliseconds(10 * 1000 / 60);
+            }
 
             GameMain.spriteBatch.Draw(_SpriteImage.texture, getRectangle(), _SpriteImage.GetSourceRectangle(_Frame), Color.White);
         }
@@ -81,6 +87,7 @@ namespace FantasyEngine.Classes.Overworld
                 || Input.keyStateDown.IsKeyDown(Keys.Right))
             {
                 ChangeDirection(Input.keyStateDown);
+                _MovingTime = gameTime.TotalGameTime;
                 return;
             }
 
@@ -90,11 +97,10 @@ namespace FantasyEngine.Classes.Overworld
                 || Input.keyStateHeld.IsKeyDown(Keys.Right))
             {
                 ChangeDirection(Input.keyStateHeld);
-
-                AnimateWalking();
-                Input.PutDelay(10, Input.keyStateHeld.GetPressedKeys());
                 return;
             }
+            else
+                _MovingTime = TimeSpan.Zero;
         }
 
         public void AnimateWalking()
@@ -186,11 +192,6 @@ namespace FantasyEngine.Classes.Overworld
                 Size = new Point(_SpriteImage.TileWidth, _SpriteImage.TileHeight);
             else
                 Size = spriteSize;
-        }
-
-        public void ChangeSprite(string charsetName)
-        {
-            ChangeSprite(charsetName, Rectangle.Empty, Point.Zero);
         }
     }
 }

@@ -61,6 +61,7 @@ namespace FantasyEngine.Classes.Overworld
             }
         }
 
+        private const float MOVE_PX_PER_MILLISECOND = 0.12f;
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -78,13 +79,13 @@ namespace FantasyEngine.Classes.Overworld
             if (Input.keyStateDown.IsKeyDown(Keys.P))
                 _ShowPosition = !_ShowPosition;
 
-            int step = 2; //TODO: Constante
+            int step = (int)(gameTime.ElapsedGameTime.TotalMilliseconds * MOVE_PX_PER_MILLISECOND);
 
             #region Update Direction
             if (Input.keyStateHeld.IsKeyDown(Keys.Up)
-                        || Input.keyStateHeld.IsKeyDown(Keys.Down)
-                        || Input.keyStateHeld.IsKeyDown(Keys.Left)
-                        || Input.keyStateHeld.IsKeyDown(Keys.Right))
+                || Input.keyStateHeld.IsKeyDown(Keys.Down)
+                || Input.keyStateHeld.IsKeyDown(Keys.Left)
+                || Input.keyStateHeld.IsKeyDown(Keys.Right))
             {
                 Rectangle heroRect = Player.GamePlayer.Hero.getCollisionRectangle();
 
