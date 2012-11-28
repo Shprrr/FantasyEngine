@@ -12,13 +12,13 @@ namespace FantasyEngine.Classes
     public static class Input
     {
         /// <summary>
-        /// Number of frames waiting to remove cursor when holding a direction.
+        /// Number of millisecond to wait to move the cursor when holding a direction.
         /// </summary>
-        public const int DELAY_CURSOR = 20;
+        public const double DELAY_CURSOR = 20 * GameMain.MILLISECOND_PER_FRAME;
 
         private static GameTime oldTime = new GameTime();
         private static bool oldResultInput = true;
-        private static int delay = 0;
+        private static double delay = 0;
         private static Keys[] oldKeys = new Keys[0];
 
         /// <summary>
@@ -43,9 +43,9 @@ namespace FantasyEngine.Classes
         /// <summary>
         /// Freeze inputs for the delay specifed.
         /// </summary>
-        /// <param name="delay">Number of frame which is frozen</param>
+        /// <param name="delay">Number of millisecond which is frozen</param>
         /// <param name="keys">Keys who freeze the input</param>
-        public static void PutDelay(int delay, params Keys[] keys)
+        public static void PutDelay(double delay, params Keys[] keys)
         {
             Input.delay = delay;
             oldKeys = keys;
@@ -113,7 +113,7 @@ namespace FantasyEngine.Classes
             // Decrease one frame the delay remaining.
             if (delay > 0)
             {
-                delay--;
+                delay -= gameTime.ElapsedGameTime.TotalMilliseconds;
                 oldResultInput = false;
                 return false;
             }

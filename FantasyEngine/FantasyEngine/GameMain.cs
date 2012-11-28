@@ -21,6 +21,8 @@ namespace FantasyEngine
         // Réponse : SquareEnix
 
         #region Static fields
+        public const double MILLISECOND_PER_FRAME = 1000d / 60;
+
         /// <summary>
         /// SpriteBatch to draw.
         /// </summary>

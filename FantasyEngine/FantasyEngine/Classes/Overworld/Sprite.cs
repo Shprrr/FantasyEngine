@@ -65,10 +65,10 @@ namespace FantasyEngine.Classes.Overworld
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
-            if (_MovingTime != TimeSpan.Zero && ((gameTime.TotalGameTime - _MovingTime).TotalMilliseconds / (10 * 1000 / 60)) >= 1)
+            if (_MovingTime != TimeSpan.Zero && ((gameTime.TotalGameTime - _MovingTime).TotalMilliseconds / (10 * GameMain.MILLISECOND_PER_FRAME)) >= 1)
             {
                 AnimateWalking();
-                _MovingTime += TimeSpan.FromMilliseconds(10 * 1000 / 60);
+                _MovingTime += TimeSpan.FromMilliseconds(10 * GameMain.MILLISECOND_PER_FRAME);
             }
 
             GameMain.spriteBatch.Draw(_SpriteImage.texture, getRectangle(), _SpriteImage.GetSourceRectangle(_Frame), Color.White);
