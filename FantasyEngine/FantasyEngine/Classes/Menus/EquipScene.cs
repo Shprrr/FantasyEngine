@@ -8,6 +8,9 @@ namespace FantasyEngine.Classes.Menus
 {
     public class EquipScene : Scene
     {
+        private readonly Color COLOR_NORMAL = Color.White;
+        private readonly Color COLOR_UNEQUIP = Color.Gray;
+
         private Cursor CursorWindow;
         private Window _EquipWindow;
         /// <summary>
@@ -34,19 +37,47 @@ namespace FantasyEngine.Classes.Menus
             spriteBatchGUI.DrawString(GameMain.font, "Equipment", new Vector2(260, 68) + spriteBatchGUI.CameraOffset, Color.White);
             spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Name, new Vector2(90, 96) + spriteBatchGUI.CameraOffset, Color.White);
 
-            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.RightHand != null ? ActiveCharacter.RightHand.Name : "Right Hand",
-                new Vector2(110, 126) + spriteBatchGUI.CameraOffset, Color.White);
-            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.LeftHand != null ? ActiveCharacter.LeftHand.Name : "Left Hand",
-                new Vector2(110, 148) + spriteBatchGUI.CameraOffset, Color.White);
+            if (ActiveCharacter.RightHand != null)
+                spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.RightHand.Name,
+                    new Vector2(110, 126) + spriteBatchGUI.CameraOffset, COLOR_NORMAL);
+            else
+                spriteBatchGUI.DrawString(GameMain.font, "Right Hand",
+                    new Vector2(110, 126) + spriteBatchGUI.CameraOffset, COLOR_UNEQUIP);
 
-            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Head != null ? ActiveCharacter.Head.Name : "Head",
-                new Vector2(347, 126) + spriteBatchGUI.CameraOffset, Color.White);
-            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Body != null ? ActiveCharacter.Body.Name : "Body",
-                new Vector2(347, 148) + spriteBatchGUI.CameraOffset, Color.White);
-            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Arms != null ? ActiveCharacter.Arms.Name : "Arms",
-                new Vector2(110, 170) + spriteBatchGUI.CameraOffset, Color.White);
-            spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Feet != null ? ActiveCharacter.Feet.Name : "Feet",
-                new Vector2(347, 170) + spriteBatchGUI.CameraOffset, Color.White);
+            if (ActiveCharacter.LeftHand != null)
+                spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.LeftHand.Name,
+                    new Vector2(110, 148) + spriteBatchGUI.CameraOffset, COLOR_NORMAL);
+            else
+                spriteBatchGUI.DrawString(GameMain.font, "Left Hand",
+                    new Vector2(110, 148) + spriteBatchGUI.CameraOffset, COLOR_UNEQUIP);
+
+            if (ActiveCharacter.Head != null)
+                spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Head.Name,
+                    new Vector2(347, 126) + spriteBatchGUI.CameraOffset, COLOR_NORMAL);
+            else
+                spriteBatchGUI.DrawString(GameMain.font, "Head",
+                    new Vector2(347, 126) + spriteBatchGUI.CameraOffset, COLOR_UNEQUIP);
+
+            if (ActiveCharacter.Body != null)
+                spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Body.Name,
+                    new Vector2(347, 148) + spriteBatchGUI.CameraOffset, COLOR_NORMAL);
+            else
+                spriteBatchGUI.DrawString(GameMain.font, "Body",
+                    new Vector2(347, 148) + spriteBatchGUI.CameraOffset, COLOR_UNEQUIP);
+
+            if (ActiveCharacter.Arms != null)
+                spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Arms.Name,
+                    new Vector2(110, 170) + spriteBatchGUI.CameraOffset, COLOR_NORMAL);
+            else
+                spriteBatchGUI.DrawString(GameMain.font, "Arms",
+                    new Vector2(110, 170) + spriteBatchGUI.CameraOffset, COLOR_UNEQUIP);
+
+            if (ActiveCharacter.Feet != null)
+                spriteBatchGUI.DrawString(GameMain.font, ActiveCharacter.Feet.Name,
+                    new Vector2(347, 170) + spriteBatchGUI.CameraOffset, COLOR_NORMAL);
+            else
+                spriteBatchGUI.DrawString(GameMain.font, "Feet",
+                    new Vector2(347, 170) + spriteBatchGUI.CameraOffset, COLOR_UNEQUIP);
 
             // Draw cursor
             CursorWindow.Position = new Vector2((CursorWindow.CursorIndex % 2 == 0 ? 90 : 327), 126 + CursorWindow.CursorIndex / 2 * 22);
