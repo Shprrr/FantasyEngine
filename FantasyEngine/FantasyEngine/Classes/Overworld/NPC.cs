@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using TiledLib;
 
 namespace FantasyEngine.Classes.Overworld
 {
@@ -33,6 +32,7 @@ namespace FantasyEngine.Classes.Overworld
         public NPC(Game game, string name, string charsetName, Rectangle tileSize, Vector2 position)
             : base(game, charsetName, tileSize, position, OVERWORLD_SIZE)
         {
+            _MovePxPerMillisecond = 0.06f;
             Name = name;
             RegainDirectionAfterTalk = false;
 
@@ -60,11 +60,6 @@ namespace FantasyEngine.Classes.Overworld
         public override string ToString()
         {
             return Name;
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            base.Draw(gameTime);
         }
 
         public void DrawGUI(GameTime gameTime)
@@ -99,7 +94,7 @@ namespace FantasyEngine.Classes.Overworld
 
         public override void Update(GameTime gameTime)
         {
-            RaiseOnMoving();
+            RaiseOnMoving(gameTime);
 
             if (_MessageWindow.Enabled && Input.keyStateDown.IsKeyDown(Keys.Enter))
             {
@@ -172,115 +167,24 @@ namespace FantasyEngine.Classes.Overworld
             }
         }
 
-        public void Move(eDirection direction)
+        public void Move(GameTime gameTime, eDirection direction, int maxStep = int.MaxValue)
         {
             Vector2 newOffset;
 
-            if (CheckCollision(direction, out newOffset))
+            if (CheckCollision(gameTime, direction, out newOffset, maxStep))
             {
-                //Player.GamePlayer.Map.Offset += newOffset;
                 Position += newOffset;
-                //AnimateWalking(); //TODO: Revoir l'animation quand on fera la partie sur l'animation.
+                Step += (int)newOffset.Length();
+
+                if (Action != eAction.Moving)
+                    _MovingTime = gameTime.TotalGameTime;
                 Action = eAction.Moving;
             }
             else
             {
+                _MovingTime = TimeSpan.Zero;
                 Action = eAction.Blocked;
             }
-        }
-
-        /// <summary>
-        /// Return if it's free of moving in the direction.
-        /// </summary>
-        /// <param name="direction">Direction of moving</param>
-        /// <param name="newOffset">Where it will land if it moves in the direction</param>
-        /// <returns>Return if it's free of moving in the direction.</returns>
-        public bool CheckCollision(eDirection direction, out Vector2 newOffset)
-        {
-            int step = 2; //TODO: Constante
-            Rectangle npcRect = getCollisionRectangle();
-
-            Vector2 npc1 = Vector2.Zero;
-            Vector2 npc2 = Vector2.Zero;
-
-            newOffset = Vector2.Zero;
-
-            if (direction == eDirection.RIGHT)
-            {
-                newOffset = new Vector2(step, 0);
-
-                npc1 = new Vector2(npcRect.Right, npcRect.Top);
-                npc2 = new Vector2(npcRect.Right, npcRect.Bottom);
-            }
-
-            if (direction == eDirection.LEFT)
-            {
-                newOffset = new Vector2(-step, 0);
-
-                npc1 = new Vector2(npcRect.Left, npcRect.Top);
-                npc2 = new Vector2(npcRect.Left, npcRect.Bottom);
-            }
-
-            if (direction == eDirection.DOWN)
-            {
-                newOffset = new Vector2(0, step);
-
-                npc1 = new Vector2(npcRect.Left, npcRect.Bottom);
-                npc2 = new Vector2(npcRect.Right, npcRect.Bottom);
-            }
-
-            if (direction == eDirection.UP)
-            {
-                newOffset = new Vector2(0, -step);
-
-                npc1 = new Vector2(npcRect.Left, npcRect.Top);
-                npc2 = new Vector2(npcRect.Right, npcRect.Top);
-            }
-
-            // Clamp the camera so it never leaves the area of the map.
-            Vector2 cameraMax = new Vector2(
-                Player.GamePlayer.Map.MapData.Width * Player.GamePlayer.Map.MapData.TileWidth - 1,
-                Player.GamePlayer.Map.MapData.Height * Player.GamePlayer.Map.MapData.TileHeight - 1);
-            newOffset = Vector2.Clamp(npc1 + newOffset, Vector2.Zero, cameraMax) - npc1;
-            newOffset = Vector2.Clamp(npc2 + newOffset, Vector2.Zero, cameraMax) - npc2;
-
-            TileLayer layer = (TileLayer)Player.GamePlayer.Map.MapData.GetLayer("Collision");
-            Point tile1 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(npc1 + newOffset);
-            Point tile2 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(npc2 + newOffset);
-
-            bool npcCollision = false;
-            // Check collision with the player.
-            if (this != Player.GamePlayer.Hero)
-            {
-                Vector2 vect = npc1 + newOffset;
-                npcCollision = npcCollision | Player.GamePlayer.Hero.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
-                vect = npc2 + newOffset;
-                npcCollision = npcCollision | Player.GamePlayer.Hero.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
-            }
-
-            // Check collision with other npcs.
-            foreach (NPC npc in Player.GamePlayer.Map.NPCs)
-            {
-                Vector2 vect = npc1 + newOffset;
-                npcCollision = npcCollision | npc.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
-                vect = npc2 + newOffset;
-                npcCollision = npcCollision | npc.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
-            }
-
-            return layer.Tiles[tile1.X, tile1.Y] == null
-                && layer.Tiles[tile2.X, tile2.Y] == null
-                && !npcCollision;
-        }
-
-        /// <summary>
-        /// Return if it's free of moving in the direction.
-        /// </summary>
-        /// <param name="direction">Direction of moving</param>
-        /// <returns>Return if it's free of moving in the direction.</returns>
-        public bool CheckCollision(eDirection direction)
-        {
-            Vector2 newOffset;
-            return CheckCollision(direction, out newOffset);
         }
 
         #region Events
@@ -293,13 +197,13 @@ namespace FantasyEngine.Classes.Overworld
                 Talking(new EventArgs(), this);
         }
 
-        public delegate void MovingHandler(EventArgs e, NPC npc);
+        public delegate void MovingHandler(EventArgs e, NPC npc, GameTime gameTime);
         public event MovingHandler Moving;
-        public virtual void RaiseOnMoving()
+        public virtual void RaiseOnMoving(GameTime gameTime)
         {
             // Raise the event by using the () operator.
             if (Moving != null)
-                Moving(new EventArgs(), this);
+                Moving(new EventArgs(), this, gameTime);
         }
         #endregion Events
     }

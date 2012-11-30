@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TiledLib;
 
 namespace FantasyEngine.Classes.Overworld
 {
@@ -21,8 +22,9 @@ namespace FantasyEngine.Classes.Overworld
 
         private Tileset _SpriteImage;
         private uint _Frame = 0;
-        private TimeSpan _MovingTime = TimeSpan.Zero;
+        protected TimeSpan _MovingTime = TimeSpan.Zero;
         private eDirection _Direction = eDirection.DOWN;
+        protected float _MovePxPerMillisecond = 0.12f;
 
         /// <summary>
         /// Direction of the sprite.
@@ -74,6 +76,11 @@ namespace FantasyEngine.Classes.Overworld
             GameMain.spriteBatch.Draw(_SpriteImage.texture, getRectangle(), _SpriteImage.GetSourceRectangle(_Frame), Color.White);
         }
 
+        public void AnimateWalking()
+        {
+            _Frame = (uint)(((_Frame + 1) % nbFrameAnimation) + ((int)Direction * nbFrameAnimation));
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -101,11 +108,6 @@ namespace FantasyEngine.Classes.Overworld
             }
             else
                 _MovingTime = TimeSpan.Zero;
-        }
-
-        public void AnimateWalking()
-        {
-            _Frame = (uint)(((_Frame + 1) % nbFrameAnimation) + ((int)Direction * nbFrameAnimation));
         }
 
         /// <summary>
@@ -160,6 +162,104 @@ namespace FantasyEngine.Classes.Overworld
                     Direction = eDirection.LEFT;
                     break;
             }
+        }
+
+        /// <summary>
+        /// Return if it's free of moving in the direction.
+        /// </summary>
+        /// <param name="direction">Direction of moving</param>
+        /// <param name="newOffset">Where it will land if it moves in the direction</param>
+        /// <param name="maxStep">Maximum allowed to go in that direction</param>
+        /// <returns>Return if it's free of moving in the direction.</returns>
+        public bool CheckCollision(GameTime gameTime, eDirection direction, out Vector2 newOffset, int maxStep = int.MaxValue)
+        {
+            int step = (int)(gameTime.ElapsedGameTime.TotalMilliseconds * _MovePxPerMillisecond);
+            if (step > maxStep) step = maxStep;
+            Rectangle spriteRect = getCollisionRectangle();
+            newOffset = Vector2.Zero;
+
+            // If the step if greater than the space to clip to something solid, this will clip to the nearest place possible.
+            while (step > 0)
+            {
+                Vector2 sprite1 = Vector2.Zero;
+                Vector2 sprite2 = Vector2.Zero;
+
+                newOffset = Vector2.Zero;
+
+                if (direction == eDirection.RIGHT)
+                {
+                    newOffset = new Vector2(step, 0);
+
+                    sprite1 = new Vector2(spriteRect.Right, spriteRect.Top);
+                    sprite2 = new Vector2(spriteRect.Right, spriteRect.Bottom);
+                }
+
+                if (direction == eDirection.LEFT)
+                {
+                    newOffset = new Vector2(-step, 0);
+
+                    sprite1 = new Vector2(spriteRect.Left, spriteRect.Top);
+                    sprite2 = new Vector2(spriteRect.Left, spriteRect.Bottom);
+                }
+
+                if (direction == eDirection.DOWN)
+                {
+                    newOffset = new Vector2(0, step);
+
+                    sprite1 = new Vector2(spriteRect.Left, spriteRect.Bottom);
+                    sprite2 = new Vector2(spriteRect.Right, spriteRect.Bottom);
+                }
+
+                if (direction == eDirection.UP)
+                {
+                    newOffset = new Vector2(0, -step);
+
+                    sprite1 = new Vector2(spriteRect.Left, spriteRect.Top);
+                    sprite2 = new Vector2(spriteRect.Right, spriteRect.Top);
+                }
+
+                // Clamp the camera so it never leaves the area of the map.
+                Vector2 cameraMax = new Vector2(
+                    Player.GamePlayer.Map.MapData.Width * Player.GamePlayer.Map.MapData.TileWidth - 1,
+                    Player.GamePlayer.Map.MapData.Height * Player.GamePlayer.Map.MapData.TileHeight - 1);
+                newOffset = Vector2.Clamp(sprite1 + newOffset, Vector2.Zero, cameraMax) - sprite1;
+                newOffset = Vector2.Clamp(sprite2 + newOffset, Vector2.Zero, cameraMax) - sprite2;
+
+                TileLayer layer = (TileLayer)Player.GamePlayer.Map.MapData.GetLayer("Collision");
+                Point tile1 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(sprite1 + newOffset);
+                Point tile2 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(sprite2 + newOffset);
+
+                bool npcCollision = false;
+                // Check collision with the player.
+                if (this != Player.GamePlayer.Hero)
+                {
+                    Vector2 vect = sprite1 + newOffset;
+                    npcCollision = npcCollision | Player.GamePlayer.Hero.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
+                    vect = sprite2 + newOffset;
+                    npcCollision = npcCollision | Player.GamePlayer.Hero.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
+                }
+
+                // Check collision with other npcs.
+                foreach (NPC npc in Player.GamePlayer.Map.NPCs)
+                {
+                    if (this == npc)
+                        continue;
+
+                    Vector2 vect = sprite1 + newOffset;
+                    npcCollision = npcCollision | npc.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
+                    vect = sprite2 + newOffset;
+                    npcCollision = npcCollision | npc.getCollisionRectangle().Contains((int)vect.X, (int)vect.Y);
+                }
+
+                if (layer.Tiles[tile1.X, tile1.Y] == null
+                    && layer.Tiles[tile2.X, tile2.Y] == null
+                    && !npcCollision)
+                    return true;
+                else
+                    step--; // Need clipping.
+            }
+
+            return false;
         }
 
         /// <summary>

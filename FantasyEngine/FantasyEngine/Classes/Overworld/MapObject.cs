@@ -167,7 +167,7 @@ namespace FantasyEngine.Classes.Overworld
             }
         }
 
-        void npc_Moving(EventArgs e, NPC npc)
+        void npc_Moving(EventArgs e, NPC npc, GameTime gameTime)
         {
             switch (_MapNo)
             {
@@ -177,41 +177,30 @@ namespace FantasyEngine.Classes.Overworld
                         case "Woman":
                             if (npc.Action == NPC.eAction.Stay || npc.Action == NPC.eAction.Moving || npc.Action == NPC.eAction.Blocked)
                             {
-                                if (npc.Step % 10 == 0 && npc.Action != NPC.eAction.Blocked)
+                                if (npc.Step < 256)
                                 {
-                                    npc.AnimateWalking();
+                                    npc.Direction = Sprite.eDirection.UP;
+                                    npc.Move(gameTime, Sprite.eDirection.UP, 256 - npc.Step);
                                 }
-
-                                if (npc.Step % 2 == 0)
+                                else if (npc.Step < 672)
                                 {
-                                    if (npc.Step < 256)
-                                    {
-                                        npc.Direction = Sprite.eDirection.UP;
-                                        npc.Move(Sprite.eDirection.UP);
-                                    }
-                                    else if (npc.Step < 672)
-                                    {
-                                        npc.Direction = Sprite.eDirection.RIGHT;
-                                        npc.Move(Sprite.eDirection.RIGHT);
-                                    }
-                                    else if (npc.Step < 928)
-                                    {
-                                        npc.Direction = Sprite.eDirection.DOWN;
-                                        npc.Move(Sprite.eDirection.DOWN);
-                                    }
-                                    else if (npc.Step < 1344)
-                                    {
-                                        npc.Direction = Sprite.eDirection.LEFT;
-                                        npc.Move(Sprite.eDirection.LEFT);
-                                    }
-                                    else
-                                    {
-                                        npc.Step = -1;
-                                    }
+                                    npc.Direction = Sprite.eDirection.RIGHT;
+                                    npc.Move(gameTime, Sprite.eDirection.RIGHT, 672 - npc.Step);
                                 }
-
-                                if (npc.Action != NPC.eAction.Blocked)
-                                    npc.Step++;
+                                else if (npc.Step < 928)
+                                {
+                                    npc.Direction = Sprite.eDirection.DOWN;
+                                    npc.Move(gameTime, Sprite.eDirection.DOWN, 928 - npc.Step);
+                                }
+                                else if (npc.Step < 1344)
+                                {
+                                    npc.Direction = Sprite.eDirection.LEFT;
+                                    npc.Move(gameTime, Sprite.eDirection.LEFT, 1344 - npc.Step);
+                                }
+                                else
+                                {
+                                    npc.Step = 0;
+                                }
                             }
                             break;
                     }
