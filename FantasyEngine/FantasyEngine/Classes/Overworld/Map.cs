@@ -10,7 +10,7 @@ using FantasyEngineData.Entities;
 
 namespace FantasyEngine.Classes.Overworld
 {
-    public class MapObject : DrawableGameComponent
+    public class Map : DrawableGameComponent
     {
         public struct Encounter
         {
@@ -32,7 +32,7 @@ namespace FantasyEngine.Classes.Overworld
         }
 
         private eMapNo _MapNo;
-        private Map _MapData;
+        private TiledLib.Map _MapData;
         private List<NPC> _NPCs = new List<NPC>();
         private List<Encounter> _Encounters = new List<Encounter>();
 
@@ -44,7 +44,7 @@ namespace FantasyEngine.Classes.Overworld
         /// <summary>
         /// Data of the map.
         /// </summary>
-        public Map MapData { get { return _MapData; } }
+        public TiledLib.Map MapData { get { return _MapData; } }
 
         /// <summary>
         /// Background song of the map.
@@ -63,9 +63,9 @@ namespace FantasyEngine.Classes.Overworld
 
         private void Init(string mapName)
         {
-            _MapData = Game.Content.Load<Map>(@"Maps\" + mapName);
+            _MapData = Game.Content.Load<TiledLib.Map>(@"Maps\" + mapName);
             _MapData.GetLayer("Collision").Visible = false; // Potential bug if there's no layer Collision.
-            foreach (TiledLib.MapObject obj in _MapData.GetAllObjects())
+            foreach (MapObject obj in ((MapObjectLayer)_MapData.GetLayer("NPC")).Objects)
             {
                 NPC npc;
                 Rectangle tileSize = Rectangle.Empty;
@@ -93,6 +93,10 @@ namespace FantasyEngine.Classes.Overworld
                 npc.Talking += new NPC.TalkingHandler(npc_Talk);
                 npc.Moving += new NPC.MovingHandler(npc_Moving);
                 NPCs.Add(npc);
+            }
+
+            foreach (MapObject obj in ((MapObjectLayer)_MapData.GetLayer("Event")).Objects)
+            {
             }
         }
 
@@ -208,7 +212,7 @@ namespace FantasyEngine.Classes.Overworld
             }
         }
 
-        public MapObject(Game game, eMapNo mapNo, Vector2 offset)
+        public Map(Game game, eMapNo mapNo, Vector2 offset)
             : base(game)
         {
             Initialize();

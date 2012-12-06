@@ -162,7 +162,7 @@ namespace FantasyEngine.Classes.Overworld
 
             if (Input.keyStateDown.IsKeyDown(Keys.B))
             {
-                MapObject.Encounter mob = Player.GamePlayer.Map.Encounters[0];
+                Map.Encounter mob = Player.GamePlayer.Map.Encounters[0];
                 Battle battle = new Battle(Game, "battleback_grass");
                 battle._Enemies[0] = new Battler(Game, mob.Monster, mob.Level);
                 battle._Enemies[0].Name = battle._Enemies[0].CurrentJob.JobName + "1";

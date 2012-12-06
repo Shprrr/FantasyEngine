@@ -17,7 +17,7 @@
   </data>
  </layer>
  <objectgroup name="NPC" width="20" height="15">
-  <object name="boy1" type="NPC" x="288" y="128" width="32" height="32">
+  <object name="boy1" x="288" y="128" width="32" height="32">
    <properties>
     <property name="sprite" value="npc"/>
     <property name="tileSize" value="0 0 128 16"/>
@@ -61,6 +61,22 @@
    <properties>
     <property name="sprite" value="npc"/>
     <property name="tileSize" value="0 112 128 16"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="Event" width="20" height="15">
+  <object name="TPtoTranquilityPlain" type="teleport" x="256" y="0" width="96" height="32">
+   <properties>
+    <property name="teleport" value="tranquility plain"/>
+    <property name="tx" value="44"/>
+    <property name="ty" value="37"/>
+   </properties>
+  </object>
+  <object name="TPtoTranquilityPlain" type="teleport" x="256" y="448" width="96" height="32">
+   <properties>
+    <property name="teleport" value="tranquility plain"/>
+    <property name="tx" value="44"/>
+    <property name="ty" value="53"/>
    </properties>
   </object>
  </objectgroup>

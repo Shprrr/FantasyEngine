@@ -19,6 +19,6 @@ namespace FantasyEngine.Classes
         public Inventory Inventory = new Inventory();
         //Quest
         //Bank
-        public MapObject Map;
+        public Map Map;
     }
 }
