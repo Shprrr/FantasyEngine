@@ -45,7 +45,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="TiledPipelineExtensions">
-      <HintPath>..\References\ContentPipeline\TiledPipelineExtensions.dll</HintPath>
+      <HintPath>..\References\ContentPipeline\$(Configuration)\TiledPipelineExtensions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -17,9 +17,19 @@
             <param name="existingInstance">The existing Map instance.</param>
             <returns>A new Map instance.</returns>
         </member>
-        <member name="T:TiledLib.TileLayer">
+        <member name="T:TiledLib.Orientation">
             <summary>
-            A map layer containing tiles.
+            Defines the possible orientations for a Map.
+            </summary>
+        </member>
+        <member name="F:TiledLib.Orientation.Orthogonal">
+            <summary>
+            The tiles of the map are orthogonal.
+            </summary>
+        </member>
+        <member name="F:TiledLib.Orientation.Isometric">
+            <summary>
+            The tiles of the map are isometric.
             </summary>
         </member>
         <member name="T:TiledLib.Layer">
@@ -42,6 +52,19 @@
             Gets the height (in tiles) of the layer.
             </summary>
         </member>
+        <member name="P:TiledLib.Layer.LayerDepth">
+            <summary>
+            Gets or sets the depth of the layer.
+            </summary>
+            <remarks>
+            This value is passed to SpriteBatch when drawing tiles in this layer and therefore
+            is only useful if SpriteBatch.Begin is called with SpriteSortMode.FrontToBack or
+            SpriteSortMode.BackToFront.
+            
+            By default, the Map will set up the layers with LayerDepth values that work for
+            SpriteSortMode.BackToFront to enable alpha blending to work properly.
+            </remarks>
+        </member>
         <member name="P:TiledLib.Layer.Visible">
             <summary>
             Gets or sets the whether the layer is visible.
@@ -57,106 +80,44 @@
             Gets the list of properties for the layer.
             </summary>
         </member>
+        <member name="T:TiledLib.TileLayer">
+            <summary>
+            A map layer containing tiles.
+            </summary>
+        </member>
         <member name="P:TiledLib.TileLayer.Tiles">
             <summary>
             Gets the layout of tiles on the layer.
             </summary>
         </member>
-        <member name="T:TiledLib.Orientation">
+        <member name="T:TiledLib.TileGrid">
             <summary>
-            Defines the possible orientations for a Map.
+            A 2D grid of Tile objects.
             </summary>
         </member>
-        <member name="F:TiledLib.Orientation.Orthogonal">
+        <member name="M:TiledLib.TileGrid.#ctor(System.Int32,System.Int32)">
             <summary>
-            The tiles of the map are orthogonal.
+            Creates a new TileGrid.
+            </summary>
+            <param name="width">The width of the grid.</param>
+            <param name="height">The height of the grid.</param>
+        </member>
+        <member name="P:TiledLib.TileGrid.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets or sets a Tile at a given index.
+            </summary>
+            <param name="x">The X index.</param>
+            <param name="y">The Y index.</param>
+            <returns></returns>
+        </member>
+        <member name="P:TiledLib.TileGrid.Width">
+            <summary>
+            Gets the width of the grid.
             </summary>
         </member>
-        <member name="F:TiledLib.Orientation.Isometric">
+        <member name="P:TiledLib.TileGrid.Height">
             <summary>
-            The tiles of the map are isometric.
-            </summary>
-        </member>
-        <member name="T:TiledLib.PropertyCollection">
-            <summary>
-            An enumerable collection of properties.
-            </summary>
-        </member>
-        <member name="M:TiledLib.PropertyCollection.#ctor">
-            <summary>
-            Creates a new PropertyCollection.
-            </summary>
-        </member>
-        <member name="M:TiledLib.PropertyCollection.Add(TiledLib.Property)">
-            <summary>
-            Adds a property to the collection.
-            </summary>
-            <param name="property">The property to add.</param>
-        </member>
-        <member name="M:TiledLib.PropertyCollection.Remove(System.String)">
-            <summary>
-            Removes a property with the given name.
-            </summary>
-            <param name="name">The name of the property to remove.</param>
-            <returns>True if the property was removed, false otherwise.</returns>
-        </member>
-        <member name="M:TiledLib.PropertyCollection.GetEnumerator">
-            <summary>
-            Gets an enumerator that can be used to iterate over the properties in the collection.
-            </summary>
-            <returns>An enumerator over the properties.</returns>
-        </member>
-        <member name="P:TiledLib.PropertyCollection.Item(System.String)">
-            <summary>
-            Gets a Property with the given name.
-            </summary>
-            <param name="name">The name of the property to retrieve.</param>
-            <returns>The Property if a matching one is found or null if no Property exists for the given name.</returns>
-        </member>
-        <member name="T:TiledLib.Property">
-            <summary>
-            A simple key-value property pair.
-            </summary>
-        </member>
-        <member name="M:TiledLib.Property.#ctor(System.String,System.String)">
-            <summary>
-            Creates a new Property with a given name and initial value.
-            </summary>
-            <param name="name">The name of the property.</param>
-            <param name="value">The initial value of the property.</param>
-        </member>
-        <member name="M:TiledLib.Property.SetValue(System.Int32)">
-            <summary>
-            Sets the value of the property as an integer.
-            </summary>
-            <param name="value">The new value of the property.</param>
-        </member>
-        <member name="M:TiledLib.Property.SetValue(System.Single)">
-            <summary>
-            Sets the value of the property as a floating point number.
-            </summary>
-            <param name="value">The new value of the property.</param>
-        </member>
-        <member name="M:TiledLib.Property.SetValue(System.Boolean)">
-            <summary>
-            Sets the value of the property as a boolean.
-            </summary>
-            <param name="value">The new value of the property.</param>
-        </member>
-        <member name="M:TiledLib.Property.SetValue(System.String)">
-            <summary>
-            Sets the value of the property as a string.
-            </summary>
-            <param name="value">The new value of the property.</param>
-        </member>
-        <member name="P:TiledLib.Property.Name">
-            <summary>
-            Gets the name of the property.
-            </summary>
-        </member>
-        <member name="P:TiledLib.Property.RawValue">
-            <summary>
-            Gets the raw value string of the property.
+            Gets the height of the grid.
             </summary>
         </member>
         <member name="T:TiledLib.MapObjectLayer">
@@ -201,55 +162,6 @@
             Gets the objects on the current layer.
             </summary>
         </member>
-        <member name="T:TiledLib.MapObject">
-            <summary>
-            An arbitrary object placed on an ObjectLayer.
-            </summary>
-        </member>
-        <member name="M:TiledLib.MapObject.#ctor(System.String,System.String)">
-            <summary>
-            Creates a new MapObject.
-            </summary>
-            <param name="name">The name of the object.</param>
-            <param name="type">The type of object to create.</param>
-        </member>
-        <member name="M:TiledLib.MapObject.#ctor(System.String,System.String,Microsoft.Xna.Framework.Rectangle)">
-            <summary>
-            Creates a new MapObject.
-            </summary>
-            <param name="name">The name of the object.</param>
-            <param name="type">The type of object to create.</param>
-            <param name="bounds">The initial bounds of the object.</param>
-        </member>
-        <member name="M:TiledLib.MapObject.#ctor(System.String,System.String,Microsoft.Xna.Framework.Rectangle,TiledLib.PropertyCollection)">
-            <summary>
-            Creates a new MapObject.
-            </summary>
-            <param name="name">The name of the object.</param>
-            <param name="type">The type of object to create.</param>
-            <param name="bounds">The initial bounds of the object.</param>
-            <param name="properties">The initial property collection or null to create an empty property collection.</param>
-        </member>
-        <member name="P:TiledLib.MapObject.Name">
-            <summary>
-            Gets the name of the object.
-            </summary>
-        </member>
-        <member name="P:TiledLib.MapObject.Type">
-            <summary>
-            Gets the type of the object.
-            </summary>
-        </member>
-        <member name="P:TiledLib.MapObject.Bounds">
-            <summary>
-            Gets or sets the bounds of the object.
-            </summary>
-        </member>
-        <member name="P:TiledLib.MapObject.Properties">
-            <summary>
-            Gets a list of the object's properties.
-            </summary>
-        </member>
         <member name="T:TiledLib.MapObjectFinder">
             <summary>
             A delegate used for searching for map objects.
@@ -262,6 +174,15 @@
             <summary>
             A full map from Tiled.
             </summary>
+        </member>
+        <member name="F:TiledLib.Map.LayerDepthSpacing">
+            <summary>
+            The difference in layer depth between layers.
+            </summary>
+            <remarks>
+            The algorithm for creating the LayerDepth for each layer when enumerating from
+            back to front is:
+            float layerDepth = 1f - (LayerDepthSpacing * i);</remarks>
         </member>
         <member name="M:TiledLib.Map.WorldPointToTileIndex(Microsoft.Xna.Framework.Vector2)">
             <summary>
@@ -372,35 +293,98 @@
             Gets a collection of all of the layers in the map.
             </summary>
         </member>
-        <member name="T:TiledLib.TileGrid">
+        <member name="T:TiledLib.MapObject">
             <summary>
-            A 2D grid of Tile objects.
+            An arbitrary object placed on an ObjectLayer.
             </summary>
         </member>
-        <member name="M:TiledLib.TileGrid.#ctor(System.Int32,System.Int32)">
+        <member name="M:TiledLib.MapObject.#ctor(System.String,System.String)">
             <summary>
-            Creates a new TileGrid.
+            Creates a new MapObject.
             </summary>
-            <param name="width">The width of the grid.</param>
-            <param name="height">The height of the grid.</param>
+            <param name="name">The name of the object.</param>
+            <param name="type">The type of object to create.</param>
         </member>
-        <member name="P:TiledLib.TileGrid.Item(System.Int32,System.Int32)">
+        <member name="M:TiledLib.MapObject.#ctor(System.String,System.String,Microsoft.Xna.Framework.Rectangle)">
             <summary>
-            Gets or sets a Tile at a given index.
+            Creates a new MapObject.
             </summary>
-            <param name="x">The X index.</param>
-            <param name="y">The Y index.</param>
-            <returns></returns>
+            <param name="name">The name of the object.</param>
+            <param name="type">The type of object to create.</param>
+            <param name="bounds">The initial bounds of the object.</param>
         </member>
-        <member name="P:TiledLib.TileGrid.Width">
+        <member name="M:TiledLib.MapObject.#ctor(System.String,System.String,Microsoft.Xna.Framework.Rectangle,TiledLib.PropertyCollection)">
             <summary>
-            Gets the width of the grid.
+            Creates a new MapObject.
+            </summary>
+            <param name="name">The name of the object.</param>
+            <param name="type">The type of object to create.</param>
+            <param name="bounds">The initial bounds of the object.</param>
+            <param name="properties">The initial property collection or null to create an empty property collection.</param>
+        </member>
+        <member name="P:TiledLib.MapObject.Name">
+            <summary>
+            Gets the name of the object.
             </summary>
         </member>
-        <member name="P:TiledLib.TileGrid.Height">
+        <member name="P:TiledLib.MapObject.Type">
             <summary>
-            Gets the height of the grid.
+            Gets the type of the object.
             </summary>
+        </member>
+        <member name="P:TiledLib.MapObject.Bounds">
+            <summary>
+            Gets or sets the bounds of the object.
+            </summary>
+        </member>
+        <member name="P:TiledLib.MapObject.Properties">
+            <summary>
+            Gets a list of the object's properties.
+            </summary>
+        </member>
+        <member name="T:TiledLib.PropertyCollection">
+            <summary>
+            An enumerable collection of properties.
+            </summary>
+        </member>
+        <member name="M:TiledLib.PropertyCollection.#ctor">
+            <summary>
+            Creates a new PropertyCollection.
+            </summary>
+        </member>
+        <member name="M:TiledLib.PropertyCollection.Add(TiledLib.Property)">
+            <summary>
+            Adds a property to the collection.
+            </summary>
+            <param name="property">The property to add.</param>
+        </member>
+        <member name="M:TiledLib.PropertyCollection.TryGetValue(System.String,TiledLib.Property@)">
+            <summary>
+            Attempts to get a property by name.
+            </summary>
+            <param name="name">The name of the property to retrieve.</param>
+            <param name="property">The property that is found, if one matches.</param>
+            <returns>True if the property was found, false otherwise.</returns>
+        </member>
+        <member name="M:TiledLib.PropertyCollection.Remove(System.String)">
+            <summary>
+            Removes a property with the given name.
+            </summary>
+            <param name="name">The name of the property to remove.</param>
+            <returns>True if the property was removed, false otherwise.</returns>
+        </member>
+        <member name="M:TiledLib.PropertyCollection.GetEnumerator">
+            <summary>
+            Gets an enumerator that can be used to iterate over the properties in the collection.
+            </summary>
+            <returns>An enumerator over the properties.</returns>
+        </member>
+        <member name="P:TiledLib.PropertyCollection.Item(System.String)">
+            <summary>
+            Gets a Property with the given name.
+            </summary>
+            <param name="name">The name of the property to retrieve.</param>
+            <returns>The Property if a matching one is found or null if no Property exists for the given name.</returns>
         </member>
         <member name="T:TiledLib.Tile">
             <summary>
@@ -428,13 +412,14 @@
             </summary>
             <returns>A new Tile with the same properties as the current tile.</returns>
         </member>
-        <member name="M:TiledLib.Tile.DrawOrthographic(Microsoft.Xna.Framework.Graphics.SpriteBatch,Microsoft.Xna.Framework.Rectangle,System.Single)">
+        <member name="M:TiledLib.Tile.DrawOrthographic(Microsoft.Xna.Framework.Graphics.SpriteBatch,Microsoft.Xna.Framework.Rectangle,System.Single,System.Single)">
             <summary>
             Draws the tile with an orthographic perspective.
             </summary>
             <param name="spriteBatch">The SpriteBatch to use when rendering the tile.</param>
             <param name="destBounds">The destination bounds where the tile should be drawn.</param>
             <param name="opacity">The level of opacity to use when drawing the tile.</param>
+            <param name="layerDepth">The layer depth to use when drawing the tile.</param>
         </member>
         <member name="P:TiledLib.Tile.Texture">
             <summary>
@@ -454,6 +439,57 @@
         <member name="P:TiledLib.Tile.Color">
             <summary>
             Gets or sets a color associated with the tile.
+            </summary>
+        </member>
+        <member name="P:TiledLib.Tile.SpriteEffects">
+            <summary>
+            Gets or sets the SpriteEffects applied when drawing this tile.
+            </summary>
+        </member>
+        <member name="T:TiledLib.Property">
+            <summary>
+            A simple key-value property pair.
+            </summary>
+        </member>
+        <member name="M:TiledLib.Property.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new Property with a given name and initial value.
+            </summary>
+            <param name="name">The name of the property.</param>
+            <param name="value">The initial value of the property.</param>
+        </member>
+        <member name="M:TiledLib.Property.SetValue(System.Int32)">
+            <summary>
+            Sets the value of the property as an integer.
+            </summary>
+            <param name="value">The new value of the property.</param>
+        </member>
+        <member name="M:TiledLib.Property.SetValue(System.Single)">
+            <summary>
+            Sets the value of the property as a floating point number.
+            </summary>
+            <param name="value">The new value of the property.</param>
+        </member>
+        <member name="M:TiledLib.Property.SetValue(System.Boolean)">
+            <summary>
+            Sets the value of the property as a boolean.
+            </summary>
+            <param name="value">The new value of the property.</param>
+        </member>
+        <member name="M:TiledLib.Property.SetValue(System.String)">
+            <summary>
+            Sets the value of the property as a string.
+            </summary>
+            <param name="value">The new value of the property.</param>
+        </member>
+        <member name="P:TiledLib.Property.Name">
+            <summary>
+            Gets the name of the property.
+            </summary>
+        </member>
+        <member name="P:TiledLib.Property.RawValue">
+            <summary>
+            Gets the raw value string of the property.
             </summary>
         </member>
     </members>
