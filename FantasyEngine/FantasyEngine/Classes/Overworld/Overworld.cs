@@ -14,6 +14,8 @@ namespace FantasyEngine.Classes.Overworld
     {
         private readonly string[] MENU_COMMANDS = { "Character", "Equipment", "Inventory", "Skills", "Quit game" };
 
+        public static readonly Vector2 CAMERA_CENTER = new Vector2(304, 224);
+
         private bool _ShowPosition = false;
         private Command _Menu;
 
@@ -103,6 +105,10 @@ namespace FantasyEngine.Classes.Overworld
                     Player.GamePlayer.Map.Offset += newOffset;
                     Player.GamePlayer.Hero.Position += newOffset;
                 }
+
+                Event eve = Player.GamePlayer.Hero.CheckEvent();
+                if (eve != null && eve.Type == Event.eType.Teleport)
+                    eve.Teleport();
 
                 return;
             } // if (Direction held)

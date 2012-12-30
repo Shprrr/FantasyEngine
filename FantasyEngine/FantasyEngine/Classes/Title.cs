@@ -57,7 +57,7 @@ namespace FantasyEngine.Classes
 
             Vector2 startingPoint = new Vector2(64, 64);
             Player.GamePlayer.Hero = new Sprite(Game, @"Overworld\characters", Player.GamePlayer.Actors[0].CurrentJob.BaseJob.OverworldSpriteSize, startingPoint, Sprite.OVERWORLD_SIZE);
-            Player.GamePlayer.Map = new Map(Game, Map.eMapNo.VILLAGE, startingPoint - new Vector2(304, 224));
+            Player.GamePlayer.Map = new Map(Game, "village", startingPoint - Overworld.Overworld.CAMERA_CENTER);
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetItem("Potion"), 2));
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetWeapon("Knife"), 1));
             Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetShield("Leather Shield"), 2));

@@ -26,14 +26,20 @@ namespace FantasyEngine.Classes.Overworld
             }
         }
 
+        public const string LAYER_NAME_COLLISION = "Collision";
+        public const string LAYER_NAME_NPC = "NPC";
+        public const string LAYER_NAME_EVENT = "Event";
+
         public enum eMapNo
         {
-            VILLAGE
+            VILLAGE,
+            TRANQUILITY_PLAIN
         }
 
         private eMapNo _MapNo;
         private TiledLib.Map _MapData;
         private List<NPC> _NPCs = new List<NPC>();
+        private List<Event> _Events = new List<Event>();
         private List<Encounter> _Encounters = new List<Encounter>();
 
         /// <summary>
@@ -52,9 +58,14 @@ namespace FantasyEngine.Classes.Overworld
         public Song BackgroundMusic;
 
         /// <summary>
-        /// List all non-playable character in the map.
+        /// List all non-playable characters in the map.
         /// </summary>
         public List<NPC> NPCs { get { return _NPCs; } }
+
+        /// <summary>
+        /// List all events in the map.
+        /// </summary>
+        public List<Event> Events { get { return _Events; } }
 
         /// <summary>
         /// List of all monsters that can be encountered.
@@ -64,40 +75,58 @@ namespace FantasyEngine.Classes.Overworld
         private void Init(string mapName)
         {
             _MapData = Game.Content.Load<TiledLib.Map>(@"Maps\" + mapName);
-            _MapData.GetLayer("Collision").Visible = false; // Potential bug if there's no layer Collision.
-            foreach (MapObject obj in ((MapObjectLayer)_MapData.GetLayer("NPC")).Objects)
-            {
-                NPC npc;
-                Rectangle tileSize = Rectangle.Empty;
 
-                if (obj.Properties["tileSize"] != null)
+            bool hasCollision = false, hasNPC = false, hasEvent = false;
+            foreach (var layer in _MapData.Layers)
+            {
+                hasCollision |= layer.Name == LAYER_NAME_COLLISION;
+                hasNPC |= layer.Name == LAYER_NAME_NPC;
+                hasEvent |= layer.Name == LAYER_NAME_EVENT;
+            }
+
+            if (hasCollision)
+                _MapData.GetLayer(LAYER_NAME_COLLISION).Visible = false;
+
+            if (hasNPC)
+                foreach (MapObject obj in ((MapObjectLayer)_MapData.GetLayer(LAYER_NAME_NPC)).Objects)
                 {
-                    string[] tileSizeString = obj.Properties["tileSize"].RawValue.Split(' ');
-                    tileSize = new Rectangle(int.Parse(tileSizeString[0]), int.Parse(tileSizeString[1]), int.Parse(tileSizeString[2]), int.Parse(tileSizeString[3]));
+                    NPC npc;
+                    Rectangle tileSize = Rectangle.Empty;
+
+                    if (obj.Properties["tileSize"] != null)
+                    {
+                        string[] tileSizeString = obj.Properties["tileSize"].RawValue.Split(' ');
+                        tileSize = new Rectangle(int.Parse(tileSizeString[0]), int.Parse(tileSizeString[1]), int.Parse(tileSizeString[2]), int.Parse(tileSizeString[3]));
+                    }
+
+                    if (obj.Properties["direction"] != null)
+                        if (obj.Properties["regainDirection"] != null)
+                            npc = new NPC(Game, obj.Name,
+                                @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize,
+                                new Vector2(obj.Bounds.X, obj.Bounds.Y),
+                                (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties["direction"].RawValue),
+                                bool.Parse(obj.Properties["regainDirection"].RawValue));
+                        else
+                            npc = new NPC(Game, obj.Name,
+                                @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize,
+                                new Vector2(obj.Bounds.X, obj.Bounds.Y),
+                                (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties["direction"].RawValue));
+                    else
+                        npc = new NPC(Game, obj.Name, @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize, new Vector2(obj.Bounds.X, obj.Bounds.Y));
+                    npc.Talking += new NPC.TalkingHandler(npc_Talk);
+                    npc.Moving += new NPC.MovingHandler(npc_Moving);
+                    NPCs.Add(npc);
                 }
 
-                if (obj.Properties["direction"] != null)
-                    if (obj.Properties["regainDirection"] != null)
-                        npc = new NPC(Game, obj.Name,
-                            @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize,
-                            new Vector2(obj.Bounds.X, obj.Bounds.Y),
-                            (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties["direction"].RawValue),
-                            bool.Parse(obj.Properties["regainDirection"].RawValue));
-                    else
-                        npc = new NPC(Game, obj.Name,
-                            @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize,
-                            new Vector2(obj.Bounds.X, obj.Bounds.Y),
-                            (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties["direction"].RawValue));
-                else
-                    npc = new NPC(Game, obj.Name, @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize, new Vector2(obj.Bounds.X, obj.Bounds.Y));
-                npc.Talking += new NPC.TalkingHandler(npc_Talk);
-                npc.Moving += new NPC.MovingHandler(npc_Moving);
-                NPCs.Add(npc);
-            }
-
-            foreach (MapObject obj in ((MapObjectLayer)_MapData.GetLayer("Event")).Objects)
-            {
-            }
+            if (hasEvent)
+                foreach (MapObject obj in ((MapObjectLayer)_MapData.GetLayer(LAYER_NAME_EVENT)).Objects)
+                {
+                    if (obj.Type == "teleport")
+                    {
+                        Event eve = new Event(obj.Bounds, obj.Properties["teleport"].RawValue, new Vector2(float.Parse(obj.Properties["tx"].RawValue), float.Parse(obj.Properties["ty"].RawValue)));
+                        Events.Add(eve);
+                    }
+                }
         }
 
         void npc_Talk(EventArgs e, NPC npc)
@@ -212,22 +241,29 @@ namespace FantasyEngine.Classes.Overworld
             }
         }
 
-        public Map(Game game, eMapNo mapNo, Vector2 offset)
+        public Map(Game game, string mapName, Vector2 offset)
             : base(game)
         {
             Initialize();
-            _MapNo = mapNo;
-            switch (_MapNo)
+            Init(mapName);
+            Offset = offset;
+
+            switch (mapName)
             {
-                case eMapNo.VILLAGE:
-                    Init("village");
-                    Offset = offset;
+                case "village":
+                    _MapNo = eMapNo.VILLAGE;
                     BackgroundMusic = Game.Content.Load<Song>(@"Audios\Musics\Village");
                     Encounters.Add(new Encounter(Game.Content.Load<Monster>(@"Monsters\Goblin"), 1, 100));
 
                     NPC boy1 = new NPC(Game, "test", @"Overworld\npc", new Rectangle(0, 16, 128, 16), new Vector2(256, 64));
                     boy1.Talking += new NPC.TalkingHandler(boy1_Talking);
                     NPCs.Add(boy1);
+                    break;
+
+                case "tranquility plain":
+                    _MapNo = eMapNo.TRANQUILITY_PLAIN;
+                    BackgroundMusic = Game.Content.Load<Song>(@"Audios\Musics\Village");
+                    Encounters.Add(new Encounter(Game.Content.Load<Monster>(@"Monsters\Goblin"), 2, 100));
                     break;
             }
         }

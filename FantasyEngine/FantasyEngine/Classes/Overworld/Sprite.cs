@@ -18,7 +18,7 @@ namespace FantasyEngine.Classes.Overworld
             RIGHT
         }
 
-        public static readonly Point OVERWORLD_SIZE = new Point(32, 32);
+        public static readonly Vector2 OVERWORLD_SIZE = new Vector2(32, 32);
 
         private Tileset _SpriteImage;
         private uint _Frame = 0;
@@ -45,7 +45,7 @@ namespace FantasyEngine.Classes.Overworld
         /// Position in pixel on the screen.
         /// </summary>
         public Vector2 Position { get; set; }
-        public Point Size { get; set; }
+        public Vector2 Size { get; set; }
 
         /// <summary>
         /// Image of the sprite.
@@ -57,7 +57,7 @@ namespace FantasyEngine.Classes.Overworld
         /// </summary>
         private const int nbFrameAnimation = 2;
 
-        public Sprite(Game game, string charsetName, Rectangle tileSize, Vector2 position, Point size)
+        public Sprite(Game game, string charsetName, Rectangle tileSize, Vector2 position, Vector2 size)
             : base(game)
         {
             ChangeSprite(charsetName, tileSize, size);
@@ -225,7 +225,7 @@ namespace FantasyEngine.Classes.Overworld
                 newOffset = Vector2.Clamp(sprite1 + newOffset, Vector2.Zero, cameraMax) - sprite1;
                 newOffset = Vector2.Clamp(sprite2 + newOffset, Vector2.Zero, cameraMax) - sprite2;
 
-                TileLayer layer = (TileLayer)Player.GamePlayer.Map.MapData.GetLayer("Collision");
+                TileLayer layer = (TileLayer)Player.GamePlayer.Map.MapData.GetLayer(Map.LAYER_NAME_COLLISION);
                 Point tile1 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(sprite1 + newOffset);
                 Point tile2 = Player.GamePlayer.Map.MapData.WorldPointToTileIndex(sprite2 + newOffset);
 
@@ -263,12 +263,27 @@ namespace FantasyEngine.Classes.Overworld
         }
 
         /// <summary>
+        /// Return if an event is triggered.
+        /// </summary>
+        /// <returns>Return the event triggered.</returns>
+        public Event CheckEvent()
+        {
+            foreach (Event eve in Player.GamePlayer.Map.Events)
+            {
+                if (eve.EventSize.Intersects(getCollisionRectangle()))
+                    return eve;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Get the drawing zone of the sprite.
         /// </summary>
         /// <returns></returns>
         public Rectangle getRectangle()
         {
-            return new Rectangle((int)Position.X, (int)Position.Y, Size.X, Size.Y);
+            return new Rectangle((int)Position.X, (int)Position.Y, (int)Size.X, (int)Size.Y);
         }
 
         /// <summary>
@@ -277,10 +292,10 @@ namespace FantasyEngine.Classes.Overworld
         /// <returns></returns>
         public Rectangle getCollisionRectangle()
         {
-            return new Rectangle((int)Position.X, (int)Position.Y, Size.X - 1, Size.Y - 1);
+            return new Rectangle((int)Position.X, (int)Position.Y, (int)Size.X - 1, (int)Size.Y - 1);
         }
 
-        public void ChangeSprite(string charsetName, Rectangle tileSize, Point spriteSize)
+        public void ChangeSprite(string charsetName, Rectangle tileSize, Vector2 spriteSize)
         {
             Texture2D texture = Game.Content.Load<Texture2D>(@"Images\" + charsetName);
             if (tileSize == Rectangle.Empty)
@@ -288,8 +303,8 @@ namespace FantasyEngine.Classes.Overworld
             else
                 _SpriteImage = new Tileset(texture, tileSize, tileSize.Width / (nbFrameAnimation * 4), tileSize.Height);
 
-            if (spriteSize == Point.Zero)
-                Size = new Point(_SpriteImage.TileWidth, _SpriteImage.TileHeight);
+            if (spriteSize == Vector2.Zero)
+                Size = new Vector2(_SpriteImage.TileWidth, _SpriteImage.TileHeight);
             else
                 Size = spriteSize;
         }
