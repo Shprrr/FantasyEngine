@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,13 +31,21 @@ namespace FantasyEngine.Classes.Overworld
         public const string LAYER_NAME_NPC = "NPC";
         public const string LAYER_NAME_EVENT = "Event";
 
-        public enum eMapNo
-        {
-            VILLAGE,
-            TRANQUILITY_PLAIN
-        }
+        public const string PROP_NAME_NPC_SPRITE = "sprite";
+        public const string PROP_NAME_NPC_TILESIZE = "tileSize";
+        public const string PROP_NAME_NPC_DIRECTION = "direction";
+        public const string PROP_NAME_NPC_REGAINDIRECTION = "regainDirection";
+        public const string PROP_NAME_NPC_TALK = "talk";
+        public const string PROP_NAME_NPC_MOVE = "move";
 
-        private eMapNo _MapNo;
+        public const string TYPE_NAME_EVENT_TELEPORT = "teleport";
+        public const string PROP_NAME_EVENT_TELEPORT = "teleport";
+        public const string PROP_NAME_EVENT_TX = "tx";
+        public const string PROP_NAME_EVENT_TY = "ty";
+
+        public const string TYPE_NAME_EVENT_ONENTER = "onEnter";
+        public const string PROP_NAME_EVENT_ONENTER = "onEnter";
+
         private TiledLib.Map _MapData;
         private List<NPC> _NPCs = new List<NPC>();
         private List<Event> _Events = new List<Event>();
@@ -93,152 +102,58 @@ namespace FantasyEngine.Classes.Overworld
                     NPC npc;
                     Rectangle tileSize = Rectangle.Empty;
 
-                    if (obj.Properties["tileSize"] != null)
+                    if (obj.Properties[PROP_NAME_NPC_TILESIZE] != null)
                     {
-                        string[] tileSizeString = obj.Properties["tileSize"].RawValue.Split(' ');
+                        string[] tileSizeString = obj.Properties[PROP_NAME_NPC_TILESIZE].RawValue.Split(' ');
                         tileSize = new Rectangle(int.Parse(tileSizeString[0]), int.Parse(tileSizeString[1]), int.Parse(tileSizeString[2]), int.Parse(tileSizeString[3]));
                     }
 
-                    if (obj.Properties["direction"] != null)
-                        if (obj.Properties["regainDirection"] != null)
+                    if (obj.Properties[PROP_NAME_NPC_DIRECTION] != null)
+                        if (obj.Properties[PROP_NAME_NPC_REGAINDIRECTION] != null)
                             npc = new NPC(Game, obj.Name,
-                                @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize,
+                                @"Overworld\" + obj.Properties[PROP_NAME_NPC_SPRITE].RawValue, tileSize,
                                 new Vector2(obj.Bounds.X, obj.Bounds.Y),
-                                (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties["direction"].RawValue),
-                                bool.Parse(obj.Properties["regainDirection"].RawValue));
+                                (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties[PROP_NAME_NPC_DIRECTION].RawValue),
+                                bool.Parse(obj.Properties[PROP_NAME_NPC_REGAINDIRECTION].RawValue));
                         else
                             npc = new NPC(Game, obj.Name,
-                                @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize,
+                                @"Overworld\" + obj.Properties[PROP_NAME_NPC_SPRITE].RawValue, tileSize,
                                 new Vector2(obj.Bounds.X, obj.Bounds.Y),
-                                (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties["direction"].RawValue));
+                                (Sprite.eDirection)Enum.Parse(typeof(Sprite.eDirection), obj.Properties[PROP_NAME_NPC_DIRECTION].RawValue));
                     else
-                        npc = new NPC(Game, obj.Name, @"Overworld\" + obj.Properties["sprite"].RawValue, tileSize, new Vector2(obj.Bounds.X, obj.Bounds.Y));
-                    npc.Talking += new NPC.TalkingHandler(npc_Talk);
-                    npc.Moving += new NPC.MovingHandler(npc_Moving);
+                        npc = new NPC(Game, obj.Name, @"Overworld\" + obj.Properties[PROP_NAME_NPC_SPRITE].RawValue, tileSize, new Vector2(obj.Bounds.X, obj.Bounds.Y));
+
+                    if (obj.Properties[PROP_NAME_NPC_TALK] != null)
+                        npc.Talking += (NPC.TalkingHandler)Delegate.CreateDelegate(typeof(NPC.TalkingHandler),
+                            Type.GetType("FantasyEngine.Classes.Overworld.Maps." + mapName.Replace(" ", "")).GetMethod(obj.Properties[PROP_NAME_NPC_TALK].RawValue, BindingFlags.Public | BindingFlags.Static));
+
+                    if (obj.Properties[PROP_NAME_NPC_MOVE] != null)
+                        npc.Moving += (NPC.MovingHandler)Delegate.CreateDelegate(typeof(NPC.MovingHandler),
+                            Type.GetType("FantasyEngine.Classes.Overworld.Maps." + mapName.Replace(" ", "")).GetMethod(obj.Properties[PROP_NAME_NPC_MOVE].RawValue, BindingFlags.Public | BindingFlags.Static));
+
                     NPCs.Add(npc);
                 }
 
             if (hasEvent)
                 foreach (MapObject obj in ((MapObjectLayer)_MapData.GetLayer(LAYER_NAME_EVENT)).Objects)
                 {
-                    if (obj.Type == "teleport")
+                    Event eve = null;
+                    switch (obj.Type)
                     {
-                        Event eve = new Event(obj.Bounds, obj.Properties["teleport"].RawValue, new Vector2(float.Parse(obj.Properties["tx"].RawValue), float.Parse(obj.Properties["ty"].RawValue)));
+                        case TYPE_NAME_EVENT_TELEPORT:
+                            eve = new Event(Game, obj.Bounds, obj.Properties[PROP_NAME_EVENT_TELEPORT].RawValue, new Vector2(float.Parse(obj.Properties[PROP_NAME_EVENT_TX].RawValue), float.Parse(obj.Properties[PROP_NAME_EVENT_TY].RawValue)));
+                            break;
+
+                        case TYPE_NAME_EVENT_ONENTER:
+                            eve = new Event(Game, obj.Bounds);
+                            eve.OnEnter += (Event.OnEnterHandler)Delegate.CreateDelegate(typeof(Event.OnEnterHandler),
+                                Type.GetType("FantasyEngine.Classes.Overworld.Maps." + mapName.Replace(" ", "")).GetMethod(obj.Properties[PROP_NAME_EVENT_ONENTER].RawValue, BindingFlags.Public | BindingFlags.Static));
+                            break;
+                    }
+
+                    if (eve != null)
                         Events.Add(eve);
-                    }
                 }
-        }
-
-        void npc_Talk(EventArgs e, NPC npc)
-        {
-            Thread thr;
-            switch (_MapNo)
-            {
-                case eMapNo.VILLAGE:
-                    switch (npc.Name)
-                    {
-                        case "boy1":
-                            thr = new Thread(
-                                delegate(object Data)
-                                {
-                                    npc.Talk(npc.Name + ": Loaded succesfully.");
-                                });
-                            thr.Start(npc);
-                            break;
-
-                        case "Claudia":
-                            thr = new Thread(
-                                delegate(object Data)
-                                {
-                                    npc.Talk(npc.Name + ": The fountain is pretty.");
-                                });
-                            thr.Start(npc);
-                            break;
-
-                        case "Woman":
-                            thr = new Thread(
-                                delegate(object Data)
-                                {
-                                    npc.Talk(npc.Name + ": I don't have time to talk.  RUN!!");
-                                });
-                            thr.Start(npc);
-                            break;
-
-                        case "Griswold":
-                            thr = new Thread(
-                                delegate(object Data)
-                                {
-                                    npc.Talk(npc.Name + ": Hello. What can I do for you ?");
-                                    List<FantasyEngineData.Items.BaseItem> shopBuy = new List<FantasyEngineData.Items.BaseItem>();
-                                    shopBuy.Add(FantasyEngineData.Items.ItemManager.GetItem("Potion"));
-                                    shopBuy.Add(FantasyEngineData.Items.ItemManager.GetWeapon("Dagger"));
-                                    shopBuy.Add(FantasyEngineData.Items.ItemManager.GetWeapon("Long Sword"));
-                                    Scene.AddSubScene(new ShopScene(Game, shopBuy));
-                                });
-                            thr.Start(npc);
-                            break;
-
-                        case "Inn":
-                            Scene.AddSubScene(new InnScene(Game, 10));
-                            break;
-
-                        case "JobMaster":
-                            Scene.AddSubScene(new JobChangeScene(Game));
-                            break;
-
-                        case "Steve":
-                            thr = new Thread(
-                                delegate(object Data)
-                                {
-                                    npc.Talk(npc.Name + ": People think I talk too much, but I don't think so. I really don't know why they think that.");
-                                    npc.Talk(npc.Name + ": It's not like I'm talking and I'm talking and it seems to have no end to what I'm saying and on top of that, there's no purpose to what I'm saying because I only fill space with unnecessary dialog just to take to another screen to see that I continue to talk again and again...");
-                                });
-                            thr.Start(npc);
-                            break;
-                    }
-                    break;
-            }
-        }
-
-        void npc_Moving(EventArgs e, NPC npc, GameTime gameTime)
-        {
-            switch (_MapNo)
-            {
-                case eMapNo.VILLAGE:
-                    switch (npc.Name)
-                    {
-                        case "Woman":
-                            if (npc.Action == NPC.eAction.Stay || npc.Action == NPC.eAction.Moving || npc.Action == NPC.eAction.Blocked)
-                            {
-                                if (npc.Step < 256)
-                                {
-                                    npc.Direction = Sprite.eDirection.UP;
-                                    npc.Move(gameTime, Sprite.eDirection.UP, 256 - npc.Step);
-                                }
-                                else if (npc.Step < 672)
-                                {
-                                    npc.Direction = Sprite.eDirection.RIGHT;
-                                    npc.Move(gameTime, Sprite.eDirection.RIGHT, 672 - npc.Step);
-                                }
-                                else if (npc.Step < 928)
-                                {
-                                    npc.Direction = Sprite.eDirection.DOWN;
-                                    npc.Move(gameTime, Sprite.eDirection.DOWN, 928 - npc.Step);
-                                }
-                                else if (npc.Step < 1344)
-                                {
-                                    npc.Direction = Sprite.eDirection.LEFT;
-                                    npc.Move(gameTime, Sprite.eDirection.LEFT, 1344 - npc.Step);
-                                }
-                                else
-                                {
-                                    npc.Step = 0;
-                                }
-                            }
-                            break;
-                    }
-                    break;
-            }
         }
 
         public Map(Game game, string mapName, Vector2 offset)
@@ -250,8 +165,7 @@ namespace FantasyEngine.Classes.Overworld
 
             switch (mapName)
             {
-                case "village":
-                    _MapNo = eMapNo.VILLAGE;
+                case "Village":
                     BackgroundMusic = Game.Content.Load<Song>(@"Audios\Musics\Village");
                     Encounters.Add(new Encounter(Game.Content.Load<Monster>(@"Monsters\Goblin"), 1, 100));
 
@@ -260,8 +174,7 @@ namespace FantasyEngine.Classes.Overworld
                     NPCs.Add(boy1);
                     break;
 
-                case "tranquility plain":
-                    _MapNo = eMapNo.TRANQUILITY_PLAIN;
+                case "Tranquility Plain":
                     BackgroundMusic = Game.Content.Load<Song>(@"Audios\Musics\Village");
                     Encounters.Add(new Encounter(Game.Content.Load<Monster>(@"Monsters\Goblin"), 2, 100));
                     break;

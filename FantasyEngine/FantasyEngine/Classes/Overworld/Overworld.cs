@@ -110,6 +110,9 @@ namespace FantasyEngine.Classes.Overworld
                 if (eve != null && eve.Type == Event.eType.Teleport)
                     eve.Teleport();
 
+                if (eve != null && eve.Type == Event.eType.OnEnter)
+                    eve.RaiseOnEnter(gameTime);
+
                 return;
             } // if (Direction held)
             #endregion Update Direction

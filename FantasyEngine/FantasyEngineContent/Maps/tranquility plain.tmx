@@ -11,7 +11,7 @@
    eJzt3Ntu4zAMBFBi283/f/K+rNEiiCWRHIpDmQMIaJMikHki+aqKdE7OX3Dr6PJevz/g1qZriap/RDvZqZIDYuwx5xQHixlbnmjx7sKQk+an6ibtwGXi8fj+37Lrd4qH1cLj8GVoTzGxeHgdUIanmaxYfN80a02Rtdoxnhg97n7W+uycd5BOu0w0c9Wo5oweMydGk5nHpzqvvsbq4elLtInF4/d7d3NZBQ9GE4+H5W/ZPNhMtPvz0XsV56yqJitOs9+ZPSz9quIxO/5l9WAxiRofFT0YTHZeL2mPeSznhJ/24xqjzGuEaJPs8TG6fmLZblaXLBPUfOWdw9hcqnpY5qsKLlU87uqPvEfIYFLBA3GN90SPTJMog/b4ifc6VkQtsvclFT2Q+/L2+InFw3vu0R73aY/aHtH7kvbAbAPKqT10tR6NFeR5enuseSD+rj3uY7lmMroPODN5yXit0m+P2bqml7Lvp3hoaz8yeQH73h5+k/YYx3u82x55Hoh5qz3G0aw7WBk/J3hoTTKOryzPwLWHPhYPq0V7zIN4pqE9cPE88zOq+1070QNpopmvVsbByvk5Kk/2QI2X9hjHu05KY9Ee8+x+nqE9xtGen3vvf8yu2Wqu70b+75UKHp980OOI4f6HxQNlYj0/v15DP/fTHnaPlffaQxeEB7oO7WEziTCq7IEwYfXItKjiscOEwaKSx7vBaWs/EH3xmESeU1W1eLIHy/4C/f2wmmR6MDo81YPZAtU/i0mGB7vFkzwqWCD7qTXZ6VHF4gkelSwyPUTiTapZtAdfO9WjosWpHlUt0H1n2adHeny9Nea+s4yRqDp9+lykDbrfp3qsft772NE6MXiI4E2Q24X63q80ZA2YPJB1RPdrZ2O6H+KpJeu9kZ0eIjEm2rqe4IDyEImbu2Z1PmVMIC1E4s/Zd+1Ls1v22sJucR4ibcLmIdImbB4ibcJkcSV6TdJpLdrjSgWT3evbsiyusJpcdR/1e4fNbg8RvvnLct8navxkeFzJNpmNCe22eI0yLa5kmezYdo0P8rvhzc75K3O7R+vhGRNpwrzdzIkYK+3gD8qkLXDxjJWen+JS9TjlKal2nNI5M/8AoY09yw==
   </data>
  </layer>
- <layer name="Collision" width="100" height="100" opacity="0.48">
+ <layer name="Collision" width="100" height="100" opacity="0.5">
   <data encoding="base64" compression="zlib">
    eJzt211OwzAUBeEui/2vDPUNCbmtf649x51P4pXYd0iomuTx0M1+Fv+oT/X8bPqZpL3e3OnGvaSeW/T1VaB2Ia5pJ8r+qX8fJ5yew+njE52ciT3+OzUTW7SdmI09Xts5H1u8Zw+eXXOyx+d2zMoefarnZY9+lTOzx5iqudljnE1Y7MFTdZ9U41bPzx5z7MFiD56VM7THPHuw2IPFHjw2YbEHiz1Y7MFiDxZ7sNiDxR4s9mBJ7tHzrlLKu03pPYi/a0bynpLX3pK8p+S1tyTvKXntLcl7Sl57S/Kektfekryn5LW3JO8pee0tyXtKXvsrq9ZijzXsYQ/a8ezBOp491hzvtu93n1J73GzFLO2xjj1Y7MFiD57ZedpjLXuw2INnZqb2WM8ePKNztUcNe/CMzNYedezB0ztfe9SyB4vXLBZ7sNiDxR48/k9n8RxhsQeL32Wx2IPF+yEs3sNl8TkgDp/rZbn1ef5Uq2dokzkV87PJuKrZ2aRf9cxo7yTR7ZpVQpPT77clv5e50ru572pzYj6069fIfZ+q8+fkXE43WTnLFY1Oz+Pp1Bp2HLenD+masXMtJ/ed8D78X5XrIu+brGJudpjn9808M+eK16c6qZ9TvkXa5xTd6RfTsE+h
   </data>
@@ -19,16 +19,21 @@
  <objectgroup name="Event" width="100" height="100">
   <object name="TPtoVillage" type="teleport" x="1376" y="1216" width="96" height="32">
    <properties>
-    <property name="teleport" value="village"/>
+    <property name="teleport" value="Village"/>
     <property name="tx" value="9"/>
     <property name="ty" value="1"/>
    </properties>
   </object>
-  <object name="TPtoVillage" type="teleport" x="1376" y="1664" width="96" height="32">
+  <object name="TPtoVillage2" type="teleport" x="1376" y="1664" width="96" height="32">
    <properties>
-    <property name="teleport" value="village"/>
+    <property name="teleport" value="Village"/>
     <property name="tx" value="9"/>
     <property name="ty" value="13"/>
+   </properties>
+  </object>
+  <object name="Battle" type="onEnter" x="704" y="1152" width="32" height="32">
+   <properties>
+    <property name="onEnter" value="Battle_OnEnter"/>
    </properties>
   </object>
  </objectgroup>

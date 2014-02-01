@@ -135,6 +135,8 @@
     <Compile Include="Classes\Menus\EquipScene.cs" />
     <Compile Include="Classes\Menus\InventoryScene.cs" />
     <Compile Include="Classes\Menus\LevelUpScene.cs" />
+    <Compile Include="Classes\Overworld\Maps\TranquilityPlain.cs" />
+    <Compile Include="Classes\Overworld\Maps\Village.cs" />
     <Compile Include="Classes\Overworld\NPC.cs" />
     <Compile Include="Classes\Player.cs" />
     <Compile Include="Classes\Scene.cs" />

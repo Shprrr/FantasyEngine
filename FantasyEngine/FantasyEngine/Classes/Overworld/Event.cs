@@ -5,11 +5,12 @@ using Microsoft.Xna.Framework;
 
 namespace FantasyEngine.Classes.Overworld
 {
-    public class Event
+    public class Event : GameComponent
     {
         public enum eType
         {
-            Teleport
+            Teleport,
+            OnEnter
         }
 
         public eType Type { get; protected set; }
@@ -24,7 +25,8 @@ namespace FantasyEngine.Classes.Overworld
         /// <param name="eventSize">Zone to teleport</param>
         /// <param name="teleportMap">Where to teleport</param>
         /// <param name="teleportPosition">Where to teleport</param>
-        public Event(Rectangle eventSize, string teleportMap, Vector2 teleportPosition)
+        public Event(Game game, Rectangle eventSize, string teleportMap, Vector2 teleportPosition)
+            : base(game)
         {
             Type = eType.Teleport;
             EventSize = eventSize;
@@ -32,10 +34,24 @@ namespace FantasyEngine.Classes.Overworld
             TeleportPosition = teleportPosition;
         }
 
+        /// <summary>
+        /// Event de type OnEnter
+        /// </summary>
+        /// <param name="eventSize">Zone to enter to trigger the event</param>
+        public Event(Game game, Rectangle eventSize)
+            : base(game)
+        {
+            Type = eType.OnEnter;
+            EventSize = eventSize;
+        }
+
         public override string ToString()
         {
             if (Type == eType.Teleport)
                 return "Teleport to " + TeleportMap + " at " + TeleportPosition;
+
+            if (Type == eType.OnEnter)
+                return "Enter at " + EventSize + (OnEnter != null ? " for " + OnEnter.Method.Name : string.Empty);
 
             return base.ToString();
         }
@@ -49,5 +65,16 @@ namespace FantasyEngine.Classes.Overworld
             Game game = Player.GamePlayer.Map.Game;
             Player.GamePlayer.Map = new Map(game, TeleportMap, Player.GamePlayer.Hero.Position - Overworld.CAMERA_CENTER);
         }
+
+        #region Events
+        public delegate void OnEnterHandler(EventArgs e, Event eve, GameTime gameTime);
+        public event OnEnterHandler OnEnter;
+        public virtual void RaiseOnEnter(GameTime gameTime)
+        {
+            // Raise the event by using the () operator.
+            if (OnEnter != null)
+                OnEnter(new EventArgs(), this, gameTime);
+        }
+        #endregion Events
     }
 }

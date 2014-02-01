@@ -77,20 +77,25 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Maps\rules\rule.tmx">
+      <Name>rule</Name>
+      <Importer>TmxImporter</Importer>
+      <Processor>TmxProcessor</Processor>
+    </None>
     <None Include="Maps\tileset.png">
       <Name>tileset</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </None>
-    <Compile Include="Maps\tranquility plain.tmx">
-      <Name>tranquility plain</Name>
+    <Compile Include="Maps\Tranquility Plain.tmx">
+      <Name>Tranquility Plain</Name>
       <Importer>TmxImporter</Importer>
       <Processor>TmxProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Maps\village.tmx">
-      <Name>village</Name>
+    <Compile Include="Maps\Village.tmx">
+      <Name>Village</Name>
       <Importer>TmxImporter</Importer>
       <Processor>TmxProcessor</Processor>
     </Compile>
@@ -393,6 +398,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Maps\rules.txt">
+      <Name>rules</Name>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 
