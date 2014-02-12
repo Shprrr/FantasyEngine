@@ -43,7 +43,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\x86\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;ENGINE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -55,7 +55,7 @@
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\x86\Release</OutputPath>
-    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <DefineConstants>TRACE;WINDOWS;ENGINE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -128,6 +128,7 @@
     <Compile Include="Classes\Menus\ShopScene.cs" />
     <Compile Include="Classes\Menus\SkillScene.cs" />
     <Compile Include="Classes\NumericDropDown.cs" />
+    <Compile Include="Classes\Overworld\Encounter.cs" />
     <Compile Include="Classes\Overworld\Event.cs" />
     <Compile Include="Classes\Overworld\Map.cs" />
     <Compile Include="Classes\Menus\CharacterScene.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Classes\Menus\EquipScene.cs" />
     <Compile Include="Classes\Menus\InventoryScene.cs" />
     <Compile Include="Classes\Menus\LevelUpScene.cs" />
+    <Compile Include="Classes\Overworld\Maps\IMapFactory.cs" />
     <Compile Include="Classes\Overworld\Maps\TranquilityPlain.cs" />
     <Compile Include="Classes\Overworld\Maps\Village.cs" />
     <Compile Include="Classes\Overworld\NPC.cs" />

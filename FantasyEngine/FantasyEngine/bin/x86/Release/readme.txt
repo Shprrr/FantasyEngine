@@ -15,5 +15,6 @@ Special debug commands
 B            : Debug button to call a battle.
 <            : Force quit.
 F12          : Show the FPS.
-P            : Show position on the map.
+P            : Show debug informations.
 L            : Level up.
+V            : Toggle Battle/No Battle

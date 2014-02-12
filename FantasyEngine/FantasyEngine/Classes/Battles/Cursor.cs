@@ -37,11 +37,12 @@ namespace FantasyEngine.Classes.Battles
 
 			frame = (byte)((frame + 1) % 8);
 
+#if ENGINE
 			if (Player.GamePlayer.ShowDebug)
 			{
 				GameMain.spriteBatchGUI.DrawString(GameMain.font, "Cursor Index: " + _Index, new Vector2(8, 28), Color.White);
 			}
-
+#endif
 			Color alpha = Color.White * (frame < 4 ? 0.5f : 1);
 			switch (_Target)
 			{
