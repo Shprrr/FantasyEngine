@@ -48,11 +48,22 @@ namespace FantasyEngine.Classes
 		{
 			Player.GamePlayer = new Player();
 
-			for (int i = 0; i < 1/*MAX_ACTOR*/; i++)
+#if ENGINE
+			for (int i = 0; i < 1; i++)
+#else
+			for (int i = 0; i < Player.MAX_ACTOR; i++)
+#endif
 			{
-				Player.GamePlayer.Actors[i] = new Character();
-				Player.GamePlayer.Actors[i].Name = "H" + (i + 1);
-				Player.GamePlayer.Actors[i].IndexCurrentJob = 0;
+				Player.GamePlayer.Actors[i] = new Character("H" + (i + 1));
+#if ENGINE
+				BaseJob[] baseJobs = JobManager.GetAllBaseJob();
+				for (int j = 0; j < baseJobs.Length; j++)
+				{
+					if (baseJobs[j].JobAbbreviation != "Ar")
+						Player.GamePlayer.Actors[i].Jobs[j] = new Job(baseJobs[j]);
+				}
+				Player.GamePlayer.Actors[i].JobSort();
+#endif
 			}
 
 			Vector2 startingPoint = new Vector2(64, 64);
@@ -60,6 +71,7 @@ namespace FantasyEngine.Classes
 			Player.GamePlayer.Map = Map.GetFactory("Village").CreateMap(Game);
 			Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetItem("Potion"), 2));
 			Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetWeapon("Knife"), 1));
+#if ENGINE
 			Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetShield("Leather Shield"), 2));
 			Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetArmor("Leather Helmet"), 1));
 			Player.GamePlayer.Inventory.Items.Add(new Inventory.InvItem(ItemManager.GetArmor("Leather Armor"), 1));
@@ -79,7 +91,7 @@ namespace FantasyEngine.Classes
 			Player.GamePlayer.Actors[0].Skills[4].Exp += 17075;
 			Player.GamePlayer.Actors[0].Skills.Add(new Skill(SkillManager.GetBaseSkill("Cure")));
 			Player.GamePlayer.Actors[0].Skills[5].Exp += 70;
-
+#endif
 			Player.GamePlayer.StepToBattle = FantasyEngineData.Extensions.rand.Next(Overworld.Overworld.STEP_TO_BATTLE_MIN, Overworld.Overworld.STEP_TO_BATTLE_MAX);
 
 			Scene.ChangeMainScene(new Overworld.Overworld(Game));

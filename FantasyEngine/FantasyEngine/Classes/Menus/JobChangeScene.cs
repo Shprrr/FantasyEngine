@@ -8,333 +8,336 @@ using FantasyEngineData.Entities;
 
 namespace FantasyEngine.Classes.Menus
 {
-    public class JobChangeScene : Scene
-    {
-        private readonly string[] USE_COMMANDS = { "Change", "Cancel" };
+	public class JobChangeScene : Scene
+	{
+		private readonly string[] USE_COMMANDS = { "Change", "Cancel" };
 
-        private readonly Color COLOR_NORMAL = Color.White;
-        private readonly Color COLOR_UNUSUABLE = Color.Gray;
-        private readonly Texture2D COMPARE_ARROW;
+		private readonly Color COLOR_NORMAL = Color.White;
+		private readonly Color COLOR_UNUSUABLE = Color.Gray;
+		private readonly Texture2D COMPARE_ARROW;
 
-        private Character _CurrentActor;
-        private Job[] _Jobs = new Job[Character.MAX_JOB];
-        private Cursor _CursorWindow;
-        private Window _DescriptionWindow;
-        private Window _JobsWindow;
-        private Window _CompareWindow;
-        private Window _PrerequisiteWindow;
-        private Command _UseCommand;
-        private Window _MessageWindow;
-        private TimeSpan _MessageTime;
+		private Character _CurrentActor;
+		private Job[] _Jobs = new Job[Character.MAX_JOB];
+		private Cursor _CursorWindow;
+		private Window _DescriptionWindow;
+		private Window _JobsWindow;
+		private Window _CompareWindow;
+		private Window _PrerequisiteWindow;
+		private Command _UseCommand;
+		private Window _MessageWindow;
+		private TimeSpan _MessageTime;
 
-        public Character CurrentActor
-        {
-            get { return _CurrentActor; }
-            set { _CurrentActor = value; }
-        }
+		public Character CurrentActor
+		{
+			get { return _CurrentActor; }
+			set { _CurrentActor = value; }
+		}
 
-        public JobChangeScene(Game game)
-            : base(game)
-        {
-            COMPARE_ARROW = Game.Content.Load<Texture2D>(@"Images\Menus\compare_arrow");
+		public JobChangeScene(Game game)
+			: base(game)
+		{
+			COMPARE_ARROW = Game.Content.Load<Texture2D>(@"Images\Menus\compare_arrow");
 
-            //TODO: Take in parameters the actor for multi-actor.
-            CurrentActor = Player.GamePlayer.Actors[0];
-            int i = 0;
-            foreach (var job in CurrentActor.Jobs)
-            {
-                if (job == null || job == CurrentActor.CurrentJob)
-                    continue;
+			//TODO: Take in parameters the actor for multi-actor.
+			CurrentActor = Player.GamePlayer.Actors[0];
+			int i = 0;
+			foreach (var job in CurrentActor.Jobs)
+			{
+				if (job == null || job == CurrentActor.CurrentJob)
+					continue;
 
-                _Jobs[i] = job;
-                ++i;
-            }
+				_Jobs[i] = job;
+				++i;
+			}
 
-            _CursorWindow = new Cursor(Game, _Jobs.Count(j => j != null));
-            _DescriptionWindow = new Window(game, 0, 0, 640, 48); _DescriptionWindow.Visible = false;
-            _JobsWindow = new Window(Game, 0, _DescriptionWindow.Rectangle.Bottom, 368, 432);
-            _CompareWindow = new Window(game, _JobsWindow.Rectangle.Right, _DescriptionWindow.Rectangle.Bottom, 640 - _JobsWindow.Rectangle.Right, 184);
-            _PrerequisiteWindow = new Window(game, _CompareWindow.Rectangle.X, _CompareWindow.Rectangle.Bottom, _CompareWindow.Rectangle.Width, 480 - _CompareWindow.Rectangle.Bottom);
-            _MessageWindow = new Window(game, 0, 0, 640, 48); _MessageWindow.Enabled = false; _MessageWindow.Visible = false;
+			_CursorWindow = new Cursor(Game, _Jobs.Count(j => j != null));
+			_DescriptionWindow = new Window(game, 0, 0, 640, 48); _DescriptionWindow.Visible = false;
+			_JobsWindow = new Window(Game, 0, _DescriptionWindow.Rectangle.Bottom, 368, 432);
+			_CompareWindow = new Window(game, _JobsWindow.Rectangle.Right, _DescriptionWindow.Rectangle.Bottom, 640 - _JobsWindow.Rectangle.Right, 184);
+			_PrerequisiteWindow = new Window(game, _CompareWindow.Rectangle.X, _CompareWindow.Rectangle.Bottom, _CompareWindow.Rectangle.Width, 480 - _CompareWindow.Rectangle.Bottom);
+			_MessageWindow = new Window(game, 0, 0, 640, 48); _MessageWindow.Enabled = false; _MessageWindow.Visible = false;
 
-            _UseCommand = new Command(Game, 472, USE_COMMANDS, 2);
-            _UseCommand.ChangeOffset(84, _JobsWindow.Rectangle.Bottom - _UseCommand.Rectangle.Height - Window.Tileset.TileHeight);
-            _UseCommand.Enabled = false;
-            _UseCommand.Visible = false;
-        }
+			_UseCommand = new Command(Game, 472, USE_COMMANDS, 2);
+			_UseCommand.ChangeOffset(84, _JobsWindow.Rectangle.Bottom - _UseCommand.Rectangle.Height - Window.Tileset.TileHeight);
+			_UseCommand.Enabled = false;
+			_UseCommand.Visible = false;
+		}
 
-        public override void DrawGUI(GameTime gameTime)
-        {
-            base.DrawGUI(gameTime);
+		public override void DrawGUI(GameTime gameTime)
+		{
+			base.DrawGUI(gameTime);
 
-            Job job = _Jobs[_CursorWindow.CursorIndex];
+			Job job = _Jobs[_CursorWindow.CursorIndex];
 
-            DrawDescription(gameTime, job);
+			DrawDescription(gameTime, job);
 
-            DrawListJobs(gameTime);
+			DrawListJobs(gameTime);
 
-            DrawCompare(gameTime, job);
+			DrawCompare(gameTime, job);
 
-            DrawPrerequisite(gameTime, job);
+			DrawPrerequisite(gameTime, job);
 
-            DrawMessage(gameTime);
+			DrawMessage(gameTime);
 
-            _UseCommand.Offset = spriteBatchGUI.CameraOffset;
-            _UseCommand.Draw(gameTime);
-        }
+			_UseCommand.Offset = spriteBatchGUI.CameraOffset;
+			_UseCommand.Draw(gameTime);
+		}
 
-        private void DrawDescription(GameTime gameTime, Job job)
-        {
-            if (!_DescriptionWindow.Visible)
-                return;
+		private void DrawDescription(GameTime gameTime, Job job)
+		{
+			if (!_DescriptionWindow.Visible)
+				return;
 
-            _DescriptionWindow.Offset = spriteBatchGUI.CameraOffset;
-            _DescriptionWindow.Draw(gameTime);
-            spriteBatchGUI.Scissor(_DescriptionWindow.InsideBound);
+			_DescriptionWindow.Offset = spriteBatchGUI.CameraOffset;
+			_DescriptionWindow.Draw(gameTime);
+			spriteBatchGUI.Scissor(_DescriptionWindow.InsideBound);
 
-            if (job != null)
-                spriteBatchGUI.DrawString(GameMain.font, ""/*job.Description*/,
-                    new Vector2(16, 16) + spriteBatchGUI.CameraOffset, Color.White);
+			if (job != null)
+				spriteBatchGUI.DrawString(GameMain.font, ""/*job.Description*/,
+					new Vector2(16, 16) + spriteBatchGUI.CameraOffset, Color.White);
 
-            spriteBatchGUI.ScissorReset();
-        }
+			spriteBatchGUI.ScissorReset();
+		}
 
-        private void DrawListJobs(GameTime gameTime)
-        {
-            _JobsWindow.Offset = spriteBatchGUI.CameraOffset;
-            _JobsWindow.Draw(gameTime);
-            spriteBatchGUI.Scissor(_JobsWindow.InsideBound);
+		private void DrawListJobs(GameTime gameTime)
+		{
+			_JobsWindow.Offset = spriteBatchGUI.CameraOffset;
+			_JobsWindow.Draw(gameTime);
+			spriteBatchGUI.Scissor(_JobsWindow.InsideBound);
 
-            // Draw list of items
-            int i = 0;
-            foreach (var job in _Jobs)
-            {
-                if (job == null)
-                    continue;
+			// Draw list of items
+			int i = 0;
+			foreach (var job in _Jobs)
+			{
+				if (job == null)
+					continue;
 
-                bool isAllowed = job.BaseJob.IsAllowed(CurrentActor);
+				bool isAllowed = job.BaseJob.IsAllowed(CurrentActor);
 
-                spriteBatchGUI.DrawString(GameMain.font, job.JobName,
-                    new Vector2(34, 68 + i * 22) + spriteBatchGUI.CameraOffset, isAllowed ? COLOR_NORMAL : COLOR_UNUSUABLE);
+				spriteBatchGUI.DrawString(GameMain.font, job.JobName,
+					new Vector2(34, 68 + i * 22) + spriteBatchGUI.CameraOffset, isAllowed ? COLOR_NORMAL : COLOR_UNUSUABLE);
 
-                spriteBatchGUI.DrawString(GameMain.font, job.BaseJob.JobAbbreviation,
-                    new Vector2(230, 68 + i * 22) + spriteBatchGUI.CameraOffset, isAllowed ? COLOR_NORMAL : COLOR_UNUSUABLE);
+				spriteBatchGUI.DrawString(GameMain.font, job.BaseJob.JobAbbreviation,
+					new Vector2(230, 68 + i * 22) + spriteBatchGUI.CameraOffset, isAllowed ? COLOR_NORMAL : COLOR_UNUSUABLE);
 
-                spriteBatchGUI.DrawString(GameMain.font, "L:" + job.Level.ToString(),
-                    new Vector2(294, 68 + i * 22) + spriteBatchGUI.CameraOffset, isAllowed ? COLOR_NORMAL : COLOR_UNUSUABLE);
+				spriteBatchGUI.DrawString(GameMain.font, "L:" + job.Level.ToString(),
+					new Vector2(294, 68 + i * 22) + spriteBatchGUI.CameraOffset, isAllowed ? COLOR_NORMAL : COLOR_UNUSUABLE);
 
-                ++i;
-            }
+				++i;
+			}
 
-            // Draw cursor
-            _CursorWindow.Position = new Vector2(14, 68 + _CursorWindow.CursorIndex * 22);
-            _CursorWindow.Draw(gameTime);
+			if (i == 0)
+				spriteBatchGUI.DrawString(GameMain.font, "No other job available", new Vector2(34, 68) + spriteBatchGUI.CameraOffset, COLOR_UNUSUABLE);
 
-            spriteBatchGUI.ScissorReset();
-        }
+			// Draw cursor
+			_CursorWindow.Position = new Vector2(14, 68 + _CursorWindow.CursorIndex * 22);
+			_CursorWindow.Draw(gameTime);
 
-        private void DrawCompare(GameTime gameTime, Job job)
-        {
-            if (!_CompareWindow.Visible)
-                return;
+			spriteBatchGUI.ScissorReset();
+		}
 
-            _CompareWindow.Offset = spriteBatchGUI.CameraOffset;
-            _CompareWindow.Draw(gameTime);
-            spriteBatchGUI.Scissor(_CompareWindow.InsideBound);
+		private void DrawCompare(GameTime gameTime, Job job)
+		{
+			if (!_CompareWindow.Visible)
+				return;
 
-            if (job != null && job.Level != 0)
-            {
-                spriteBatchGUI.DrawString(GameMain.font, CurrentActor.Name,
-                    new Vector2(382, 68) + spriteBatchGUI.CameraOffset, Color.White);
+			_CompareWindow.Offset = spriteBatchGUI.CameraOffset;
+			_CompareWindow.Draw(gameTime);
+			spriteBatchGUI.Scissor(_CompareWindow.InsideBound);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "HP:",
-                    new Vector2(382, 90) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.MaxHp.ToString().PadLeft(4, ''),
-                    new Vector2(510, 90) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(562, 90) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, job.MaxHp.ToString().PadLeft(4, ''),
-                    new Vector2(578, 90) + spriteBatchGUI.CameraOffset, Color.White);
+			if (job != null && job.Level != 0)
+			{
+				spriteBatchGUI.DrawString(GameMain.font, CurrentActor.Name,
+					new Vector2(382, 68) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "MP:",
-                    new Vector2(382, 106) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.MaxMp.ToString().PadLeft(4, ''),
-                    new Vector2(510, 106) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(562, 106) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, job.MaxMp.ToString().PadLeft(4, ''),
-                    new Vector2(578, 106) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, "HP:",
+					new Vector2(382, 90) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.MaxHp.ToString().PadLeft(4, ''),
+					new Vector2(510, 90) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(562, 90) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, job.MaxHp.ToString().PadLeft(4, ''),
+					new Vector2(578, 90) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "Strength:",
-                    new Vector2(382, 122) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Strength.ToString().PadLeft(3, ''),
-                    new Vector2(538, 122) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 122) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, job.Strength.ToString().PadLeft(3, ''),
-                    new Vector2(590, 122) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, "MP:",
+					new Vector2(382, 106) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.MaxMp.ToString().PadLeft(4, ''),
+					new Vector2(510, 106) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(562, 106) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, job.MaxMp.ToString().PadLeft(4, ''),
+					new Vector2(578, 106) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "Vitality:",
-                    new Vector2(382, 138) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Vitality.ToString().PadLeft(3, ''),
-                    new Vector2(538, 138) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 138) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, job.Vitality.ToString().PadLeft(3, ''),
-                    new Vector2(590, 138) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, "Strength:",
+					new Vector2(382, 122) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Strength.ToString().PadLeft(3, ''),
+					new Vector2(538, 122) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 122) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, job.Strength.ToString().PadLeft(3, ''),
+					new Vector2(590, 122) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "Accuracy:",
-                    new Vector2(382, 154) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Accuracy.ToString().PadLeft(3, ''),
-                    new Vector2(538, 154) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 154) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, job.Accuracy.ToString().PadLeft(3, ''),
-                    new Vector2(590, 154) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, "Vitality:",
+					new Vector2(382, 138) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Vitality.ToString().PadLeft(3, ''),
+					new Vector2(538, 138) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 138) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, job.Vitality.ToString().PadLeft(3, ''),
+					new Vector2(590, 138) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "Agility:",
-                    new Vector2(382, 170) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Agility.ToString().PadLeft(3, ''),
-                    new Vector2(538, 170) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 170) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, job.Agility.ToString().PadLeft(3, ''),
-                    new Vector2(590, 170) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, "Accuracy:",
+					new Vector2(382, 154) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Accuracy.ToString().PadLeft(3, ''),
+					new Vector2(538, 154) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 154) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, job.Accuracy.ToString().PadLeft(3, ''),
+					new Vector2(590, 154) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "Intelligence:",
-                    new Vector2(382, 186) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Intelligence.ToString().PadLeft(3, ''),
-                    new Vector2(538, 186) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 186) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, job.Intelligence.ToString().PadLeft(3, ''),
-                    new Vector2(590, 186) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, "Agility:",
+					new Vector2(382, 170) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Agility.ToString().PadLeft(3, ''),
+					new Vector2(538, 170) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 170) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, job.Agility.ToString().PadLeft(3, ''),
+					new Vector2(590, 170) + spriteBatchGUI.CameraOffset, Color.White);
 
-                spriteBatchGUI.DrawString(GameMain.font8, "Wisdom:",
-                    new Vector2(382, 202) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Wisdom.ToString().PadLeft(3, ''),
-                    new Vector2(538, 202) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 202) + spriteBatchGUI.CameraOffset, Color.White);
-                spriteBatchGUI.DrawString(GameMain.font8, job.Wisdom.ToString().PadLeft(3, ''),
-                    new Vector2(590, 202) + spriteBatchGUI.CameraOffset, Color.White);
-            }
+				spriteBatchGUI.DrawString(GameMain.font8, "Intelligence:",
+					new Vector2(382, 186) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Intelligence.ToString().PadLeft(3, ''),
+					new Vector2(538, 186) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 186) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, job.Intelligence.ToString().PadLeft(3, ''),
+					new Vector2(590, 186) + spriteBatchGUI.CameraOffset, Color.White);
 
-            spriteBatchGUI.ScissorReset();
-        }
+				spriteBatchGUI.DrawString(GameMain.font8, "Wisdom:",
+					new Vector2(382, 202) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, CurrentActor.Wisdom.ToString().PadLeft(3, ''),
+					new Vector2(538, 202) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.Draw(COMPARE_ARROW, new Vector2(574, 202) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, job.Wisdom.ToString().PadLeft(3, ''),
+					new Vector2(590, 202) + spriteBatchGUI.CameraOffset, Color.White);
+			}
 
-        private void DrawPrerequisite(GameTime gameTime, Job job)
-        {
-            if (!_PrerequisiteWindow.Visible)
-                return;
+			spriteBatchGUI.ScissorReset();
+		}
 
-            _PrerequisiteWindow.Offset = spriteBatchGUI.CameraOffset;
-            _PrerequisiteWindow.Draw(gameTime);
-            spriteBatchGUI.Scissor(_PrerequisiteWindow.InsideBound);
+		private void DrawPrerequisite(GameTime gameTime, Job job)
+		{
+			if (!_PrerequisiteWindow.Visible)
+				return;
 
-            if (job != null)
-            {
-                int i = 0;
-                BaseJob[] baseJobs = JobManager.GetAllBaseJob();
-                foreach (var jobPrerequisite in job.BaseJob.PrerequisiteJobs)
-                {
-                    int indexJob = Array.IndexOf<BaseJob>(baseJobs, jobPrerequisite.Job);
-                    if (CurrentActor.Jobs[indexJob].Level < jobPrerequisite.Level)
-                    {
-                        spriteBatchGUI.DrawString(GameMain.font, jobPrerequisite.Job.JobAbbreviation + " Level " + jobPrerequisite.Level,
-                            new Vector2(382, 248 + i * 22) + spriteBatchGUI.CameraOffset, Color.White);
-                        ++i;
-                    }
-                }
+			_PrerequisiteWindow.Offset = spriteBatchGUI.CameraOffset;
+			_PrerequisiteWindow.Draw(gameTime);
+			spriteBatchGUI.Scissor(_PrerequisiteWindow.InsideBound);
 
-                if (i == 0)
-                    spriteBatchGUI.DrawString(GameMain.font, "Available", new Vector2(382, 248 + i * 22) + spriteBatchGUI.CameraOffset, Color.White);
-            }
+			if (job != null)
+			{
+				int i = 0;
+				BaseJob[] baseJobs = JobManager.GetAllBaseJob();
+				foreach (var jobPrerequisite in job.BaseJob.PrerequisiteJobs)
+				{
+					int indexJob = Array.IndexOf<BaseJob>(baseJobs, jobPrerequisite.Job);
+					if (CurrentActor.Jobs[indexJob].Level < jobPrerequisite.Level)
+					{
+						spriteBatchGUI.DrawString(GameMain.font, jobPrerequisite.Job.JobAbbreviation + " Level " + jobPrerequisite.Level,
+							new Vector2(382, 248 + i * 22) + spriteBatchGUI.CameraOffset, Color.White);
+						++i;
+					}
+				}
 
-            spriteBatchGUI.ScissorReset();
-        }
+				if (i == 0)
+					spriteBatchGUI.DrawString(GameMain.font, "Available", new Vector2(382, 248 + i * 22) + spriteBatchGUI.CameraOffset, Color.White);
+			}
 
-        private void DrawMessage(GameTime gameTime)
-        {
-            if (!_MessageWindow.Visible)
-                return;
+			spriteBatchGUI.ScissorReset();
+		}
 
-            _MessageWindow.Offset = spriteBatchGUI.CameraOffset;
-            _MessageWindow.Draw(gameTime);
-            spriteBatchGUI.Scissor(_MessageWindow.InsideBound);
+		private void DrawMessage(GameTime gameTime)
+		{
+			if (!_MessageWindow.Visible)
+				return;
 
-            spriteBatchGUI.DrawString(GameMain.font, "Job changed and item unequipped.",
-                new Vector2(16, 16) + spriteBatchGUI.CameraOffset, Color.White);
+			_MessageWindow.Offset = spriteBatchGUI.CameraOffset;
+			_MessageWindow.Draw(gameTime);
+			spriteBatchGUI.Scissor(_MessageWindow.InsideBound);
 
-            spriteBatchGUI.ScissorReset();
-        }
+			spriteBatchGUI.DrawString(GameMain.font, "Job changed and item unequipped.",
+				new Vector2(16, 16) + spriteBatchGUI.CameraOffset, Color.White);
 
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
+			spriteBatchGUI.ScissorReset();
+		}
 
-            _UseCommand.Update(gameTime);
+		public override void Update(GameTime gameTime)
+		{
+			base.Update(gameTime);
 
-            if (!Input.UpdateInput(gameTime))
-                return;
+			_UseCommand.Update(gameTime);
 
-            if (_MessageWindow.Enabled)
-            {
-                if (gameTime.TotalGameTime - _MessageTime >= TimeSpan.FromSeconds(2) || Input.keyStateDown.IsKeyDown(Keys.Enter))
-                    Scene.RemoveSubScene();
+			if (!Input.UpdateInput(gameTime))
+				return;
 
-                return;
-            }
+			if (_MessageWindow.Enabled)
+			{
+				if (gameTime.TotalGameTime - _MessageTime >= TimeSpan.FromSeconds(2) || Input.keyStateDown.IsKeyDown(Keys.Enter))
+					Scene.RemoveSubScene();
 
-            if (!_UseCommand.Enabled)
-                _CursorWindow.Update(gameTime);
+				return;
+			}
 
-            if (Input.keyStateDown.IsKeyDown(Keys.Enter))
-            {
-                Job job = _Jobs[_CursorWindow.CursorIndex];
-                if (_UseCommand.Enabled)
-                    switch (_UseCommand.CursorPosition)
-                    {
-                        case 0: // Change
-                            CurrentActor.Hp = CurrentActor.MaxHp;
-                            CurrentActor.Mp = CurrentActor.MaxMp;
-                            CurrentActor.Statut = Status.Normal;
+			if (!_UseCommand.Enabled)
+				_CursorWindow.Update(gameTime);
 
-                            for (int i = 0; i < Character.MAX_JOB; i++)
-                            {
-                                if (job == CurrentActor.Jobs[i])
-                                {
-                                    CurrentActor.IndexCurrentJob = i;
-                                    break;
-                                }
-                            }
+			if (Input.keyStateDown.IsKeyDown(Keys.Enter))
+			{
+				Job job = _Jobs[_CursorWindow.CursorIndex];
+				if (_UseCommand.Enabled)
+					switch (_UseCommand.CursorPosition)
+					{
+						case 0: // Change
+							CurrentActor.Hp = CurrentActor.MaxHp;
+							CurrentActor.Mp = CurrentActor.MaxMp;
+							CurrentActor.Statut = Status.Normal;
 
-                            CurrentActor.UnequipAll(Player.GamePlayer.Inventory);
-                            Player.GamePlayer.Hero.ChangeSprite(@"Overworld\characters", CurrentActor.CurrentJob.BaseJob.OverworldSpriteSize, Sprite.OVERWORLD_SIZE);
+							for (int i = 0; i < Character.MAX_JOB; i++)
+							{
+								if (job == CurrentActor.Jobs[i])
+								{
+									CurrentActor.IndexCurrentJob = i;
+									break;
+								}
+							}
 
-                            _MessageWindow.Enabled = true;
-                            _MessageWindow.Visible = true;
-                            _MessageTime = gameTime.TotalGameTime;
-                            _UseCommand.Enabled = false;
-                            _UseCommand.Visible = false;
-                            break;
+							CurrentActor.UnequipAll(Player.GamePlayer.Inventory);
+							Player.GamePlayer.Hero.ChangeSprite(@"Overworld\characters", CurrentActor.CurrentJob.BaseJob.OverworldSpriteSize, Sprite.OVERWORLD_SIZE);
 
-                        case 1: // Cancel
-                            _UseCommand.Enabled = false;
-                            _UseCommand.Visible = false;
-                            break;
-                    }
-                else
-                    if (job.BaseJob.IsAllowed(CurrentActor))
-                    {
-                        _UseCommand.Enabled = true;
-                        _UseCommand.Visible = true;
-                    }
-            }
+							_MessageWindow.Enabled = true;
+							_MessageWindow.Visible = true;
+							_MessageTime = gameTime.TotalGameTime;
+							_UseCommand.Enabled = false;
+							_UseCommand.Visible = false;
+							break;
 
-            if (Input.keyStateDown.IsKeyDown(Keys.Escape)
-                || Input.keyStateDown.IsKeyDown(Keys.Back))
-            {
-                if (_UseCommand.Enabled)
-                {
-                    _UseCommand.Enabled = false;
-                    _UseCommand.Visible = false;
-                }
-                else
-                    Scene.RemoveSubScene();
-            }
-        }
-    }
+						case 1: // Cancel
+							_UseCommand.Enabled = false;
+							_UseCommand.Visible = false;
+							break;
+					}
+				else
+					if (job != null && job.BaseJob.IsAllowed(CurrentActor))
+					{
+						_UseCommand.Enabled = true;
+						_UseCommand.Visible = true;
+					}
+			}
+
+			if (Input.keyStateDown.IsKeyDown(Keys.Escape)
+				|| Input.keyStateDown.IsKeyDown(Keys.Back))
+			{
+				if (_UseCommand.Enabled)
+				{
+					_UseCommand.Enabled = false;
+					_UseCommand.Visible = false;
+				}
+				else
+					Scene.RemoveSubScene();
+			}
+		}
+	}
 }
