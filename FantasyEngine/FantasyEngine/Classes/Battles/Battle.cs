@@ -9,6 +9,7 @@ using FantasyEngineData.Battles;
 using FantasyEngineData.Entities;
 using FantasyEngineData.Items;
 using FantasyEngineData.Skills;
+using BattleData = FantasyEngineData.Battles.Battle;
 
 namespace FantasyEngine.Classes.Battles
 {
@@ -37,60 +38,10 @@ namespace FantasyEngine.Classes.Battles
 		}
 	}
 
-	public struct CTBTurn : IComparable<CTBTurn>
+	//TODO: Enemy mort attaque encore et encore targetable.
+	//TODO: Attack normal ne devrait pas être multi target.
+	public class BattleScene : Scene
 	{
-		public int counter;
-		public int rank;
-		public int tickSpeed;
-		public Battler battler;
-
-		public override int GetHashCode() { return base.GetHashCode(); }
-
-		public override bool Equals(object obj)
-		{
-			if (obj is CTBTurn)
-			{
-				CTBTurn other = (CTBTurn)obj;
-				//    return other.pActor == null || (this.pActor != null && this.counter <= other.counter);
-				if (this.battler == other.battler)
-					return this.counter == other.counter;
-
-				return false;
-			}
-
-			return base.Equals(obj);
-		}
-
-		public override string ToString()
-		{
-			return battler + " [C:" + counter + "]";
-		}
-
-		#region IComparable<CTBTurn> Membres
-
-		public int CompareTo(CTBTurn other)
-		{
-			//return other.pActor == null || (this.pActor != null && this.counter <= other.counter);
-			if (this.battler == other.battler)
-				return 0;
-
-			if (other.battler == null)
-				return -1;
-
-			if (this.battler == null)
-				return 1;
-
-			return this.counter.CompareTo(other.counter);
-		}
-
-		#endregion
-	}
-
-	public class Battle : Scene
-	{
-		public const int MAX_CTB = 16;
-		public const int MAX_ENEMY = Player.MAX_ACTOR;
-
 		private readonly string[] playerCommands = { "Attack", "Magic", "Item", "Guard", "Run" };
 		private enum ePlayerCommand
 		{
@@ -101,15 +52,16 @@ namespace FantasyEngine.Classes.Battles
 			Run
 		}
 
+		//TODO: À enlever.
 		private readonly string[] partyCommand = { "Fight", "Escape" };
 		private const string MISS = "MISS";
 
-		#region Fields
+		private Battle _Battle;
 		private Texture2D _BattleBack;
 		private Song _BattleMusic;
 
 		private Command _PlayerCommand;
-		private Command _PartyCommand;
+		private Command _PartyCommand; //TODO: À enlever.
 		private Window _HelpWindow;
 		private Window _StatusWindow;
 		private Window _MessageWindow;
@@ -119,633 +71,22 @@ namespace FantasyEngine.Classes.Battles
 		private SkillSelection _SkillSelection;
 
 		private int _CTBWindowScrollY;
+		private BattleAction _CurrentAction;
+		private Cursor _Target = null;
+		private Battler[] _TargetBattler;
 
-		private int _BattleTurn = 0;
-		private int _Phase;
 		private int _PhaseStep;
 		private int _AnimationWait = 0;
 
-		private List<CTBTurn> _OrderBattle;
-		private Cursor _Target = null;
-		private Battler[] _TargetBattler = new Battler[Player.MAX_ACTOR + MAX_ENEMY];
-
-		private int _ActiveBattlerIndex;
-		private BattleAction _CurrentAction;
-
-		private bool _CanEscape = true;
-		private bool _CanLose = true;
 		private int _Exp = 0;
 		private int _Gold = 0;
 		private List<BaseItem> _Treasure = new List<BaseItem>();
-		#endregion Fields
 
-		/// <summary>
-		/// Get the Battler who is taking an action.
-		/// </summary>
-		/// <returns></returns>
-		private Battler getActiveBattler()
-		{
-			return _ActiveBattlerIndex < Player.MAX_ACTOR ? _Actors[_ActiveBattlerIndex] : _Enemies[_ActiveBattlerIndex - Player.MAX_ACTOR];
-		}
-		private void setActiveBattler()
-		{
-			for (int i = 0; i < Player.MAX_ACTOR; i++)
-			{
-				if (_Actors[i] == _OrderBattle[0].battler)
-					_ActiveBattlerIndex = i;
-			}
-
-			for (int i = 0; i < MAX_ENEMY; i++)
-			{
-				if (_Enemies[i] == _OrderBattle[0].battler)
-					_ActiveBattlerIndex = Player.MAX_ACTOR + i;
-			}
-		}
-
-		/// <summary>
-		/// Determine battle Win/Loss results.
-		/// </summary>
-		/// <returns></returns>
-		private bool Judge()
-		{
-			foreach (Battler actor in _Actors)
-			{
-				//TODO: Pas sur, mais je ne pense pas que ca marche pour plus qu'un actor.
-				if (actor != null && actor.IsDead)
-				{
-					BattleEnd(_CanLose ? 1 : 2);
-					return true;
-				}
-			}
-
-			foreach (Battler enemy in _Enemies)
-			{
-				if (enemy != null && !enemy.IsDead)
-				{
-					return false;
-				}
-			}
-
-			// Start after battle phase (win)
-			StartPhase5();
-			return true;
-		}
-
-		/// <summary>
-		/// Battle Ends.
-		/// </summary>
-		/// <param name="result">Results (0:Win 1:Lose 2:Escape)</param>
-		private void BattleEnd(int result)
-		{
-			switch (result)
-			{
-				case 0: // Win
-					{
-						int nbActor = 0;
-						foreach (Battler actor in _Actors)
-						{
-							if (actor != null && !actor.IsDead)
-								nbActor++;
-						}
-
-						foreach (Battler actor in _Actors)
-						{
-							if (actor != null && !actor.IsDead)
-							{
-								int oldLevel = actor.Level;
-								actor.Exp += _Exp / nbActor;
-#if DEBUG
-								actor.Exp += 40;
-#endif
-								if (actor.Level != oldLevel)
-									Scene.AddSubScene(new FantasyEngine.Classes.Menus.LevelUpScene(Game, actor));
-								Player.GamePlayer.Inventory.Gold += _Gold / nbActor;
-								Player.GamePlayer.Inventory.AddRange(_Treasure);
-							}
-						}
-					}
-					break;
-
-				case 1: // Lose
-					// Gameover screen
-					// Wakeup in the inn.
-					break;
-			}
-
-			//Remove battle states.
-			foreach (Battler actor in _Actors)
-			{
-			}
-
-			_Phase = 6;
-		}
-
-
-		/// <summary>
-		/// Start Pre-battle phase.
-		/// </summary>
-		public void StartPhase1()
-		{
-			_Phase = 1;
-
-			InitCTBCounters();
-
-			SetBattlerPositions();
-
-			// Start party command phase
-			StartPhase3();
-		}
-
-		/// <summary>
-		/// Initialise CTB counters for the first time.
-		/// </summary>
-		private void InitCTBCounters()
-		{
-			//1-Calcul les ICV, ajoute le plus petit et garde les restes
-			List<CTBTurn> tempCTB = new List<CTBTurn>(Player.MAX_ACTOR + MAX_ENEMY);
-
-			//Get ICVs
-			for (int i = 0; i < Player.MAX_ACTOR; i++)
-			{
-				if (_Actors[i] == null)
-					continue;
-
-				_Actors[i].CalculateICV();
-				CTBTurn turn = new CTBTurn();
-				turn.battler = _Actors[i];
-				turn.rank = 3;
-				turn.counter = turn.battler.Counter;
-				turn.tickSpeed = turn.battler.getTickSpeed();
-				tempCTB.Add(turn);
-			}
-
-			for (int i = 0; i < MAX_ENEMY; i++)
-			{
-				if (_Enemies[i] == null)
-					continue;
-
-				_Enemies[i].CalculateICV();
-				CTBTurn turn = new CTBTurn();
-				turn.battler = _Enemies[i];
-				turn.rank = 3;
-				turn.counter = turn.battler.Counter;
-				turn.tickSpeed = turn.battler.getTickSpeed();
-				tempCTB.Add(turn);
-			}
-
-			//Sort ICVs
-			tempCTB.Sort();
-
-			//Keep lowest
-			if (tempCTB[0].battler == null)
-				return;
-			_OrderBattle.Add(tempCTB[0]);
-
-			//2-Calcul le NCV de celui ajouté, ajoute le plus petit et garde les restes
-			for (int i = 1; i < MAX_CTB; i++)
-			{
-				//Get Next CV
-				CTBTurn turn = tempCTB[0];
-				turn.counter += turn.battler.getCounterValue(turn.rank);
-				tempCTB[0] = turn;
-
-				//Sort CVs
-				tempCTB.Sort();
-
-				//Keep lowest
-				_OrderBattle.Add(tempCTB[0]);
-				tempCTB[0].battler.Counter = tempCTB[0].counter;
-			}
-
-			setActiveBattler();
-		}
-
-		/// <summary>
-		/// Take all battler and set their position.
-		/// </summary>
-		private void SetBattlerPositions()
-		{
-			for (int i = 0; i < Player.MAX_ACTOR; i++)
-				if (_Actors[i] != null)
-					_Actors[i].BattlerPosition = new Vector2(320, 160 + 40 * i);
-
-			for (int i = 0; i < MAX_ENEMY; i++)
-				if (_Enemies[i] != null)
-					_Enemies[i].BattlerPosition = new Vector2(100, 160 + 40 * i);
-		}
-
-		/// <summary>
-		/// Start Party Command phase.
-		/// </summary>
-		private void StartPhase2()
-		{
-			_Phase = 2;
-
-			//Set actor to non-selecting
-
-			_PartyCommand.Enabled = true;
-			_PartyCommand.Visible = true;
-
-			_PlayerCommand.Enabled = false;
-			_PlayerCommand.Visible = false;
-		}
-
-		/// <summary>
-		/// Start Actor command phase.
-		/// </summary>
-		private void StartPhase3()
-		{
-			_Phase = 3;
-
-			// Determine win/loss situation
-			if (Judge())
-			{
-				// If won or lost: end method
-				return;
-			}
-
-			for (int i = 0; i < _TargetBattler.Length; i++)
-			{
-				_TargetBattler[i] = null;
-			}
-
-			_BattleTurn++;
-
-			foreach (Battler actor in _Actors)
-			{
-				if (getActiveBattler() == actor)
-				{
-					SetupCommandWindow();
-					return;
-				}
-			}
-
-			foreach (Battler enemy in _Enemies)
-			{
-				if (getActiveBattler() == enemy)
-				{
-					_CurrentAction = enemy.AIChooseAction(Game, _Enemies, _Actors);
-					StartPhase4();
-					return;
-				}
-			}
-		}
-
-		private void SetupCommandWindow()
-		{
-			// Disable party command window
-			_PartyCommand.Enabled = false;
-			_PartyCommand.Visible = false;
-			// Enable actor command window
-			_PlayerCommand.Enabled = true;
-			_PlayerCommand.Visible = true;
-			// Set index to 0
-			// Note: They may want to keep position of the last action.
-			_PlayerCommand.CursorPosition = 0;
-		}
-
-		/// <summary>
-		/// Start the select of the target with a default target.
-		/// </summary>
-		/// <param name="defaultValue">First position of the target cursor</param>
-		private void StartTargetSelection(eTargetType defaultValue)
-		{
-			//Make cursor
-			_Target = new Cursor(Game, _Actors, _Enemies, defaultValue, _ActiveBattlerIndex);
-
-			_PlayerCommand.Enabled = false;
-		}
-
-		private void EndTargetSelection()
-		{
-			_Target = null;
-		}
-
-		private void StartItemSelection()
-		{
-			_ItemSelection.Enabled = true;
-			_ItemSelection.Visible = true;
-
-			_PlayerCommand.Enabled = false;
-		}
-
-		private void EndItemSelection()
-		{
-			_ItemSelection.Enabled = false;
-			_ItemSelection.Visible = false;
-
-			if (_CurrentAction.Item is Item)
-				StartTargetSelection(((Item)_CurrentAction.Item).DefaultTarget);
-		}
-
-		private void StartSkillSelection()
-		{
-			_SkillSelection.Enabled = true;
-			_SkillSelection.Visible = true;
-			_SkillSelection.Actor = _Actors[_ActiveBattlerIndex];
-
-			_PlayerCommand.Enabled = false;
-		}
-
-		private void EndSkillSelection()
-		{
-			_SkillSelection.Enabled = false;
-			_SkillSelection.Visible = false;
-
-			if (_CurrentAction.Skill != null)
-				StartTargetSelection(_CurrentAction.Skill.DefaultTarget);
-		}
-
-		/// <summary>
-		/// Start Main phase.
-		/// </summary>
-		private void StartPhase4()
-		{
-			_Phase = 4;
-
-			_PlayerCommand.Enabled = false;
-			_PlayerCommand.Visible = false;
-
-			_PhaseStep = 1;
-			Phase4Step1();
-		}
-		/// <summary>
-		/// Action preparation.
-		/// </summary>
-		private void Phase4Step1()
-		{
-			//Hide Help window
-
-			//Determine win/loss
-			if (Judge())
-			{
-				// If won or lost: end method
-				Scene.ChangeMainScene(new Overworld.Overworld(Game));
-				return;
-			}
-
-			//Init animations
-
-			//Turn damage
-
-			//Natural removal of states
-
-			_PhaseStep = 2;
-			Phase4Step2();
-		}
-		/// <summary>
-		/// Start action.
-		/// </summary>
-		private void Phase4Step2()
-		{
-			switch (_CurrentAction.Kind)
-			{
-				case BattleAction.eKind.ATTACK:
-					//Set animation id
-
-					_CurrentAction.Target.getTargetBattler(_TargetBattler);
-					for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
-						if (_TargetBattler[i] != null)
-							_TargetBattler[i].Attacked(getActiveBattler());
-					break;
-
-				case BattleAction.eKind.MAGIC:
-					{
-						//Set animation id
-
-						int skillLevel;
-						if (!_CurrentAction.Skill.Casting(getActiveBattler(), out skillLevel))
-							break;
-
-						int nbTarget = 0;
-						_CurrentAction.Target.getTargetBattler(_TargetBattler);
-						for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
-							if (_TargetBattler[i] != null)
-								nbTarget++;
-
-						for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
-							if (_TargetBattler[i] != null)
-								_TargetBattler[i].Used(getActiveBattler(), _CurrentAction.Skill, skillLevel, nbTarget);
-					}
-					break;
-
-				case BattleAction.eKind.ITEM:
-					{
-						//Set animation id
-
-						int nbTarget = 0;
-						_CurrentAction.Target.getTargetBattler(_TargetBattler);
-						for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
-							if (_TargetBattler[i] != null)
-								nbTarget++;
-
-						for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
-							if (_TargetBattler[i] != null)
-								_TargetBattler[i].Used(getActiveBattler(), _CurrentAction.Item, nbTarget);
-
-						if (getActiveBattler().IsActor)
-						{
-							Player.GamePlayer.Inventory.Drop(_CurrentAction.Item);
-							_ItemSelection.RefreshChoices();
-						}
-					}
-					break;
-
-				case BattleAction.eKind.GUARD:
-					break;
-
-				case BattleAction.eKind.WAIT:
-					break;
-			}
-
-			_PhaseStep = 3;
-			Phase4Step3();
-		}
-		/// <summary>
-		/// Animation for action performer.
-		/// </summary>
-		private void Phase4Step3()
-		{
-			//Set animation of attacker
-			_AnimationWait = 30;
-		}
-		/// <summary>
-		/// Animation for target.
-		/// </summary>
-		private void Phase4Step4()
-		{
-			//Set animation of target
-
-			//Animation has at least 8 frames, regardless of its length
-			_AnimationWait = 30;
-		}
-		/// <summary>
-		/// Damage display.
-		/// </summary>
-		private void Phase4Step5()
-		{
-			//Display damage
-
-			_AnimationWait = 30;
-		}
-
-		/// <summary>
-		/// Start After Battle phase.
-		/// </summary>
-		private void StartPhase5()
-		{
-			_Phase = 5;
-			_PhaseStep = 1;
-
-			// Play the victory song.
-			Song victory = Game.Content.Load<Song>(@"Audios\Musics\Victory");
-			MediaPlayer.Stop();
-			MediaPlayer.Play(victory);
-			MediaPlayer.IsRepeating = false;
-
-			// Get Exp, Gold and Items from dead enemies.
-			foreach (Battler enemy in _Enemies)
-			{
-				if (enemy == null)
-					continue;
-
-				_Exp += enemy.ExpToGive();
-				_Gold += enemy.GoldToGive;
-				_Treasure.AddRange(enemy.Treasure);
-			}
-
-			// Wait 100 frames.
-			_AnimationWait = 30;
-
-			// Show the result.
-		}
-
-		/// <summary>
-		/// Try to escape.
-		/// </summary>
-		private void Escape()
-		{
-			//From FF3
-			//(Run Away) : DD=0 DM=0 %Chance to Run = 100 - Hit%
-			//(Hit%) : (Weapon Hit%) + (Agility/4) + (JLevel/4)
-			//(Run Away for monster ) : IF((Lowest character level) - (Enemy level) > 15) THEN %Chance to Run = 100 - Monster Hit%
-
-			//Calculate enemy agility average
-			int enemies_agi = 0;
-			int enemies_number = 0;
-			for (int i = 0; i < MAX_ENEMY; i++)
-			{
-				Character pEnemy = _Enemies[i];
-				if (pEnemy == null)
-					continue;
-
-				if (!pEnemy.IsDead)
-				{
-					enemies_agi += pEnemy.Agility;
-					enemies_number += 1;
-				}
-			}
-			if (enemies_number > 0)
-			{
-				enemies_agi /= enemies_number;
-			}
-
-			//Calculate actor agility average
-			int actors_agi = 0;
-			int actors_number = 0;
-			for (int i = 0; i < Player.MAX_ACTOR; i++)
-			{
-				Character pActor = _Actors[i];
-				if (pActor == null)
-					continue;
-
-				if (!pActor.IsDead)
-				{
-					actors_agi += pActor.Agility;
-					actors_number += 1;
-				}
-			}
-			if (actors_number > 0)
-			{
-				actors_agi /= actors_number;
-			}
-
-			//Determine if escape is successful
-			bool success = new Random().Next(0, 100) < 50 * actors_agi / enemies_agi;
-
-			if (success)
-			{
-				BattleEnd(2);
-			}
-			else
-			{
-				//Next turn
-				StartPhase4();
-			}
-		}
-
-		private void CalculateCTB()
-		{
-			// Remove active counter on all other counters.
-			int counterLastTurn = _OrderBattle[0].counter;
-			for (int i = 0; i < _OrderBattle.Count; i++)
-			{
-				CTBTurn turn = _OrderBattle[i];
-				turn.counter -= counterLastTurn;
-				_OrderBattle[i] = turn;
-			}
-
-			// Calculate the last CTBTurn to replace the one that will go out.
-
-			//1-Calcul les NCV et ajoute le plus petit
-			List<CTBTurn> tempCTB = new List<CTBTurn>(Player.MAX_ACTOR + MAX_ENEMY);
-
-			//Get NCVs
-			for (int i = 0; i < Player.MAX_ACTOR; i++)
-			{
-				if (_Actors[i] == null)
-					continue;
-
-				_Actors[i].Counter -= counterLastTurn;
-				CTBTurn turn = new CTBTurn();
-				turn.battler = _Actors[i];
-				turn.rank = 3;
-				turn.counter = turn.battler.Counter + turn.battler.getCounterValue(turn.rank);
-				turn.tickSpeed = turn.battler.getTickSpeed();
-				tempCTB.Add(turn);
-			}
-
-			for (int i = 0; i < MAX_ENEMY; i++)
-			{
-				if (_Enemies[i] == null)
-					continue;
-
-				_Enemies[i].Counter -= counterLastTurn;
-				CTBTurn turn = new CTBTurn();
-				turn.battler = _Enemies[i];
-				turn.rank = 3;
-				turn.counter = turn.battler.Counter + turn.battler.getCounterValue(turn.rank);
-				turn.tickSpeed = turn.battler.getTickSpeed();
-				tempCTB.Add(turn);
-			}
-
-			//Sort NCVs
-			tempCTB.Sort();
-
-			//Keep lowest
-			_OrderBattle.Add(tempCTB[0]);
-			tempCTB[0].battler.Counter = tempCTB[0].counter;
-
-			_OrderBattle.RemoveAt(0);
-			setActiveBattler();
-		}
-
-		public Battler[] _Actors = new Battler[Player.MAX_ACTOR];
-		public Battler[] _Enemies = new Battler[MAX_ENEMY];
-
-		public Battle(Game game, string battleBackName)
+		public BattleScene(Game game, Battle battle, string battleBackName)
 			: base(game)
 		{
+			_Battle = battle;
+
 			//Init textures
 			_BattleBack = Game.Content.Load<Texture2D>(@"Images\Battle\Battlebacks\" + battleBackName);
 
@@ -753,15 +94,6 @@ namespace FantasyEngine.Classes.Battles
 			MediaPlayer.Stop();
 			MediaPlayer.IsRepeating = true;
 			MediaPlayer.Play(_BattleMusic);
-
-			//Prepare battlers
-			for (int i = 0; i < Player.MAX_ACTOR; i++)
-			{
-				if (Player.GamePlayer.Actors[i] != null)
-					_Actors[i] = new Battler(Game, Player.GamePlayer.Actors[i]);
-			}
-
-			_OrderBattle = new List<CTBTurn>(MAX_CTB);
 
 			//Making windows
 			_PlayerCommand = new Command(Game, 160, playerCommands);
@@ -797,7 +129,169 @@ namespace FantasyEngine.Classes.Battles
 			_ResultWindow = new Window(Game, 0, 0, 640, 480);
 			_ResultWindow.Visible = false;
 
+			_TargetBattler = new Battler[BattleData.MAX_ACTOR + BattleData.MAX_ENEMY];
+
 			spriteBatch.cameraMatrix = Matrix.Identity;
+
+			_Battle.OnBeginTurn += _Battle_OnBeginTurn;
+			_Battle.OnSetupCommandWindow += Battle_OnSetupCommandWindow;
+			_Battle.OnAIChooseAction += Battle_OnAIChooseAction;
+			_Battle.OnPhase4 += Battle_OnPhase4;
+			_Battle.OnPhase4Judge += Battle_OnPhase4Judge;
+			_Battle.OnPhase4Step2 += Battle_OnPhase4Step2;
+			_Battle.OnPhase5 += Battle_OnPhase5;
+			_Battle.OnWinning += Battle_OnWinning;
+		}
+
+		void _Battle_OnBeginTurn(object sender, EventArgs e)
+		{
+			for (int i = 0; i < _TargetBattler.Length; i++)
+			{
+				_TargetBattler[i] = null;
+			}
+		}
+
+		private void Battle_OnSetupCommandWindow(object sender, EventArgs e)
+		{
+			// Disable party command window
+			_PartyCommand.Enabled = false;
+			_PartyCommand.Visible = false;
+			// Enable actor command window
+			_PlayerCommand.Enabled = true;
+			_PlayerCommand.Visible = true;
+			// Set index to 0
+			// Note: They may want to keep position of the last action.
+			_PlayerCommand.CursorPosition = 0;
+		}
+
+		/// <summary>
+		/// Start the select of the target with a default target.
+		/// </summary>
+		/// <param name="defaultValue">First position of the target cursor</param>
+		private void StartTargetSelection(eTargetType defaultValue)
+		{
+			//Make cursor
+			_Target = new Cursor(Game, _Battle.Actors, _Battle.Enemies, defaultValue, _Battle.ActiveBattlerIndex);
+
+			_PlayerCommand.Enabled = false;
+		}
+
+		private void EndTargetSelection()
+		{
+			_Target = null;
+		}
+
+		private void StartItemSelection()
+		{
+			_ItemSelection.Enabled = true;
+			_ItemSelection.Visible = true;
+
+			_PlayerCommand.Enabled = false;
+		}
+
+		private void EndItemSelection()
+		{
+			_ItemSelection.Enabled = false;
+			_ItemSelection.Visible = false;
+
+			if (_CurrentAction.Item is Item)
+				StartTargetSelection(((Item)_CurrentAction.Item).DefaultTarget);
+		}
+
+		private void StartSkillSelection()
+		{
+			_SkillSelection.Enabled = true;
+			_SkillSelection.Visible = true;
+			_SkillSelection.Actor = _Battle.getActiveBattler();
+
+			_PlayerCommand.Enabled = false;
+		}
+
+		private void EndSkillSelection()
+		{
+			_SkillSelection.Enabled = false;
+			_SkillSelection.Visible = false;
+
+			if (_CurrentAction.Skill != null)
+				StartTargetSelection(_CurrentAction.Skill.DefaultTarget);
+		}
+
+		private void Battle_OnAIChooseAction(object sender, EventArgs e)
+		{
+			_CurrentAction = ((Battler)_Battle.getActiveBattler()).AIChooseAction(Game, _Battle.Enemies, _Battle.Actors);
+		}
+
+		private void Battle_OnPhase4(object sender, EventArgs e)
+		{
+			_PlayerCommand.Enabled = false;
+			_PlayerCommand.Visible = false;
+
+			_PhaseStep = 1;
+		}
+
+		void Battle_OnPhase4Judge(object sender, EventArgs e)
+		{
+			// If won or lost: end method
+			Scene.ChangeMainScene(new Overworld.Overworld(Game));
+		}
+
+		void Battle_OnPhase4Step2(object sender, EventArgs e)
+		{
+			_PhaseStep = 2;
+			Phase4Step2();
+		}
+
+		private void Battle_OnPhase5(object sender, EventArgs e)
+		{
+			_PhaseStep = 1;
+
+			// Play the victory song.
+			Song victory = Game.Content.Load<Song>(@"Audios\Musics\Victory");
+			MediaPlayer.Stop();
+			MediaPlayer.Play(victory);
+			MediaPlayer.IsRepeating = false;
+
+			// Get Exp, Gold and Items from dead enemies.
+			foreach (Battler enemy in _Battle.Enemies)
+			{
+				if (enemy == null)
+					continue;
+
+				_Exp += enemy.ExpToGive();
+				_Gold += enemy.GoldToGive;
+				_Treasure.AddRange(enemy.Treasure);
+			}
+
+			// Wait 100 frames.
+			_AnimationWait = 30;
+
+			// Show the result.
+		}
+
+		private void Battle_OnWinning(object sender, EventArgs e)
+		{
+			int nbActorAlive = 0;
+			foreach (Battler actor in _Battle.Actors)
+			{
+				if (actor != null && !actor.IsDead)
+					nbActorAlive++;
+			}
+
+			foreach (Battler actor in _Battle.Actors)
+			{
+				if (actor != null && !actor.IsDead)
+				{
+					int oldLevel = actor.Level;
+					actor.Exp += _Exp / nbActorAlive;
+#if DEBUG
+					actor.Exp += 40;
+#endif
+					if (actor.Level != oldLevel)
+						Scene.AddSubScene(new FantasyEngine.Classes.Menus.LevelUpScene(Game, actor));
+					Player.GamePlayer.Inventory.Gold += _Gold / nbActorAlive;
+					Player.GamePlayer.Inventory.AddRange(_Treasure);
+				}
+			}
 		}
 
 		public override void Draw(GameTime gameTime)
@@ -811,44 +305,44 @@ namespace FantasyEngine.Classes.Battles
 			spriteBatch.Draw(_BattleBack, new Vector2(_BattleBack.Width, _HelpWindow.Rectangle.Bottom), Color.White);
 			spriteBatch.Draw(_BattleBack, new Vector2(_BattleBack.Width * 2, _HelpWindow.Rectangle.Bottom), Color.White);
 
-			for (int i = 0; i < Player.MAX_ACTOR; i++)
+			for (int i = 0; i < BattleData.MAX_ACTOR; i++)
 			{
-				if (_Actors[i] == null || _Actors[i].IsDead)
+				if (_Battle.Actors[i] == null || _Battle.Actors[i].IsDead)
 					continue;
 
-				Color color = _Actors[i] == _TargetBattler[i] ? new Color(0xFF, 0, 0, 0xFF) : Color.White;
-				if (_Actors[i].BattlerSprite is Tileset)
-					spriteBatch.Draw(_Actors[i].BattlerSprite.texture, _Actors[i].GetRectangle(), _Actors[i].BattlerSprite.GetSourceRectangle(0), color);
+				Color color = _Battle.Actors[i] == _TargetBattler[i] ? new Color(0xFF, 0, 0, 0xFF) : Color.White;
+				if (_Battle.Actors[i].BattlerSprite is Tileset)
+					spriteBatch.Draw(_Battle.Actors[i].BattlerSprite.texture, _Battle.Actors[i].GetRectangle(), _Battle.Actors[i].BattlerSprite.GetSourceRectangle(0), color);
 				else
-					spriteBatch.Draw(_Actors[i].BattlerSprite.texture, _Actors[i].BattlerPosition, color);
+					spriteBatch.Draw(_Battle.Actors[i].BattlerSprite.texture, _Battle.Actors[i].BattlerPosition, color);
 			}
 
-			for (int i = 0; i < MAX_ENEMY; i++)
+			for (int i = 0; i < BattleData.MAX_ENEMY; i++)
 			{
-				if (_Enemies[i] == null || _Enemies[i].IsDead)
+				if (_Battle.Enemies[i] == null || _Battle.Enemies[i].IsDead)
 					continue;
 
-				Color color = _Enemies[i] == _TargetBattler[Player.MAX_ACTOR + i] ? new Color(0xFF, 0, 0, 0xFF) : Color.White;
-				if (_Enemies[i].BattlerSprite is Tileset)
-					spriteBatch.Draw(_Enemies[i].BattlerSprite.texture, _Enemies[i].BattlerPosition, _Enemies[i].BattlerSprite.GetSourceRectangle(0), color);
+				Color color = _Battle.Enemies[i] == _TargetBattler[BattleData.MAX_ACTOR + i] ? new Color(0xFF, 0, 0, 0xFF) : Color.White;
+				if (_Battle.Enemies[i].BattlerSprite is Tileset)
+					spriteBatch.Draw(_Battle.Enemies[i].BattlerSprite.texture, _Battle.Enemies[i].BattlerPosition, _Battle.Enemies[i].BattlerSprite.GetSourceRectangle(0), color);
 				else
-					spriteBatch.Draw(_Enemies[i].BattlerSprite.texture, _Enemies[i].BattlerPosition, color);
+					spriteBatch.Draw(_Battle.Enemies[i].BattlerSprite.texture, _Battle.Enemies[i].BattlerPosition, color);
 			}
 
-			if (_Phase == 4 && _PhaseStep == 3)
+			if (_Battle.Phase == 4 && _PhaseStep == 3)
 			{
 				switch (_CurrentAction.Kind)
 				{
 					case BattleAction.eKind.ATTACK:
-						if (getActiveBattler().RightHand is Weapon)
+						if (_Battle.getActiveBattler().RightHand is Weapon)
 							spriteBatch.DrawString(GameMain.font,
-								getActiveBattler().RightHand.Name + " swing !", new Vector2(0, 200), Color.White);
+								_Battle.getActiveBattler().RightHand.Name + " swing !", new Vector2(0, 200), Color.White);
 
-						if (getActiveBattler().LeftHand is Weapon)
+						if (_Battle.getActiveBattler().LeftHand is Weapon)
 							spriteBatch.DrawString(GameMain.font,
-								getActiveBattler().LeftHand.Name + " swing !", new Vector2(0, 220), Color.White);
+								_Battle.getActiveBattler().LeftHand.Name + " swing !", new Vector2(0, 220), Color.White);
 
-						if (!(getActiveBattler().RightHand is Weapon || getActiveBattler().LeftHand is Weapon))
+						if (!(_Battle.getActiveBattler().RightHand is Weapon || _Battle.getActiveBattler().LeftHand is Weapon))
 							spriteBatch.DrawString(GameMain.font, "Barehand swing !", new Vector2(0, 200), Color.White);
 						break;
 
@@ -870,25 +364,24 @@ namespace FantasyEngine.Classes.Battles
 				_AnimationWait--;
 				if (_AnimationWait < 0)
 				{
-					_PhaseStep = 4;
 					Phase4Step4();
 				}
 			}
 
-			if (_Phase == 4 && _PhaseStep == 4)
+			if (_Battle.Phase == 4 && _PhaseStep == 4)
 			{
 				switch (_CurrentAction.Kind)
 				{
 					case BattleAction.eKind.ATTACK:
-						if (getActiveBattler().RightHand is Weapon)
+						if (_Battle.getActiveBattler().RightHand is Weapon)
 							spriteBatch.DrawString(GameMain.font,
-								getActiveBattler().RightHand.Name + " hitted !", new Vector2(0, 200), Color.White);
+								_Battle.getActiveBattler().RightHand.Name + " hitted !", new Vector2(0, 200), Color.White);
 
-						if (getActiveBattler().LeftHand is Weapon)
+						if (_Battle.getActiveBattler().LeftHand is Weapon)
 							spriteBatch.DrawString(GameMain.font,
-								getActiveBattler().LeftHand.Name + " hitted !", new Vector2(0, 220), Color.White);
+								_Battle.getActiveBattler().LeftHand.Name + " hitted !", new Vector2(0, 220), Color.White);
 
-						if (!(getActiveBattler().RightHand is Weapon || getActiveBattler().LeftHand is Weapon))
+						if (!(_Battle.getActiveBattler().RightHand is Weapon || _Battle.getActiveBattler().LeftHand is Weapon))
 							spriteBatch.DrawString(GameMain.font, "Barehand hitted !", new Vector2(0, 200), Color.White);
 						break;
 
@@ -910,19 +403,18 @@ namespace FantasyEngine.Classes.Battles
 				_AnimationWait--;
 				if (_AnimationWait < 0)
 				{
-					_PhaseStep = 5;
 					Phase4Step5();
 				}
 			}
 
-			if (_Phase == 4 && _PhaseStep == 5)
+			if (_Battle.Phase == 4 && _PhaseStep == 5)
 			{
 				switch (_CurrentAction.Kind)
 				{
 					case BattleAction.eKind.ATTACK:
 					case BattleAction.eKind.MAGIC:
 					case BattleAction.eKind.ITEM:
-						for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
+						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
 							if (_TargetBattler[i] != null)
 							{
 								int totalMultiplier = _TargetBattler[i].multiplierRH + _TargetBattler[i].multiplierLH;
@@ -948,20 +440,17 @@ namespace FantasyEngine.Classes.Battles
 				_AnimationWait--;
 				if (_AnimationWait < 0)
 				{
-					for (int i = 0; i < Player.MAX_ACTOR + MAX_ENEMY; i++)
+					for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
 						if (_TargetBattler[i] != null)
 						{
 							_TargetBattler[i].GiveDamage();
 						}
 
-					// Change the active battler for the next one.
-					CalculateCTB();
-
-					StartPhase3();
+					_Battle.NextTurn();
 				}
 			} // if (_Phase == 4 && _Phase4Step == 5)
 
-			if (_Phase == 5)
+			if (_Battle.Phase == 5)
 			{
 				if (_PhaseStep == 1)
 				{
@@ -996,7 +485,7 @@ namespace FantasyEngine.Classes.Battles
 
 			_SkillSelection.Draw(gameTime);
 
-			if (_Phase == 5 && _PhaseStep == 2)
+			if (_Battle.Phase == 5 && _PhaseStep == 2)
 			{
 				DrawResultWindow(gameTime);
 			}
@@ -1041,7 +530,7 @@ namespace FantasyEngine.Classes.Battles
 			y = _StatusWindow.Rectangle.Top;
 			right = x + (_StatusWindow.Rectangle.Width / 4);
 			height = _StatusWindow.Rectangle.Height;
-			for (int i = 0; i < Player.MAX_ACTOR; i++)
+			for (int i = 0; i < BattleData.MAX_ACTOR; i++)
 			{
 				if (i != 0)
 				{
@@ -1049,13 +538,13 @@ namespace FantasyEngine.Classes.Battles
 					spriteBatchGUI.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(3), Color.White); //Bord Gauche
 				}
 
-				if (_Actors[i] != null)
+				if (_Battle.Actors[i] != null)
 				{
 					spriteBatchGUI.DrawString(GameMain.font,
-						_Actors[i].Name,
+						_Battle.Actors[i].Name,
 						new Vector2(x + 12, y + 8), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 					spriteBatchGUI.DrawString(GameMain.font,
-						_Actors[i].Level < 100 ? "Lv" + _Actors[i].Level : "L" + _Actors[i].Level,
+						_Battle.Actors[i].Level < 100 ? "Lv" + _Battle.Actors[i].Level : "L" + _Battle.Actors[i].Level,
 						new Vector2(x + 84, y + 20), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 
 					spriteBatchGUI.DrawString(GameMain.font,
@@ -1066,7 +555,7 @@ namespace FantasyEngine.Classes.Battles
 					spriteBatchGUI.Draw(pixel, new Rectangle(x + 60, y + 38, (int)(60 * ratio), 8),
 						new Color(255 - 255 * ratio, 255 * ratio, 0));
 					spriteBatchGUI.DrawString(GameMain.font,
-						_Actors[i].Hp + "/" + _Actors[i].MaxHp,
+						_Battle.Actors[i].Hp + "/" + _Battle.Actors[i].MaxHp,
 						new Vector2(x + 24, y + 48), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 
 					spriteBatchGUI.DrawString(GameMain.font,
@@ -1077,15 +566,15 @@ namespace FantasyEngine.Classes.Battles
 					spriteBatchGUI.Draw(pixel, new Rectangle(x + 60, y + 66, (int)(60 * ratio), 8),
 						new Color(255 - 255 * ratio, 255 * ratio, 0));
 					spriteBatchGUI.DrawString(GameMain.font,
-						_Actors[i].Mp + "/" + _Actors[i].MaxMp,
+						_Battle.Actors[i].Mp + "/" + _Battle.Actors[i].MaxMp,
 						new Vector2(x + 24, y + 76), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 
 					spriteBatchGUI.DrawString(GameMain.font,
-						_Actors[i].Statut.ToString(),
+						_Battle.Actors[i].Statut.ToString(),
 						new Vector2(x + 12, y + 96), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 				}
 
-				if (i != Player.MAX_ACTOR - 1)
+				if (i != BattleData.MAX_ACTOR - 1)
 				{
 					Rectangle pos = new Rectangle(right - Window.Tileset.TileWidth, y, Window.Tileset.TileWidth, height);
 					spriteBatchGUI.Draw(Window.Tileset.texture, pos, Window.Tileset.GetSourceRectangle(5), Color.White); //Bord Droite
@@ -1105,19 +594,19 @@ namespace FantasyEngine.Classes.Battles
 
 			spriteBatchGUI.Scissor(_CTBWindow.InsideBound);
 
-			for (int i = 0; i < MAX_CTB; i++)
+			for (int i = 0; i < BattleData.MAX_CTB; i++)
 			{
 				/*GRRLIB_Rectangle(640 - 160 + 8, mpHelpWindow.Rectangle.Bottom + 8 + 32 * i, 
 					160 - 16, 32, clrNormal, false);*/
 
 				//TODO: Dessiner le rectangle counter
-				spriteBatchGUI.DrawString(GameMain.font, "C:" + _OrderBattle[i].counter,
+				spriteBatchGUI.DrawString(GameMain.font, "C:" + _Battle.OrderBattle[i].counter,
 					new Vector2(_CTBWindow.Rectangle.Left + 8,
 						_CTBWindow.Rectangle.Top + 8 + _CTBWindowScrollY + 32 * i),
 					Color.White);
 
 				//TODO: Dessiner la face
-				spriteBatchGUI.DrawString(GameMain.font8, _OrderBattle[i].battler.Name,
+				spriteBatchGUI.DrawString(GameMain.font8, _Battle.OrderBattle[i].battler.Name,
 					new Vector2(_CTBWindow.Rectangle.Left + 8 + 6 * 16,
 						_CTBWindow.Rectangle.Top + 8 + _CTBWindowScrollY + 32 * i),
 					Color.White);
@@ -1150,20 +639,17 @@ namespace FantasyEngine.Classes.Battles
 			base.Update(gameTime);
 
 			_PlayerCommand.Update(gameTime);
-			//return;
 
 			_PartyCommand.Update(gameTime);
-			//return;
 
 			if (_Target != null)
 				_Target.Update(gameTime);
-			//return;
 
 			_ItemSelection.Update(gameTime);
 
 			_SkillSelection.Update(gameTime);
 
-			if (_Phase == 6 && CurrentScene == this) //WaitEnd
+			if (_Battle.Phase == 6 && CurrentScene == this) //WaitEnd
 			{
 				// Return to map
 				MediaPlayer.Stop();
@@ -1173,21 +659,20 @@ namespace FantasyEngine.Classes.Battles
 
 			if (Input.keyStateDown.IsKeyDown(Keys.Enter))
 			{
-				switch (_Phase)
+				switch (_Battle.Phase)
 				{
-					case 2: //Party Command
-						switch (_PartyCommand.CursorPosition)
-						{
-							case 0: //Fight
-								StartPhase3();
-								return;
+					//case 2: //Party Command
+					//	switch (_PartyCommand.CursorPosition)
+					//	{
+					//		case 0: //Fight
+					//			StartPhase3();
+					//			return;
 
-							case 1: //Escape
-								if (_CanEscape)
-									Escape();
-								return;
-						}
-						break;
+					//		case 1: //Escape
+					//			_Battle.Escape();
+					//			return;
+					//	}
+					//	break;
 
 					case 3: //Actor Command
 						if (_PlayerCommand.Enabled)
@@ -1221,15 +706,13 @@ namespace FantasyEngine.Classes.Battles
 								case (int)ePlayerCommand.Guard:
 									_CurrentAction = new BattleAction(BattleAction.eKind.GUARD);
 
-									StartPhase4();
+									_Battle.StartPhase4();
 									return;
 
 								case (int)ePlayerCommand.Run:
-									if (_CanEscape)
-									{
-										_CurrentAction = new BattleAction(BattleAction.eKind.WAIT);
-										Escape();
-									}
+									_CurrentAction = new BattleAction(BattleAction.eKind.WAIT);
+
+									_Battle.Escape();
 									return;
 							}
 						} // if (_PlayerCommand.Enabled)
@@ -1239,7 +722,7 @@ namespace FantasyEngine.Classes.Battles
 							EndTargetSelection();
 
 							//Next
-							StartPhase4();
+							_Battle.StartPhase4();
 							return;
 						}
 						else if (_ItemSelection.Enabled)
@@ -1255,14 +738,14 @@ namespace FantasyEngine.Classes.Battles
 						break;
 
 					case 5: //Result Command
-						BattleEnd(0);
+						_Battle.EndBattle();
 						break;
 				} // switch (_Phase)
 			} // if (Input.keyStateDown.IsKeyDown(Keys.Enter))
 
 			if (Input.keyStateDown.IsKeyDown(Keys.Back))
 			{
-				switch (_Phase)
+				switch (_Battle.Phase)
 				{
 					case 3: //Actor Command
 						if (_Target != null)
@@ -1300,7 +783,7 @@ namespace FantasyEngine.Classes.Battles
 						break;
 
 					case 5: //Result Command
-						BattleEnd(0);
+						_Battle.EndBattle();
 						break;
 				}
 			}
@@ -1320,10 +803,180 @@ namespace FantasyEngine.Classes.Battles
 				//Scroll le CTB
 				_CTBWindowScrollY -= 4;
 
-				if (_CTBWindowScrollY < -(32 * MAX_CTB - _CTBWindow.Rectangle.Height))
-					_CTBWindowScrollY = -(32 * MAX_CTB - _CTBWindow.Rectangle.Height);
+				if (_CTBWindowScrollY < -(32 * BattleData.MAX_CTB - _CTBWindow.Rectangle.Height))
+					_CTBWindowScrollY = -(32 * BattleData.MAX_CTB - _CTBWindow.Rectangle.Height);
 				return;
 			}
+		}
+
+		/// <summary>
+		/// Start action.
+		/// </summary>
+		private void Phase4Step2()
+		{
+			switch (_CurrentAction.Kind)
+			{
+				case BattleAction.eKind.ATTACK:
+					//Set animation id
+
+					_CurrentAction.Target.getTargetBattler(_TargetBattler);
+					for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+						if (_TargetBattler[i] != null)
+							_TargetBattler[i].Attacked(_Battle.getActiveBattler());
+					break;
+
+				case BattleAction.eKind.MAGIC:
+					{
+						//Set animation id
+
+						int skillLevel;
+						if (!_CurrentAction.Skill.Casting(_Battle.getActiveBattler(), out skillLevel))
+							break;
+
+						int nbTarget = 0;
+						_CurrentAction.Target.getTargetBattler(_TargetBattler);
+						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+							if (_TargetBattler[i] != null)
+								nbTarget++;
+
+						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+							if (_TargetBattler[i] != null)
+								_TargetBattler[i].Used(_Battle.getActiveBattler(), _CurrentAction.Skill, skillLevel, nbTarget);
+					}
+					break;
+
+				case BattleAction.eKind.ITEM:
+					{
+						//Set animation id
+
+						int nbTarget = 0;
+						_CurrentAction.Target.getTargetBattler(_TargetBattler);
+						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+							if (_TargetBattler[i] != null)
+								nbTarget++;
+
+						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+							if (_TargetBattler[i] != null)
+								_TargetBattler[i].Used(_Battle.getActiveBattler(), _CurrentAction.Item, nbTarget);
+
+						if (_Battle.getActiveBattler().IsActor)
+						{
+							Player.GamePlayer.Inventory.Drop(_CurrentAction.Item);
+							_ItemSelection.RefreshChoices();
+						}
+					}
+					break;
+
+				case BattleAction.eKind.GUARD:
+					break;
+
+				case BattleAction.eKind.WAIT:
+					break;
+			}
+
+			_PhaseStep = 3;
+			Phase4Step3();
+		}
+
+		/// <summary>
+		/// Animation for action performer.
+		/// </summary>
+		private void Phase4Step3()
+		{
+			//Set animation of attacker
+			_AnimationWait = 30;
+		}
+
+		/// <summary>
+		/// Animation for target.
+		/// </summary>
+		private void Phase4Step4()
+		{
+			if (_Battle.Phase != 4 && _PhaseStep != 3)
+				return;
+
+			_PhaseStep = 4;
+			//Set animation of target
+
+			//Animation has at least 8 frames, regardless of its length
+			_AnimationWait = 30;
+		}
+
+		/// <summary>
+		/// Damage display.
+		/// </summary>
+		private void Phase4Step5()
+		{
+			if (_Battle.Phase != 4 && _PhaseStep != 4)
+				return;
+
+			_PhaseStep = 5;
+			//Display damage
+
+			_AnimationWait = 30;
+		}
+	}
+
+	public class Battle : BattleData
+	{
+		public BattleScene BattleScene { get; private set; }
+
+		public Battler[] Actors { get { return (Battler[])_Actors; } }
+		public Battler[] Enemies { get { return (Battler[])_Enemies; } }
+
+
+		/// <summary>
+		/// Take all battler and set their position.
+		/// </summary>
+		private void SetBattlerPositions()
+		{
+			for (int i = 0; i < MAX_ACTOR; i++)
+				if (_Actors[i] != null)
+					Actors[i].BattlerPosition = new Vector2(320, 160 + 40 * i);
+
+			for (int i = 0; i < MAX_ENEMY; i++)
+				if (_Enemies[i] != null)
+					Enemies[i].BattlerPosition = new Vector2(100, 160 + 40 * i);
+		}
+
+		/// <summary>
+		/// Start Party Command phase.
+		/// </summary>
+		//private void StartPhase2()
+		//{
+		//	_Phase = 2;
+
+		//	//Set actor to non-selecting
+
+		//	_PartyCommand.Enabled = true;
+		//	_PartyCommand.Visible = true;
+
+		//	_PlayerCommand.Enabled = false;
+		//	_PlayerCommand.Visible = false;
+		//}
+
+		public Battle(Game game, string battleBackName)
+			: base()
+		{
+			MAX_ENEMY = MAX_ACTOR = Player.MAX_ACTOR;
+			_Actors = new Battler[MAX_ACTOR];
+			_Enemies = new Battler[MAX_ENEMY];
+
+			//Prepare battlers
+			for (int i = 0; i < MAX_ACTOR; i++)
+			{
+				if (Player.GamePlayer.Actors[i] != null)
+					_Actors[i] = new Battler(game, Player.GamePlayer.Actors[i]);
+			}
+
+			BattleScene = new BattleScene(game, this, battleBackName);
+
+			OnStartBattle += Battle_OnStartBattle;
+		}
+
+		private void Battle_OnStartBattle(object sender, EventArgs e)
+		{
+			SetBattlerPositions();
 		}
 	}
 }

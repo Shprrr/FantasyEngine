@@ -136,11 +136,11 @@ namespace FantasyEngine.Classes.Overworld
 							Battle battle = new Battle(Game, Player.GamePlayer.Map.BattleBackName);
 							for (int i = 0; i < encounter.Monsters.Length; i++)
 							{
-								battle._Enemies[i] = new Battler(Game, encounter.Monsters[i].Monster, encounter.Monsters[i].Level);
-								battle._Enemies[i].Name = battle._Enemies[i].CurrentJob.JobName[0].ToString() + (i + 1) + " L" + battle._Enemies[i].CurrentJob.Level;
+								battle.Enemies[i] = new Battler(Game, encounter.Monsters[i].Monster, encounter.Monsters[i].Level);
+								battle.Enemies[i].Name = battle.Enemies[i].CurrentJob.JobName[0].ToString() + (i + 1) + " L" + battle.Enemies[i].CurrentJob.Level;
 							}
-							battle.StartPhase1();
-							Scene.ChangeMainScene(battle);
+							battle.StartBattle();
+							Scene.ChangeMainScene(battle.BattleScene);
 
 							Player.GamePlayer.StepToBattle = Extensions.rand.Next(STEP_TO_BATTLE_MIN, STEP_TO_BATTLE_MAX);
 						}
@@ -214,10 +214,10 @@ namespace FantasyEngine.Classes.Overworld
 					encounter = new Encounter(Game.Content.Load<FantasyEngineData.Entities.Monster>(@"Monsters\Goblin"), 1, 100);
 
 				Battle battle = new Battle(Game, Player.GamePlayer.Map.BattleBackName);
-				battle._Enemies[0] = new Battler(Game, encounter.Monsters[0].Monster, encounter.Monsters[0].Level);
-				battle._Enemies[0].Name = battle._Enemies[0].CurrentJob.JobName + "1";
-				battle.StartPhase1();
-				Scene.ChangeMainScene(battle);
+				battle.Enemies[0] = new Battler(Game, encounter.Monsters[0].Monster, encounter.Monsters[0].Level);
+				battle.Enemies[0].Name = battle.Enemies[0].CurrentJob.JobName + "1";
+				battle.StartBattle();
+				Scene.ChangeMainScene(battle.BattleScene);
 			}
 
 			if (Input.keyStateDown.IsKeyDown(Keys.V))

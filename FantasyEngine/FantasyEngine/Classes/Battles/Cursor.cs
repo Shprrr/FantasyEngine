@@ -5,25 +5,22 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using FantasyEngineData.Battles;
+using CursorData = FantasyEngineData.Battles.Cursor;
 
 namespace FantasyEngine.Classes.Battles
 {
 	public class Cursor : DrawableGameComponent
 	{
-		private int _Index = 0;
-		private int _IndexCourant = 0;
-		private eTargetType _Target = eTargetType.NONE;
-
-		private Battler[] _Actors = new Battler[Player.MAX_ACTOR];
+		private CursorData _Data;
+		private Battler[] _Actors = new Battler[Battle.MAX_ACTOR];
 		private Battler[] _Enemies = new Battler[Battle.MAX_ENEMY];
 
-		public Cursor(Game game, Battler[] Actors, Battler[] Enemies, eTargetType Target, int IndexCourant)
+		public Cursor(Game game, Battler[] Actors, Battler[] Enemies, eTargetType defaultTarget, int indexSelf)
 			: base(game)
 		{
-			_IndexCourant = IndexCourant;
-			_Target = Target;
+			_Data = new CursorData(defaultTarget, indexSelf);
 
-			for (int i = 0; i < Player.MAX_ACTOR; i++)
+			for (int i = 0; i < Battle.MAX_ACTOR; i++)
 				_Actors[i] = Actors[i];
 
 			for (int i = 0; i < Battle.MAX_ENEMY; i++)
@@ -40,17 +37,17 @@ namespace FantasyEngine.Classes.Battles
 #if ENGINE
 			if (Player.GamePlayer.ShowDebug)
 			{
-				GameMain.spriteBatchGUI.DrawString(GameMain.font, "Cursor Index: " + _Index, new Vector2(8, 28), Color.White);
+				GameMain.spriteBatchGUI.DrawString(GameMain.font, "Cursor Index: " + _Data.Index, new Vector2(8, 28), Color.White);
 			}
 #endif
 			Color alpha = Color.White * (frame < 4 ? 0.5f : 1);
-			switch (_Target)
+			switch (_Data.Target)
 			{
 				case eTargetType.SINGLE_ENEMY:
 					//Dessiner un cursor sur l'enemy sélectionné
 					GameMain.spriteBatchGUI.Draw(GameMain.cursor,
-						new Vector2(_Enemies[_Index].BattlerPosition.X + _Enemies[_Index].BattlerSprite.TileWidth + 8,
-							_Enemies[_Index].BattlerPosition.Y + (_Enemies[_Index].BattlerSprite.TileHeight / 2)),
+						new Vector2(_Enemies[_Data.Index].BattlerPosition.X + _Enemies[_Data.Index].BattlerSprite.TileWidth + 8,
+							_Enemies[_Data.Index].BattlerPosition.Y + (_Enemies[_Data.Index].BattlerSprite.TileHeight / 2)),
 						null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, 0);
 					break;
 
@@ -66,13 +63,13 @@ namespace FantasyEngine.Classes.Battles
 
 				case eTargetType.SINGLE_PARTY:
 					//Dessiner un cursor sur l'actor sélectionné
-					GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[_Index].BattlerPosition.X - 8,
-						_Actors[_Index].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), Color.White);
+					GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[_Data.Index].BattlerPosition.X - 8,
+						_Actors[_Data.Index].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), Color.White);
 					break;
 
 				case eTargetType.MULTI_PARTY:
 					//Dessiner un cursor en alpha sur chacun des actors
-					for (int i = 0; i < Player.MAX_ACTOR; i++)
+					for (int i = 0; i < Battle.MAX_ACTOR; i++)
 						if (_Actors[i] != null)
 							GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[i].BattlerPosition.X - 8,
 								_Actors[i].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), alpha);
@@ -80,19 +77,19 @@ namespace FantasyEngine.Classes.Battles
 
 				case eTargetType.SELF:
 					//Dessiner un cursor sur l'actor courant
-					if (_IndexCourant < Player.MAX_ACTOR)
-						GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[_IndexCourant].BattlerPosition.X - 8,
-							_Actors[_IndexCourant].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), Color.White);
+					if (_Data.IndexSelf < Battle.MAX_ACTOR)
+						GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[_Data.IndexSelf].BattlerPosition.X - 8,
+							_Actors[_Data.IndexSelf].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), Color.White);
 					else
 						GameMain.spriteBatchGUI.Draw(GameMain.cursor,
-							new Vector2(_Enemies[_IndexCourant].BattlerPosition.X + _Enemies[_IndexCourant].BattlerSprite.TileWidth + 8,
-								_Enemies[_IndexCourant].BattlerPosition.Y + (_Enemies[_IndexCourant].BattlerSprite.TileHeight / 2)),
+							new Vector2(_Enemies[_Data.IndexSelf - Battle.MAX_ACTOR].BattlerPosition.X + _Enemies[_Data.IndexSelf - Battle.MAX_ACTOR].BattlerSprite.TileWidth + 8,
+								_Enemies[_Data.IndexSelf - Battle.MAX_ACTOR].BattlerPosition.Y + (_Enemies[_Data.IndexSelf - Battle.MAX_ACTOR].BattlerSprite.TileHeight / 2)),
 							null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.FlipHorizontally, 0);
 					break;
 
 				case eTargetType.ALL:
 					//Dessiner un cursor en alpha sur chacun des actors et des ennemis
-					for (int i = 0; i < Player.MAX_ACTOR; i++)
+					for (int i = 0; i < Battle.MAX_ACTOR; i++)
 						if (_Actors[i] != null)
 							GameMain.spriteBatchGUI.Draw(GameMain.cursor, new Vector2(_Actors[i].BattlerPosition.X - 8,
 								_Actors[i].BattlerPosition.Y + (Battler.BATTLER_SIZE.Y / 2)), alpha);
@@ -122,20 +119,20 @@ namespace FantasyEngine.Classes.Battles
 			if (Input.keyStateHeld.IsKeyDown(Keys.Down))
 			{
 				//Si on peut descendre
-				if (_Target == eTargetType.SINGLE_PARTY)
+				if (_Data.Target == eTargetType.SINGLE_PARTY)
 				{
-					if (_Actors[_Index + 1] != null)
-						_Index++;
+					if (_Actors[_Data.Index + 1] != null)
+						_Data.Index++;
 					else
-						_Index = 0;
+						_Data.Index = 0;
 					Input.PutDelay(Keys.Down);
 				}
-				else if (_Target == eTargetType.SINGLE_ENEMY)
+				else if (_Data.Target == eTargetType.SINGLE_ENEMY)
 				{
-					if (_Enemies[_Index + 1] != null)
-						_Index++;
+					if (_Enemies[_Data.Index + 1] != null)
+						_Data.Index++;
 					else
-						_Index = 0;
+						_Data.Index = 0;
 					Input.PutDelay(Keys.Down);
 				}
 
@@ -145,30 +142,30 @@ namespace FantasyEngine.Classes.Battles
 			if (Input.keyStateHeld.IsKeyDown(Keys.Up))
 			{
 				//Si on peut monter
-				if (_Target == eTargetType.SINGLE_PARTY)
+				if (_Data.Target == eTargetType.SINGLE_PARTY)
 				{
 					//Valider l'index le plus haut
 					do
 					{
-						if (_Index != 0)
-							_Index--;
+						if (_Data.Index != 0)
+							_Data.Index--;
 						else
-							_Index = Player.MAX_ACTOR - 1;
+							_Data.Index = Battle.MAX_ACTOR - 1;
 					}
-					while (_Actors[_Index] == null);
+					while (_Actors[_Data.Index] == null);
 					Input.PutDelay(Keys.Up);
 				}
-				else if (_Target == eTargetType.SINGLE_ENEMY)
+				else if (_Data.Target == eTargetType.SINGLE_ENEMY)
 				{
 					//Valider l'index le plus haut
 					do
 					{
-						if (_Index != 0)
-							_Index--;
+						if (_Data.Index != 0)
+							_Data.Index--;
 						else
-							_Index = Battle.MAX_ENEMY - 1;
+							_Data.Index = Battle.MAX_ENEMY - 1;
 					}
-					while (_Enemies[_Index] == null);
+					while (_Enemies[_Data.Index] == null);
 					Input.PutDelay(Keys.Up);
 				}
 
@@ -178,36 +175,36 @@ namespace FantasyEngine.Classes.Battles
 			if (Input.keyStateDown.IsKeyDown(Keys.Left))
 			{
 				//Changer de target type
-				switch (_Target)
+				switch (_Data.Target)
 				{
 					case eTargetType.MULTI_ENEMY:
-						_Target = eTargetType.ALL;
+						_Data.Target = eTargetType.ALL;
 						break;
 
 					case eTargetType.SINGLE_ENEMY:
-						_Target = eTargetType.MULTI_ENEMY;
+						_Data.Target = eTargetType.MULTI_ENEMY;
 						break;
 
 					case eTargetType.SINGLE_PARTY:
-						_Target = eTargetType.SINGLE_ENEMY;
-						while (_Enemies[_Index] == null)
-							if (_Enemies[_Index + 1] != null)
-								_Index++;
+						_Data.Target = eTargetType.SINGLE_ENEMY;
+						while (_Enemies[_Data.Index] == null)
+							if (_Enemies[_Data.Index + 1] != null)
+								_Data.Index++;
 							else
-								_Index = 0;
+								_Data.Index = 0;
 						break;
 
 					case eTargetType.MULTI_PARTY:
-						_Target = eTargetType.SINGLE_PARTY;
-						while (_Actors[_Index] == null)
-							if (_Actors[_Index + 1] != null)
-								_Index++;
+						_Data.Target = eTargetType.SINGLE_PARTY;
+						while (_Actors[_Data.Index] == null)
+							if (_Actors[_Data.Index + 1] != null)
+								_Data.Index++;
 							else
-								_Index = 0;
+								_Data.Index = 0;
 						break;
 
 					case eTargetType.ALL:
-						_Target = eTargetType.MULTI_PARTY;
+						_Data.Target = eTargetType.MULTI_PARTY;
 						break;
 				}
 
@@ -217,36 +214,36 @@ namespace FantasyEngine.Classes.Battles
 			if (Input.keyStateDown.IsKeyDown(Keys.Right))
 			{
 				//Changer de target type
-				switch (_Target)
+				switch (_Data.Target)
 				{
 					case eTargetType.ALL:
-						_Target = eTargetType.MULTI_ENEMY;
+						_Data.Target = eTargetType.MULTI_ENEMY;
 						break;
 
 					case eTargetType.MULTI_ENEMY:
-						_Target = eTargetType.SINGLE_ENEMY;
-						while (_Enemies[_Index] == null)
-							if (_Enemies[_Index + 1] != null)
-								_Index++;
+						_Data.Target = eTargetType.SINGLE_ENEMY;
+						while (_Enemies[_Data.Index] == null)
+							if (_Enemies[_Data.Index + 1] != null)
+								_Data.Index++;
 							else
-								_Index = 0;
+								_Data.Index = 0;
 						break;
 
 					case eTargetType.SINGLE_ENEMY:
-						_Target = eTargetType.SINGLE_PARTY;
-						while (_Actors[_Index] == null)
-							if (_Actors[_Index + 1] != null)
-								_Index++;
+						_Data.Target = eTargetType.SINGLE_PARTY;
+						while (_Actors[_Data.Index] == null)
+							if (_Actors[_Data.Index + 1] != null)
+								_Data.Index++;
 							else
-								_Index = 0;
+								_Data.Index = 0;
 						break;
 
 					case eTargetType.SINGLE_PARTY:
-						_Target = eTargetType.MULTI_PARTY;
+						_Data.Target = eTargetType.MULTI_PARTY;
 						break;
 
 					case eTargetType.MULTI_PARTY:
-						_Target = eTargetType.ALL;
+						_Data.Target = eTargetType.ALL;
 						break;
 				}
 
@@ -262,39 +259,39 @@ namespace FantasyEngine.Classes.Battles
 				mapTargetBattler[i] = null;
 			}
 
-			switch (_Target)
+			switch (_Data.Target)
 			{
 				case eTargetType.SINGLE_ENEMY:
-					mapTargetBattler[Player.MAX_ACTOR + _Index] = _Enemies[_Index];
+					mapTargetBattler[Battle.MAX_ACTOR + _Data.Index] = _Enemies[_Data.Index];
 					break;
 
 				case eTargetType.MULTI_ENEMY:
 					for (int i = 0; i < Battle.MAX_ENEMY; i++)
-						mapTargetBattler[Player.MAX_ACTOR + i] = _Enemies[i];
+						mapTargetBattler[Battle.MAX_ACTOR + i] = _Enemies[i];
 					break;
 
 				case eTargetType.SINGLE_PARTY:
-					mapTargetBattler[_Index] = _Actors[_Index];
+					mapTargetBattler[_Data.Index] = _Actors[_Data.Index];
 					break;
 
 				case eTargetType.MULTI_PARTY:
-					for (int i = 0; i < Player.MAX_ACTOR; i++)
+					for (int i = 0; i < Battle.MAX_ACTOR; i++)
 						mapTargetBattler[i] = _Actors[i];
 					break;
 
 				case eTargetType.SELF:
-					if (_IndexCourant < Player.MAX_ACTOR)
-						mapTargetBattler[_IndexCourant] = _Actors[_IndexCourant];
+					if (_Data.IndexSelf < Battle.MAX_ACTOR)
+						mapTargetBattler[_Data.IndexSelf] = _Actors[_Data.IndexSelf];
 					else
-						mapTargetBattler[_IndexCourant] = _Enemies[_IndexCourant - Player.MAX_ACTOR];
+						mapTargetBattler[_Data.IndexSelf] = _Enemies[_Data.IndexSelf - Battle.MAX_ACTOR];
 					break;
 
 				case eTargetType.ALL:
-					for (int i = 0; i < Player.MAX_ACTOR; i++)
+					for (int i = 0; i < Battle.MAX_ACTOR; i++)
 						mapTargetBattler[i] = _Actors[i];
 
 					for (int i = 0; i < Battle.MAX_ENEMY; i++)
-						mapTargetBattler[Player.MAX_ACTOR + i] = _Enemies[i];
+						mapTargetBattler[Battle.MAX_ACTOR + i] = _Enemies[i];
 					break;
 			}
 		}

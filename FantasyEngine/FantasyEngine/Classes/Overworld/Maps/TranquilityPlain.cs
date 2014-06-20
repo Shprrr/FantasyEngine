@@ -34,10 +34,10 @@ namespace FantasyEngine.Classes.Overworld.Maps
 		{
 			Encounter encounter = Player.GamePlayer.Map.Encounters[0];
 			Battle battle = new Battle(eve.Game, Player.GamePlayer.Map.BattleBackName);
-			battle._Enemies[0] = new Battler(eve.Game, encounter.Monsters[0].Monster, encounter.Monsters[0].Level + 1);
-			battle._Enemies[0].Name = battle._Enemies[0].CurrentJob.JobName + "1";
-			battle.StartPhase1();
-			Scene.ChangeMainScene(battle);
+			battle.Enemies[0] = new Battler(eve.Game, encounter.Monsters[0].Monster, encounter.Monsters[0].Level + 1);
+			battle.Enemies[0].Name = battle.Enemies[0].CurrentJob.JobName + "1";
+			battle.StartBattle();
+			Scene.ChangeMainScene(battle.BattleScene);
 		}
 	}
 }
