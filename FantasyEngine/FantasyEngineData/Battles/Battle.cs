@@ -65,6 +65,16 @@ namespace FantasyEngineData.Battles
 
 	public class Battle
 	{
+		public enum ePhases
+		{
+			NONE,
+			PRE_BATTLE,
+			ACTOR_COMMAND,
+			ACTION,
+			POST_BATTLE,
+			END_BATTLE
+		}
+
 		public static int MAX_ACTOR;
 		public static int MAX_ENEMY;
 		public const int MAX_CTB = 16;
@@ -72,9 +82,9 @@ namespace FantasyEngineData.Battles
 		protected Battler[] _Actors;
 		protected Battler[] _Enemies;
 
-		protected int _BattleTurn = 0;
+		public int BattleTurn { get; private set; }
 
-		public int Phase { get; private set; }
+		public ePhases Phase { get; private set; }
 
 		private List<CTBTurn> _OrderBattle = new List<CTBTurn>(MAX_CTB);
 		public List<CTBTurn> OrderBattle { get { return _OrderBattle; } }
@@ -111,6 +121,8 @@ namespace FantasyEngineData.Battles
 		{
 			CanEscape = true;
 			CanLose = true;
+			BattleTurn = 0;
+			Phase = ePhases.NONE;
 		}
 
 		/// <summary>
@@ -118,14 +130,17 @@ namespace FantasyEngineData.Battles
 		/// </summary>
 		public void StartBattle()
 		{
-			Phase = 1;
+			if (Phase != ePhases.NONE)
+				return;
+
+			Phase = ePhases.PRE_BATTLE;
 
 			InitCTBCounters();
 
 			if (OnStartBattle != null) OnStartBattle(this, EventArgs.Empty);
 
 			// Start party command phase
-			StartPhase3();
+			BeginTurn();
 		}
 
 		public event EventHandler OnStartBattle;
@@ -253,9 +268,12 @@ namespace FantasyEngineData.Battles
 		/// <summary>
 		/// Start Actor command phase.
 		/// </summary>
-		private void StartPhase3()
+		private void BeginTurn()
 		{
-			Phase = 3;
+			if (Phase != ePhases.PRE_BATTLE && Phase != ePhases.ACTION)
+				return;
+
+			Phase = ePhases.ACTOR_COMMAND;
 
 			// Determine win/loss situation
 			if (Judge())
@@ -266,7 +284,7 @@ namespace FantasyEngineData.Battles
 
 			if (OnBeginTurn != null) OnBeginTurn(this, EventArgs.Empty);
 
-			_BattleTurn++;
+			BattleTurn++;
 
 			if (getActiveBattler().IsActor)
 			{
@@ -276,7 +294,7 @@ namespace FantasyEngineData.Battles
 			else
 			{
 				if (OnAIChooseAction != null) OnAIChooseAction(this, EventArgs.Empty);
-				StartPhase4();
+				StartActionPhase();
 				return;
 			}
 		}
@@ -311,37 +329,28 @@ namespace FantasyEngineData.Battles
 			}
 
 			// Start after battle phase (win)
-			StartPhase5();
+			StartPostBattlePhase();
 			return true;
 		}
 
 		/// <summary>
 		/// Start Main phase.
 		/// </summary>
-		public void StartPhase4()
+		public void StartActionPhase()
 		{
-			Phase = 4;
+			Phase = ePhases.ACTION;
 
-			if (OnPhase4 != null) OnPhase4(this, EventArgs.Empty);
+			if (OnActionPhase != null) OnActionPhase(this, EventArgs.Empty);
 
-			//_PhaseStep = 1;
-			Phase4Step1();
+			ActionPhasePreparation();
 		}
 
-		//TODO: À transférer dans BattleScene
 		/// <summary>
 		/// Action preparation.
 		/// </summary>
-		private void Phase4Step1()
+		private void ActionPhasePreparation()
 		{
 			//Hide Help window
-
-			//Determine win/loss
-			if (Judge()) //TODO: Pourquoi appliquer 2 fois ? (voir Phase3)
-			{
-				if (OnPhase4Judge != null) OnPhase4Judge(this, EventArgs.Empty);
-				return;
-			}
 
 			//Init animations
 
@@ -349,35 +358,31 @@ namespace FantasyEngineData.Battles
 
 			//Natural removal of states
 
-			//_PhaseStep = 2;
-			//Phase4Step2();
-			if (OnPhase4Step2 != null) OnPhase4Step2(this, EventArgs.Empty);
+			if (OnActionPhaseStep2 != null) OnActionPhaseStep2(this, EventArgs.Empty);
 		}
 
-		public event EventHandler OnPhase4;
-		public event EventHandler OnPhase4Judge;
-		public event EventHandler OnPhase4Step2;
+		public event EventHandler OnActionPhase;
+		public event EventHandler OnActionPhaseStep2;
 
 		public void NextTurn()
 		{
 			// Change the active battler for the next one.
 			CalculateCTB();
 
-			StartPhase3();
+			BeginTurn();
 		}
 
 		/// <summary>
 		/// Start After Battle phase.
 		/// </summary>
-		private void StartPhase5()
+		private void StartPostBattlePhase()
 		{
-			Phase = 5;
-			//_PhaseStep = 1;
+			Phase = ePhases.POST_BATTLE;
 
-			if (OnPhase5 != null) OnPhase5(this, EventArgs.Empty);
+			if (OnPostBattlePhase != null) OnPostBattlePhase(this, EventArgs.Empty);
 		}
 
-		public event EventHandler OnPhase5;
+		public event EventHandler OnPostBattlePhase;
 
 		public void EndBattle()
 		{
@@ -409,7 +414,7 @@ namespace FantasyEngineData.Battles
 			{
 			}
 
-			Phase = 6;
+			Phase = ePhases.END_BATTLE;
 		}
 
 		public event EventHandler OnWinning;
@@ -478,7 +483,7 @@ namespace FantasyEngineData.Battles
 			else
 			{
 				//Next turn
-				StartPhase4();
+				StartActionPhase();
 			}
 		}
 	}

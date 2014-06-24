@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 13.00
+# Visual Studio 2013
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyEngine", "FantasyEngine\FantasyEngine\FantasyEngine.csproj", "{0F580116-DBB9-4D53-9D27-B120F183658D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasyEngineContent", "FantasyEngine\FantasyEngineContent\FantasyEngineContent.contentproj", "{70568924-64AB-4857-BB5D-9A2EDFAE8B66}"

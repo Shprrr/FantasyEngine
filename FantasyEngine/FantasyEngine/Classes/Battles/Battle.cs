@@ -52,8 +52,6 @@ namespace FantasyEngine.Classes.Battles
 			Run
 		}
 
-		//TODO: À enlever.
-		private readonly string[] partyCommand = { "Fight", "Escape" };
 		private const string MISS = "MISS";
 
 		private Battle _Battle;
@@ -61,7 +59,6 @@ namespace FantasyEngine.Classes.Battles
 		private Song _BattleMusic;
 
 		private Command _PlayerCommand;
-		private Command _PartyCommand; //TODO: À enlever.
 		private Window _HelpWindow;
 		private Window _StatusWindow;
 		private Window _MessageWindow;
@@ -101,10 +98,6 @@ namespace FantasyEngine.Classes.Battles
 			_PlayerCommand.Enabled = false;
 			_PlayerCommand.Visible = false;
 
-			_PartyCommand = new Command(Game, 640, partyCommand);
-			_PartyCommand.Enabled = false;
-			_PartyCommand.Visible = false;
-
 			_HelpWindow = new Window(Game, 0, 0, 640, 48);
 			_HelpWindow.Visible = false;
 
@@ -136,10 +129,9 @@ namespace FantasyEngine.Classes.Battles
 			_Battle.OnBeginTurn += _Battle_OnBeginTurn;
 			_Battle.OnSetupCommandWindow += Battle_OnSetupCommandWindow;
 			_Battle.OnAIChooseAction += Battle_OnAIChooseAction;
-			_Battle.OnPhase4 += Battle_OnPhase4;
-			_Battle.OnPhase4Judge += Battle_OnPhase4Judge;
-			_Battle.OnPhase4Step2 += Battle_OnPhase4Step2;
-			_Battle.OnPhase5 += Battle_OnPhase5;
+			_Battle.OnActionPhase += Battle_OnActionPhase;
+			_Battle.OnActionPhaseStep2 += Battle_OnActionPhaseStep2;
+			_Battle.OnPostBattlePhase += Battle_OnPostBattlePhase;
 			_Battle.OnWinning += Battle_OnWinning;
 		}
 
@@ -153,9 +145,6 @@ namespace FantasyEngine.Classes.Battles
 
 		private void Battle_OnSetupCommandWindow(object sender, EventArgs e)
 		{
-			// Disable party command window
-			_PartyCommand.Enabled = false;
-			_PartyCommand.Visible = false;
 			// Enable actor command window
 			_PlayerCommand.Enabled = true;
 			_PlayerCommand.Visible = true;
@@ -221,7 +210,7 @@ namespace FantasyEngine.Classes.Battles
 			_CurrentAction = ((Battler)_Battle.getActiveBattler()).AIChooseAction(Game, _Battle.Enemies, _Battle.Actors);
 		}
 
-		private void Battle_OnPhase4(object sender, EventArgs e)
+		private void Battle_OnActionPhase(object sender, EventArgs e)
 		{
 			_PlayerCommand.Enabled = false;
 			_PlayerCommand.Visible = false;
@@ -229,19 +218,121 @@ namespace FantasyEngine.Classes.Battles
 			_PhaseStep = 1;
 		}
 
-		void Battle_OnPhase4Judge(object sender, EventArgs e)
+		/// <summary>
+		/// Start action.
+		/// </summary>
+		void Battle_OnActionPhaseStep2(object sender, EventArgs e)
 		{
-			// If won or lost: end method
-			Scene.ChangeMainScene(new Overworld.Overworld(Game));
-		}
+			if (_Battle.Phase != BattleData.ePhases.ACTION && _PhaseStep != 1)
+				return;
 
-		void Battle_OnPhase4Step2(object sender, EventArgs e)
-		{
 			_PhaseStep = 2;
-			Phase4Step2();
+			switch (_CurrentAction.Kind)
+			{
+				case BattleAction.eKind.ATTACK:
+					//Set animation id
+
+					_CurrentAction.Target.getTargetBattler(_TargetBattler);
+					for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+						if (_TargetBattler[i] != null)
+							_TargetBattler[i].Attacked(_Battle.getActiveBattler());
+					break;
+
+				case BattleAction.eKind.MAGIC:
+					{
+						//Set animation id
+
+						int skillLevel;
+						if (!_CurrentAction.Skill.Casting(_Battle.getActiveBattler(), out skillLevel))
+							break;
+
+						int nbTarget = 0;
+						_CurrentAction.Target.getTargetBattler(_TargetBattler);
+						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+							if (_TargetBattler[i] != null)
+								nbTarget++;
+
+						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+							if (_TargetBattler[i] != null)
+								_TargetBattler[i].Used(_Battle.getActiveBattler(), _CurrentAction.Skill, skillLevel, nbTarget);
+					}
+					break;
+
+				case BattleAction.eKind.ITEM:
+					{
+						//Set animation id
+
+						int nbTarget = 0;
+						_CurrentAction.Target.getTargetBattler(_TargetBattler);
+						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+							if (_TargetBattler[i] != null)
+								nbTarget++;
+
+						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+							if (_TargetBattler[i] != null)
+								_TargetBattler[i].Used(_Battle.getActiveBattler(), _CurrentAction.Item, nbTarget);
+
+						if (_Battle.getActiveBattler().IsActor)
+						{
+							Player.GamePlayer.Inventory.Drop(_CurrentAction.Item);
+							_ItemSelection.RefreshChoices();
+						}
+					}
+					break;
+
+				case BattleAction.eKind.GUARD:
+					break;
+
+				case BattleAction.eKind.WAIT:
+					break;
+			}
+
+			ActionPhaseStep3();
 		}
 
-		private void Battle_OnPhase5(object sender, EventArgs e)
+		/// <summary>
+		/// Animation for action performer.
+		/// </summary>
+		private void ActionPhaseStep3()
+		{
+			if (_Battle.Phase != BattleData.ePhases.ACTION && _PhaseStep != 2)
+				return;
+
+			_PhaseStep = 3;
+			//Set animation of attacker
+			_AnimationWait = 30;
+		}
+
+		/// <summary>
+		/// Animation for target.
+		/// </summary>
+		private void ActionPhaseStep4()
+		{
+			if (_Battle.Phase != BattleData.ePhases.ACTION && _PhaseStep != 3)
+				return;
+
+			_PhaseStep = 4;
+			//Set animation of target
+
+			//Animation has at least 8 frames, regardless of its length
+			_AnimationWait = 30;
+		}
+
+		/// <summary>
+		/// Damage display.
+		/// </summary>
+		private void ActionPhaseStep5()
+		{
+			if (_Battle.Phase != BattleData.ePhases.ACTION && _PhaseStep != 4)
+				return;
+
+			_PhaseStep = 5;
+			//Display damage
+
+			_AnimationWait = 30;
+		}
+
+		private void Battle_OnPostBattlePhase(object sender, EventArgs e)
 		{
 			_PhaseStep = 1;
 
@@ -329,7 +420,7 @@ namespace FantasyEngine.Classes.Battles
 					spriteBatch.Draw(_Battle.Enemies[i].BattlerSprite.texture, _Battle.Enemies[i].BattlerPosition, color);
 			}
 
-			if (_Battle.Phase == 4 && _PhaseStep == 3)
+			if (_Battle.Phase == BattleData.ePhases.ACTION && _PhaseStep == 3)
 			{
 				switch (_CurrentAction.Kind)
 				{
@@ -364,11 +455,11 @@ namespace FantasyEngine.Classes.Battles
 				_AnimationWait--;
 				if (_AnimationWait < 0)
 				{
-					Phase4Step4();
+					ActionPhaseStep4();
 				}
 			}
 
-			if (_Battle.Phase == 4 && _PhaseStep == 4)
+			if (_Battle.Phase == BattleData.ePhases.ACTION && _PhaseStep == 4)
 			{
 				switch (_CurrentAction.Kind)
 				{
@@ -403,11 +494,11 @@ namespace FantasyEngine.Classes.Battles
 				_AnimationWait--;
 				if (_AnimationWait < 0)
 				{
-					Phase4Step5();
+					ActionPhaseStep5();
 				}
 			}
 
-			if (_Battle.Phase == 4 && _PhaseStep == 5)
+			if (_Battle.Phase == BattleData.ePhases.ACTION && _PhaseStep == 5)
 			{
 				switch (_CurrentAction.Kind)
 				{
@@ -448,9 +539,9 @@ namespace FantasyEngine.Classes.Battles
 
 					_Battle.NextTurn();
 				}
-			} // if (_Phase == 4 && _Phase4Step == 5)
+			}
 
-			if (_Battle.Phase == 5)
+			if (_Battle.Phase == BattleData.ePhases.POST_BATTLE)
 			{
 				if (_PhaseStep == 1)
 				{
@@ -471,7 +562,6 @@ namespace FantasyEngine.Classes.Battles
 			if (_Target != null)
 				_Target.Draw(gameTime);
 
-			_PartyCommand.Draw(gameTime);
 			_HelpWindow.Draw(gameTime);
 
 			DrawStatusWindow(gameTime);
@@ -485,7 +575,7 @@ namespace FantasyEngine.Classes.Battles
 
 			_SkillSelection.Draw(gameTime);
 
-			if (_Battle.Phase == 5 && _PhaseStep == 2)
+			if (_Battle.Phase == BattleData.ePhases.POST_BATTLE && _PhaseStep == 2)
 			{
 				DrawResultWindow(gameTime);
 			}
@@ -640,8 +730,6 @@ namespace FantasyEngine.Classes.Battles
 
 			_PlayerCommand.Update(gameTime);
 
-			_PartyCommand.Update(gameTime);
-
 			if (_Target != null)
 				_Target.Update(gameTime);
 
@@ -649,7 +737,7 @@ namespace FantasyEngine.Classes.Battles
 
 			_SkillSelection.Update(gameTime);
 
-			if (_Battle.Phase == 6 && CurrentScene == this) //WaitEnd
+			if (_Battle.Phase == BattleData.ePhases.END_BATTLE && CurrentScene == this) //WaitEnd
 			{
 				// Return to map
 				MediaPlayer.Stop();
@@ -661,20 +749,7 @@ namespace FantasyEngine.Classes.Battles
 			{
 				switch (_Battle.Phase)
 				{
-					//case 2: //Party Command
-					//	switch (_PartyCommand.CursorPosition)
-					//	{
-					//		case 0: //Fight
-					//			StartPhase3();
-					//			return;
-
-					//		case 1: //Escape
-					//			_Battle.Escape();
-					//			return;
-					//	}
-					//	break;
-
-					case 3: //Actor Command
+					case BattleData.ePhases.ACTOR_COMMAND:
 						if (_PlayerCommand.Enabled)
 						{
 							switch (_PlayerCommand.CursorPosition)
@@ -705,8 +780,8 @@ namespace FantasyEngine.Classes.Battles
 
 								case (int)ePlayerCommand.Guard:
 									_CurrentAction = new BattleAction(BattleAction.eKind.GUARD);
-
-									_Battle.StartPhase4();
+									//TODO: Implémenter le guard.
+									_Battle.StartActionPhase();
 									return;
 
 								case (int)ePlayerCommand.Run:
@@ -722,7 +797,7 @@ namespace FantasyEngine.Classes.Battles
 							EndTargetSelection();
 
 							//Next
-							_Battle.StartPhase4();
+							_Battle.StartActionPhase();
 							return;
 						}
 						else if (_ItemSelection.Enabled)
@@ -737,7 +812,7 @@ namespace FantasyEngine.Classes.Battles
 						}
 						break;
 
-					case 5: //Result Command
+					case BattleData.ePhases.POST_BATTLE:
 						_Battle.EndBattle();
 						break;
 				} // switch (_Phase)
@@ -747,7 +822,7 @@ namespace FantasyEngine.Classes.Battles
 			{
 				switch (_Battle.Phase)
 				{
-					case 3: //Actor Command
+					case BattleData.ePhases.ACTOR_COMMAND:
 						if (_Target != null)
 						{
 							EndTargetSelection();
@@ -782,7 +857,7 @@ namespace FantasyEngine.Classes.Battles
 						}
 						break;
 
-					case 5: //Result Command
+					case BattleData.ePhases.POST_BATTLE:
 						_Battle.EndBattle();
 						break;
 				}
@@ -808,113 +883,6 @@ namespace FantasyEngine.Classes.Battles
 				return;
 			}
 		}
-
-		/// <summary>
-		/// Start action.
-		/// </summary>
-		private void Phase4Step2()
-		{
-			switch (_CurrentAction.Kind)
-			{
-				case BattleAction.eKind.ATTACK:
-					//Set animation id
-
-					_CurrentAction.Target.getTargetBattler(_TargetBattler);
-					for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
-						if (_TargetBattler[i] != null)
-							_TargetBattler[i].Attacked(_Battle.getActiveBattler());
-					break;
-
-				case BattleAction.eKind.MAGIC:
-					{
-						//Set animation id
-
-						int skillLevel;
-						if (!_CurrentAction.Skill.Casting(_Battle.getActiveBattler(), out skillLevel))
-							break;
-
-						int nbTarget = 0;
-						_CurrentAction.Target.getTargetBattler(_TargetBattler);
-						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
-							if (_TargetBattler[i] != null)
-								nbTarget++;
-
-						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
-							if (_TargetBattler[i] != null)
-								_TargetBattler[i].Used(_Battle.getActiveBattler(), _CurrentAction.Skill, skillLevel, nbTarget);
-					}
-					break;
-
-				case BattleAction.eKind.ITEM:
-					{
-						//Set animation id
-
-						int nbTarget = 0;
-						_CurrentAction.Target.getTargetBattler(_TargetBattler);
-						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
-							if (_TargetBattler[i] != null)
-								nbTarget++;
-
-						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
-							if (_TargetBattler[i] != null)
-								_TargetBattler[i].Used(_Battle.getActiveBattler(), _CurrentAction.Item, nbTarget);
-
-						if (_Battle.getActiveBattler().IsActor)
-						{
-							Player.GamePlayer.Inventory.Drop(_CurrentAction.Item);
-							_ItemSelection.RefreshChoices();
-						}
-					}
-					break;
-
-				case BattleAction.eKind.GUARD:
-					break;
-
-				case BattleAction.eKind.WAIT:
-					break;
-			}
-
-			_PhaseStep = 3;
-			Phase4Step3();
-		}
-
-		/// <summary>
-		/// Animation for action performer.
-		/// </summary>
-		private void Phase4Step3()
-		{
-			//Set animation of attacker
-			_AnimationWait = 30;
-		}
-
-		/// <summary>
-		/// Animation for target.
-		/// </summary>
-		private void Phase4Step4()
-		{
-			if (_Battle.Phase != 4 && _PhaseStep != 3)
-				return;
-
-			_PhaseStep = 4;
-			//Set animation of target
-
-			//Animation has at least 8 frames, regardless of its length
-			_AnimationWait = 30;
-		}
-
-		/// <summary>
-		/// Damage display.
-		/// </summary>
-		private void Phase4Step5()
-		{
-			if (_Battle.Phase != 4 && _PhaseStep != 4)
-				return;
-
-			_PhaseStep = 5;
-			//Display damage
-
-			_AnimationWait = 30;
-		}
 	}
 
 	public class Battle : BattleData
@@ -938,22 +906,6 @@ namespace FantasyEngine.Classes.Battles
 				if (_Enemies[i] != null)
 					Enemies[i].BattlerPosition = new Vector2(100, 160 + 40 * i);
 		}
-
-		/// <summary>
-		/// Start Party Command phase.
-		/// </summary>
-		//private void StartPhase2()
-		//{
-		//	_Phase = 2;
-
-		//	//Set actor to non-selecting
-
-		//	_PartyCommand.Enabled = true;
-		//	_PartyCommand.Visible = true;
-
-		//	_PlayerCommand.Enabled = false;
-		//	_PlayerCommand.Visible = false;
-		//}
 
 		public Battle(Game game, string battleBackName)
 			: base()
