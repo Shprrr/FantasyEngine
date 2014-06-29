@@ -39,7 +39,6 @@ namespace FantasyEngine.Classes.Battles
 	}
 
 	//TODO: Enemy mort attaque encore et encore targetable.
-	//TODO: Attack normal ne devrait pas être multi target.
 	public class BattleScene : Scene
 	{
 		private readonly string[] playerCommands = { "Attack", "Magic", "Item", "Guard", "Run" };
@@ -157,10 +156,11 @@ namespace FantasyEngine.Classes.Battles
 		/// Start the select of the target with a default target.
 		/// </summary>
 		/// <param name="defaultValue">First position of the target cursor</param>
-		private void StartTargetSelection(eTargetType defaultValue)
+		/// <param name="possibleTargets">Possible targets that can be selected</param>
+		private void StartTargetSelection(eTargetType defaultValue, params eTargetType[] possibleTargets)
 		{
 			//Make cursor
-			_Target = new Cursor(Game, _Battle.Actors, _Battle.Enemies, defaultValue, _Battle.ActiveBattlerIndex);
+			_Target = new Cursor(Game, _Battle.Actors, _Battle.Enemies, defaultValue, _Battle.ActiveBattlerIndex, possibleTargets);
 
 			_PlayerCommand.Enabled = false;
 		}
@@ -184,7 +184,7 @@ namespace FantasyEngine.Classes.Battles
 			_ItemSelection.Visible = false;
 
 			if (_CurrentAction.Item is Item)
-				StartTargetSelection(((Item)_CurrentAction.Item).DefaultTarget);
+				StartTargetSelection(((Item)_CurrentAction.Item).DefaultTarget, Cursor.POSSIBLE_TARGETS_ANYONE);
 		}
 
 		private void StartSkillSelection()
@@ -202,7 +202,7 @@ namespace FantasyEngine.Classes.Battles
 			_SkillSelection.Visible = false;
 
 			if (_CurrentAction.Skill != null)
-				StartTargetSelection(_CurrentAction.Skill.DefaultTarget);
+				StartTargetSelection(_CurrentAction.Skill.DefaultTarget, Cursor.POSSIBLE_TARGETS_ANYONE);
 		}
 
 		private void Battle_OnAIChooseAction(object sender, EventArgs e)
@@ -759,7 +759,7 @@ namespace FantasyEngine.Classes.Battles
 									_CurrentAction = new BattleAction(BattleAction.eKind.ATTACK);
 
 									//Select the target
-									StartTargetSelection(eTargetType.SINGLE_ENEMY);
+									StartTargetSelection(eTargetType.SINGLE_ENEMY, Cursor.POSSIBLE_TARGETS_ONE);
 									return;
 
 								case (int)ePlayerCommand.Magic:
@@ -781,7 +781,9 @@ namespace FantasyEngine.Classes.Battles
 								case (int)ePlayerCommand.Guard:
 									_CurrentAction = new BattleAction(BattleAction.eKind.GUARD);
 									//TODO: Implémenter le guard.
-									_Battle.StartActionPhase();
+
+									//Confirm the target
+									StartTargetSelection(eTargetType.SELF, eTargetType.SELF);
 									return;
 
 								case (int)ePlayerCommand.Run:
