@@ -72,6 +72,13 @@ namespace FantasyEngine
 			spriteBatchGUI = new FantasyEngine.Xna.SpriteBatch(GraphicsDevice);
 
 #if DEBUG
+			// Get the screen info for the last screen
+			System.Windows.Forms.Screen scr = System.Windows.Forms.Screen.AllScreens[System.Windows.Forms.Screen.AllScreens.Length - 1];
+
+			// Reposition the window onto the specified screen
+			var form = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(Window.Handle);
+			form.Location = new System.Drawing.Point(form.Location.X + scr.Bounds.X, form.Location.Y + scr.Bounds.Y);
+
 			showFps = true;
 			MediaPlayer.IsMuted = true;
 #endif
