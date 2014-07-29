@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<XnaContent>
-	<Asset Type="FantasyEngineData.Items.Item">
-		<Name>Potion</Name>
-		<Type>Consumable</Type>
-		<Price>10</Price>
-	</Asset>
-</XnaContent>

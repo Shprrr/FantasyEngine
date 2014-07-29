@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FantasyEngineData.Effects;
 using FantasyEngineData.Entities;
 using FantasyEngineData.Items;
 using FantasyEngineData.Skills;
@@ -19,8 +20,7 @@ namespace FantasyEngineData.Battles
 		public int GoldToGive = 0;
 		public List<BaseItem> Treasure = new List<BaseItem>();
 
-		public int multiplierRH, multiplierLH;
-		public int damageRH, damageLH;
+		public Damage damageR, damageL;
 
 		public bool IsActor { get; set; }
 
@@ -135,60 +135,47 @@ namespace FantasyEngineData.Battles
 
 		public void Attacked(Battler attacker)
 		{
-			multiplierRH = 0;
-			multiplierLH = 0;
-			damageRH = 0;
-			damageLH = 0;
+			damageR = Damage.Empty;
+			damageL = Damage.Empty;
 
 			if (attacker.RightHand is Weapon)
 			{
-				CalculatePhysicalDamage(attacker, ePhysicalDamageOption.RIGHT, out multiplierRH, out damageRH);
+				CalculatePhysicalDamage(attacker, ePhysicalDamageOption.RIGHT, out damageR);
 			}
 
 			if (attacker.LeftHand is Weapon)
 			{
-				CalculatePhysicalDamage(attacker, ePhysicalDamageOption.LEFT, out multiplierLH, out damageLH);
+				CalculatePhysicalDamage(attacker, ePhysicalDamageOption.LEFT, out damageL);
 			}
 
 			if (!(attacker.RightHand is Weapon && attacker.LeftHand is Weapon))
 			{
-				CalculatePhysicalDamage(attacker, ePhysicalDamageOption.RIGHT, out multiplierRH, out damageRH);
+				CalculatePhysicalDamage(attacker, ePhysicalDamageOption.RIGHT, out damageR);
 			}
 		}
 
 		public void Used(Battler attacker, BaseItem item, int nbTarget)
 		{
-			multiplierRH = 0;
-			multiplierLH = 0;
-			damageRH = 0;
-			damageLH = 0;
+			damageR = Damage.Empty;
+			damageL = Damage.Empty;
 
 			if (item.Effect != null)
-				multiplierRH = item.Effect.Use(attacker, this, out damageRH, nbTarget) ? 1 : 0;
+				item.Effect.CalculateDamage(attacker, this, out damageR, nbTarget);
 		}
 
 		public void Used(Battler attacker, Skill skill, int skillLevel, int nbTarget)
 		{
-			multiplierRH = 0;
-			multiplierLH = 0;
-			damageRH = 0;
-			damageLH = 0;
+			damageR = Damage.Empty;
+			damageL = Damage.Empty;
 
 			if (skill.Effect != null)
-				multiplierRH = skill.Use(attacker, this, skillLevel, out damageRH, nbTarget) ? 1 : 0;
+				skill.CalculateDamage(attacker, this, skillLevel, out damageR, nbTarget);
 		}
 
 		public void GiveDamage()
 		{
-			if (multiplierRH > 0)
-			{
-				Hp -= damageRH;
-			}
-
-			if (multiplierLH > 0)
-			{
-				Hp -= damageLH;
-			}
+			damageR.ApplyDamage(this);
+			damageL.ApplyDamage(this);
 		}
 
 		public int ExpToGive()

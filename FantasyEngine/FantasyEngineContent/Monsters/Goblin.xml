@@ -3,7 +3,7 @@
 	<Asset Type="FantasyEngineData.Entities.Monster">
 		<JobName>Goblin</JobName>
 		<MaxHp>40</MaxHp>
-		<MaxMp>0</MaxMp>
+		<MaxMp>100</MaxMp>
 		<Strength>25</Strength>
 		<Vitality>3</Vitality>
 		<Accuracy>2</Accuracy>

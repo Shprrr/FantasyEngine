@@ -508,8 +508,8 @@ namespace FantasyEngine.Classes.Battles
 						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
 							if (_TargetBattler[i] != null)
 							{
-								int totalMultiplier = _TargetBattler[i].multiplierRH + _TargetBattler[i].multiplierLH;
-								int totalDamage = _TargetBattler[i].damageRH + _TargetBattler[i].damageLH;
+								int totalMultiplier = _TargetBattler[i].damageR.Multiplier + _TargetBattler[i].damageL.Multiplier;
+								int totalDamage = Math.Abs(_TargetBattler[i].damageR.Value + _TargetBattler[i].damageL.Value);
 								string damage = totalMultiplier == 0 ? MISS :
 									(_CurrentAction.Kind != BattleAction.eKind.ITEM ?
 										totalMultiplier + " hit" + (totalMultiplier > 1 ? "s" : "") : "") +
@@ -579,6 +579,17 @@ namespace FantasyEngine.Classes.Battles
 			{
 				DrawResultWindow(gameTime);
 			}
+
+#if ENGINE
+			if (Player.GamePlayer.ShowDebug)
+			{
+				for (int i = 0; i < _Battle.Enemies.Length; i++)
+				{
+					if (_Battle.Enemies[i] != null)
+						GameMain.spriteBatchGUI.DrawString(GameMain.font8, "HP: " + _Battle.Enemies[i].Hp + "/" + _Battle.Enemies[i].MaxHp, new Vector2(8, 120 + i * 12), Color.White);
+				}
+			}
+#endif
 		}
 
 		private void DrawStatusWindow(GameTime gameTime)

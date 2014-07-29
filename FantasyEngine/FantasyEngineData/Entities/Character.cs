@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FantasyEngineData.Effects;
 using FantasyEngineData.Items;
 using FantasyEngineData.Skills;
 
@@ -10,20 +11,6 @@ namespace FantasyEngineData.Entities
 	{
 		public const int NAME_LENGTH = 32;
 		public const int MAX_JOB = 8;
-
-		//TODO: Transferer dans les Weapons
-		public enum ePhysicalDamageOption
-		{
-			RIGHT,
-			LEFT,
-			BOTH
-		}
-		public enum eMagicalDamageOption
-		{
-			NONE,
-			BLACK,
-			WHITE
-		}
 
 		#region Fields
 		private string _Name;
@@ -609,8 +596,12 @@ namespace FantasyEngineData.Entities
 		}
 		#endregion Battle Stats
 
-		public void CalculatePhysicalDamage(Character attacker, ePhysicalDamageOption damageOption, out int multiplier, out int damage)
+		public void CalculatePhysicalDamage(Character attacker, ePhysicalDamageOption damageOption, out Damage damage)
 		{
+			damage = new Damage();
+			damage.Type = Damage.eDamageType.HP;
+			damage.User = this;
+
 			//Calculate min and max base damage
 			int baseMinDmg = attacker.getBaseDamage(damageOption);
 
@@ -633,10 +624,10 @@ namespace FantasyEngineData.Entities
 			//hitPourc /= (IsFrontRow || weapon.IsLongRange ? 1 : 2);
 
 			//Calculate attack multiplier
-			multiplier = 0;
+			damage.Multiplier = 0;
 			for (int i = 0; i < attacker.getAttackMultiplier(); i++)
 				if (Extensions.rand.Next(0, 100) < hitPourc)
-					multiplier++;
+					damage.Multiplier++;
 
 			//Bonus on defense for Target
 			int defense = getDefenseDamage();
@@ -654,22 +645,23 @@ namespace FantasyEngineData.Entities
 			//Calculate multiplier and final damage
 			for (int i = 0; i < defenseMul; i++)
 				if (Extensions.rand.Next(0, 100) < getEvadePourc())
-					multiplier--;
+					damage.Multiplier--;
 
-			damage = (Extensions.rand.Next(baseMinDmg, baseMaxDmg + 1) - defense) * multiplier;
+			damage.Value = (Extensions.rand.Next(baseMinDmg, baseMaxDmg + 1) - defense) * damage.Multiplier;
 			//damage *= AttackIsJump ? 3 : 1;
 
 			//Validate final damage and multiplier
-			if (damage < 1) //Min 1 s'il tape au moins une fois
-				damage = 1;
+			if (damage.Value < 1) //Min 1 s'il tape au moins une fois
+				damage.Value = 1;
 
-			if (multiplier < 1) //Check s'il tape au moins une fois
-				damage = 0;
+			if (damage.Multiplier < 1) //Check s'il tape au moins une fois
+				damage.Value = 0;
 		}
 
-		public void CalculateMagicalDamage(Character attacker, eMagicalDamageOption damageOption, int spellDamage, int spellHitPourc, int nbTarget, ref int multiplier, out int damage)
+		public void CalculateMagicalDamage(Character attacker, eMagicalDamageOption damageOption, int spellDamage, int spellHitPourc, int nbTarget, ref Damage damage)
 		{
 			bool isItem = spellHitPourc == 100;
+			damage.Type = Damage.eDamageType.HP;
 
 			//Calculate min and max base damage
 			int baseMinDmg = attacker.getMagicBaseDamage(damageOption, spellDamage);
@@ -693,10 +685,10 @@ namespace FantasyEngineData.Entities
 			//Calculate attack multiplier
 			if (!isItem)
 			{
-				multiplier = 0;
+				damage.Multiplier = 0;
 				for (int i = 0; i < attacker.getMagicAttackMultiplier(damageOption); i++)
 					if (Extensions.rand.Next(0, 100) < hitPourc)
-						multiplier++;
+						damage.Multiplier++;
 			}
 
 			//Bonus on defense for Target
@@ -716,18 +708,18 @@ namespace FantasyEngineData.Entities
 			if (!isItem)
 				for (int i = 0; i < defenseMul; i++)
 					if (Extensions.rand.Next(0, 100) < getMagicEvadePourc())
-						multiplier--;
+						damage.Multiplier--;
 
-			damage = (Extensions.rand.Next(baseMinDmg, baseMaxDmg + 1) - defense) * multiplier;
+			damage.Value = (Extensions.rand.Next(baseMinDmg, baseMaxDmg + 1) - defense) * damage.Multiplier;
 
-			damage /= nbTarget;
+			damage.Value /= nbTarget;
 
 			//Validate final damage and multiplier
-			if (damage < 1) //Min 1 s'il tape au moins une fois
-				damage = 1;
+			if (damage.Value < 1) //Min 1 s'il tape au moins une fois
+				damage.Value = 1;
 
-			if (multiplier < 1) //Check s'il tape au moins une fois
-				damage = 0;
+			if (damage.Multiplier < 1) //Check s'il tape au moins une fois
+				damage.Value = 0;
 		}
 
 		public void Unequip(eEquipSlot slot, Inventory inventory)

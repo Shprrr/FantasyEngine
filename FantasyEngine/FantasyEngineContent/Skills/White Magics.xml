@@ -21,6 +21,7 @@
 			<Effect>
 				<Type>RecoveryHP</Type>
 				<Value>24</Value>
+				<Multiplier>0</Multiplier>
 				<HitPourc>95</HitPourc>
 				<AddValueByLevel>1</AddValueByLevel>
 				<QuadraticCoefficientValueLevel>0.15</QuadraticCoefficientValueLevel>

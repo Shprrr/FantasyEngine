@@ -215,7 +215,13 @@ namespace FantasyEngine.Classes.Overworld
 
 				Battle battle = new Battle(Game, Player.GamePlayer.Map.BattleBackName);
 				battle.Enemies[0] = new Battler(Game, encounter.Monsters[0].Monster, encounter.Monsters[0].Level);
-				battle.Enemies[0].Name = battle.Enemies[0].CurrentJob.JobName + "1";
+				battle.Enemies[0].Name = "E1";
+				battle.Enemies[1] = new Battler(Game, encounter.Monsters[0].Monster, encounter.Monsters[0].Level);
+				battle.Enemies[1].Name = "E2";
+				battle.Enemies[2] = new Battler(Game, encounter.Monsters[0].Monster, encounter.Monsters[0].Level);
+				battle.Enemies[2].Name = "E3";
+				battle.Enemies[3] = new Battler(Game, encounter.Monsters[0].Monster, encounter.Monsters[0].Level);
+				battle.Enemies[3].Name = "E4";
 				battle.StartBattle();
 				Scene.ChangeMainScene(battle.BattleScene);
 			}
