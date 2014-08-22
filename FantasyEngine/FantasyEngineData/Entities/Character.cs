@@ -785,14 +785,12 @@ namespace FantasyEngineData.Entities
 		}
 
 		#region Events
-		//TODO: Change the handler for EventHandler.
-		public delegate void EquipmentChangedHandler(EventArgs e);
-		public event EquipmentChangedHandler EquipmentChanged;
+		public event EventHandler OnEquipmentChanged;
 		protected virtual void RaiseOnEquipmentChanged()
 		{
 			// Raise the event by using the () operator.
-			if (EquipmentChanged != null)
-				EquipmentChanged(new EventArgs());
+			if (OnEquipmentChanged != null)
+				OnEquipmentChanged(this, new EventArgs());
 		}
 
 		public event EventHandler OnDead;

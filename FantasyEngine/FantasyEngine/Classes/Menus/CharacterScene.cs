@@ -25,10 +25,10 @@ namespace FantasyEngine.Classes.Menus
 			_CharacterWindow = new Window(Game, 76, 55, 488, 370);
 			_RealActiveCharacter = activeCharacter;
 			ActiveCharacter = (Character)activeCharacter.CloneExt();
-			_RealActiveCharacter.EquipmentChanged += new Character.EquipmentChangedHandler(_RealActiveCharacter_EquipmentChanged);
+			_RealActiveCharacter.OnEquipmentChanged += _RealActiveCharacter_OnEquipmentChanged;
 		}
 
-		private void _RealActiveCharacter_EquipmentChanged(EventArgs e)
+		private void _RealActiveCharacter_OnEquipmentChanged(object sender, EventArgs e)
 		{
 			ActiveCharacter.RightHand = _RealActiveCharacter.RightHand;
 			ActiveCharacter.LeftHand = _RealActiveCharacter.LeftHand;
@@ -320,6 +320,7 @@ namespace FantasyEngine.Classes.Menus
 				|| Input.keyStateDown.IsKeyDown(Keys.C))
 			{
 				Scene.RemoveSubScene();
+				_RealActiveCharacter.OnEquipmentChanged -= _RealActiveCharacter_OnEquipmentChanged;
 			}
 		}
 	}
