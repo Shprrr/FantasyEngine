@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using FantasyEngineData.Entities;
 
 namespace FantasyEngineData.Battles
 {
@@ -18,6 +19,8 @@ namespace FantasyEngineData.Battles
 
 	public struct CTBTurn : IComparable<CTBTurn>
 	{
+		public const int RANK_DEFAULT = 3;
+
 		public int counter;
 		public int rank;
 		public int tickSpeed;
@@ -101,16 +104,33 @@ namespace FantasyEngineData.Battles
 		}
 		private void setActiveBattler()
 		{
+			int counterLastTurn = _OrderBattle[0].counter;
 			for (int i = 0; i < MAX_ACTOR; i++)
 			{
+				if (Character.IsNullOrDead(_Actors[i]))
+					continue;
+
+				_Actors[i].Counter -= counterLastTurn;
 				if (_Actors[i] == OrderBattle[0].battler)
 					ActiveBattlerIndex = i;
 			}
 
 			for (int i = 0; i < MAX_ENEMY; i++)
 			{
+				if (Character.IsNullOrDead(_Enemies[i]))
+					continue;
+
+				_Enemies[i].Counter -= counterLastTurn;
 				if (_Enemies[i] == OrderBattle[0].battler)
 					ActiveBattlerIndex = MAX_ACTOR + i;
+			}
+
+			// Remove active counter on all other counters.
+			for (int i = 0; i < _OrderBattle.Count; i++)
+			{
+				CTBTurn turn = _OrderBattle[i];
+				turn.counter -= counterLastTurn;
+				_OrderBattle[i] = turn;
 			}
 		}
 
@@ -135,7 +155,7 @@ namespace FantasyEngineData.Battles
 
 			Phase = ePhases.PRE_BATTLE;
 
-			InitCTBCounters();
+			CalculateCTB();
 
 			if (OnStartBattle != null) OnStartBattle(this, EventArgs.Empty);
 
@@ -145,24 +165,31 @@ namespace FantasyEngineData.Battles
 
 		public event EventHandler OnStartBattle;
 
-		/// <summary>
-		/// Initialise CTB counters for the first time.
-		/// </summary>
-		private void InitCTBCounters()
+		private void CalculateCTB()
 		{
-			//1-Calcul les ICV, ajoute le plus petit et garde les restes
+			if (BattleTurn > 0)
+			{
+				// Keep the CV of the next turn of the current battler
+				_OrderBattle[0].battler.Counter += _OrderBattle[0].battler.getCounterValue(_OrderBattle[0].rank); //TODO: Take rank of the current action
+
+				// Empty the OrderBattle to recalculate TickSpeed changes and Dead/Alive changes.
+				_OrderBattle.Clear();
+			}
+
+			//1-Get next CV as ICV, ajoute le plus petit et garde les restes
 			List<CTBTurn> tempCTB = new List<CTBTurn>(MAX_ACTOR + MAX_ENEMY);
 
 			//Get ICVs
 			for (int i = 0; i < MAX_ACTOR; i++)
 			{
-				if (_Actors[i] == null)
+				if (Character.IsNullOrDead(_Actors[i]))
 					continue;
 
-				_Actors[i].CalculateICV();
+				if (BattleTurn == 0)
+					_Actors[i].CalculateICV();
 				CTBTurn turn = new CTBTurn();
 				turn.battler = _Actors[i];
-				turn.rank = 3;
+				turn.rank = CTBTurn.RANK_DEFAULT;
 				turn.counter = turn.battler.Counter;
 				turn.tickSpeed = turn.battler.getTickSpeed();
 				tempCTB.Add(turn);
@@ -170,13 +197,14 @@ namespace FantasyEngineData.Battles
 
 			for (int i = 0; i < MAX_ENEMY; i++)
 			{
-				if (_Enemies[i] == null)
+				if (Character.IsNullOrDead(_Enemies[i]))
 					continue;
 
-				_Enemies[i].CalculateICV();
+				if (BattleTurn == 0)
+					_Enemies[i].CalculateICV();
 				CTBTurn turn = new CTBTurn();
 				turn.battler = _Enemies[i];
-				turn.rank = 3;
+				turn.rank = CTBTurn.RANK_DEFAULT;
 				turn.counter = turn.battler.Counter;
 				turn.tickSpeed = turn.battler.getTickSpeed();
 				tempCTB.Add(turn);
@@ -186,8 +214,6 @@ namespace FantasyEngineData.Battles
 			tempCTB.Sort();
 
 			//Keep lowest
-			if (tempCTB[0].battler == null)
-				return;
 			_OrderBattle.Add(tempCTB[0]);
 
 			//2-Calcul le NCV de celui ajouté, ajoute le plus petit et garde les restes
@@ -203,65 +229,8 @@ namespace FantasyEngineData.Battles
 
 				//Keep lowest
 				_OrderBattle.Add(tempCTB[0]);
-				tempCTB[0].battler.Counter = tempCTB[0].counter;
 			}
 
-			setActiveBattler();
-		}
-
-		private void CalculateCTB()
-		{
-			// Remove active counter on all other counters.
-			int counterLastTurn = _OrderBattle[0].counter;
-			for (int i = 0; i < _OrderBattle.Count; i++)
-			{
-				CTBTurn turn = _OrderBattle[i];
-				turn.counter -= counterLastTurn;
-				_OrderBattle[i] = turn;
-			}
-
-			// Calculate the last CTBTurn to replace the one that will go out.
-
-			//1-Calcul les NCV et ajoute le plus petit
-			List<CTBTurn> tempCTB = new List<CTBTurn>(MAX_ACTOR + MAX_ENEMY);
-
-			//Get NCVs
-			for (int i = 0; i < MAX_ACTOR; i++)
-			{
-				if (_Actors[i] == null)
-					continue;
-
-				_Actors[i].Counter -= counterLastTurn;
-				CTBTurn turn = new CTBTurn();
-				turn.battler = _Actors[i];
-				turn.rank = 3;
-				turn.counter = turn.battler.Counter + turn.battler.getCounterValue(turn.rank);
-				turn.tickSpeed = turn.battler.getTickSpeed();
-				tempCTB.Add(turn);
-			}
-
-			for (int i = 0; i < MAX_ENEMY; i++)
-			{
-				if (_Enemies[i] == null)
-					continue;
-
-				_Enemies[i].Counter -= counterLastTurn;
-				CTBTurn turn = new CTBTurn();
-				turn.battler = _Enemies[i];
-				turn.rank = 3;
-				turn.counter = turn.battler.Counter + turn.battler.getCounterValue(turn.rank);
-				turn.tickSpeed = turn.battler.getTickSpeed();
-				tempCTB.Add(turn);
-			}
-
-			//Sort NCVs
-			tempCTB.Sort();
-
-			//Keep lowest
-			_OrderBattle.Add(tempCTB[0]);
-			tempCTB[0].battler.Counter = tempCTB[0].counter;
-
-			_OrderBattle.RemoveAt(0);
 			setActiveBattler();
 		}
 
@@ -366,7 +335,7 @@ namespace FantasyEngineData.Battles
 
 		public void NextTurn()
 		{
-			// Change the active battler for the next one.
+			// Update CTB and change the active battler for the next one.
 			CalculateCTB();
 
 			BeginTurn();

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using FantasyEngineData.Battles;
+using FantasyEngineData.Entities;
 using CursorData = FantasyEngineData.Battles.Cursor;
 
 namespace FantasyEngine.Classes.Battles
@@ -118,56 +119,16 @@ namespace FantasyEngine.Classes.Battles
 
 			if (Input.keyStateHeld.IsKeyDown(Keys.Down))
 			{
-				//Si on peut descendre
-				if (_Data.Target == eTargetType.SINGLE_PARTY)
-				{
-					if (_Data.Actors[_Data.Index + 1] != null)
-						_Data.Index++;
-					else
-						_Data.Index = 0;
+				if (_Data.ChangeCursorDown())
 					Input.PutDelay(Keys.Down);
-				}
-				else if (_Data.Target == eTargetType.SINGLE_ENEMY)
-				{
-					if (_Data.Enemies[_Data.Index + 1] != null)
-						_Data.Index++;
-					else
-						_Data.Index = 0;
-					Input.PutDelay(Keys.Down);
-				}
 
 				return;
 			}
 
 			if (Input.keyStateHeld.IsKeyDown(Keys.Up))
 			{
-				//Si on peut monter
-				if (_Data.Target == eTargetType.SINGLE_PARTY)
-				{
-					//Valider l'index le plus haut
-					do
-					{
-						if (_Data.Index != 0)
-							_Data.Index--;
-						else
-							_Data.Index = Battle.MAX_ACTOR - 1;
-					}
-					while (_Data.Actors[_Data.Index] == null);
+				if (_Data.ChangeCursorUp())
 					Input.PutDelay(Keys.Up);
-				}
-				else if (_Data.Target == eTargetType.SINGLE_ENEMY)
-				{
-					//Valider l'index le plus haut
-					do
-					{
-						if (_Data.Index != 0)
-							_Data.Index--;
-						else
-							_Data.Index = Battle.MAX_ENEMY - 1;
-					}
-					while (_Data.Enemies[_Data.Index] == null);
-					Input.PutDelay(Keys.Up);
-				}
 
 				return;
 			}

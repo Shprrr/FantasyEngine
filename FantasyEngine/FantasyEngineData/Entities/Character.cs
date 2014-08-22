@@ -72,7 +72,14 @@ namespace FantasyEngineData.Entities
 		public int Hp
 		{
 			get { return CurrentJob != null ? CurrentJob.Hp : 0; }
-			set { if (CurrentJob != null) CurrentJob.Hp = value; }
+			set
+			{
+				if (CurrentJob == null) return;
+				int hpBefore = CurrentJob.Hp;
+				CurrentJob.Hp = value;
+				if (hpBefore > 0 && CurrentJob.Hp <= 0) RaiseOnDead();
+				if (hpBefore <= 0 && CurrentJob.Hp > 0) RaiseOnRevive();
+			}
 		}
 
 		public int MaxHp
@@ -772,7 +779,13 @@ namespace FantasyEngineData.Entities
 			return Name + " [Lv:" + Level + "]";
 		}
 
+		public static bool IsNullOrDead(Character character)
+		{
+			return character == null || character.IsDead;
+		}
+
 		#region Events
+		//TODO: Change the handler for EventHandler.
 		public delegate void EquipmentChangedHandler(EventArgs e);
 		public event EquipmentChangedHandler EquipmentChanged;
 		protected virtual void RaiseOnEquipmentChanged()
@@ -780,6 +793,22 @@ namespace FantasyEngineData.Entities
 			// Raise the event by using the () operator.
 			if (EquipmentChanged != null)
 				EquipmentChanged(new EventArgs());
+		}
+
+		public event EventHandler OnDead;
+		protected virtual void RaiseOnDead()
+		{
+			// Raise the event by using the () operator.
+			if (OnDead != null)
+				OnDead(this, new EventArgs());
+		}
+
+		public event EventHandler OnRevive;
+		protected virtual void RaiseOnRevive()
+		{
+			// Raise the event by using the () operator.
+			if (OnRevive != null)
+				OnRevive(this, new EventArgs());
 		}
 		#endregion Events
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FantasyEngineData.Entities;
 
 namespace FantasyEngineData.Battles
 {
@@ -61,19 +62,11 @@ namespace FantasyEngineData.Battles
 				Target = TARGET_ORDER[i];
 			} while (!PossibleTargets.Contains(Target));
 
-			if (Target == eTargetType.SINGLE_PARTY)
-				while (Actors[Index] == null)
-					if (Actors[Index + 1] != null)
-						Index++;
-					else
-						Index = 0;
+			while (Target == eTargetType.SINGLE_PARTY && Character.IsNullOrDead(Actors[Index]))
+				GoToNextActor();
 
-			if (Target == eTargetType.SINGLE_ENEMY)
-				while (Enemies[Index] == null)
-					if (Enemies[Index + 1] != null)
-						Index++;
-					else
-						Index = 0;
+			while (Target == eTargetType.SINGLE_ENEMY && Character.IsNullOrDead(Enemies[Index]))
+				GoToNextEnemy();
 		}
 
 		public void ChangeTargetTypeToRight()
@@ -96,19 +89,91 @@ namespace FantasyEngineData.Battles
 				Target = TARGET_ORDER[i];
 			} while (!PossibleTargets.Contains(Target));
 
-			if (Target == eTargetType.SINGLE_PARTY)
-				while (Actors[Index] == null)
-					if (Actors[Index + 1] != null)
-						Index++;
-					else
-						Index = 0;
+			while (Target == eTargetType.SINGLE_PARTY && Character.IsNullOrDead(Actors[Index]))
+				GoToNextActor();
 
-			if (Target == eTargetType.SINGLE_ENEMY)
-				while (Enemies[Index] == null)
-					if (Enemies[Index + 1] != null)
-						Index++;
-					else
-						Index = 0;
+			while (Target == eTargetType.SINGLE_ENEMY && Character.IsNullOrDead(Enemies[Index]))
+				GoToNextEnemy();
+		}
+
+		public bool ChangeCursorDown()
+		{
+			// If we can go down.
+			if (Target == eTargetType.SINGLE_PARTY)
+			{
+				GoToNextActor();
+				return true;
+			}
+			else if (Target == eTargetType.SINGLE_ENEMY)
+			{
+				GoToNextEnemy();
+				return true;
+			}
+			return false;
+		}
+
+		public bool ChangeCursorUp()
+		{
+			// If we can go up.
+			if (Target == eTargetType.SINGLE_PARTY)
+			{
+				GoToPreviousActor();
+				return true;
+			}
+			else if (Target == eTargetType.SINGLE_ENEMY)
+			{
+				GoToPreviousEnemy();
+				return true;
+			}
+			return false;
+		}
+
+		private void GoToPreviousActor()
+		{
+			do
+			{
+				if (Index > 0)
+					Index--;
+				else
+					Index = Actors.Length - 1;
+			}
+			while (Actors[Index] == null);
+		}
+
+		private void GoToPreviousEnemy()
+		{
+			do
+			{
+				if (Index > 0)
+					Index--;
+				else
+					Index = Enemies.Length - 1;
+			}
+			while (Enemies[Index] == null);
+		}
+
+		private void GoToNextActor()
+		{
+			do
+			{
+				if (Index < Actors.Length - 1)
+					Index++;
+				else
+					Index = 0;
+			}
+			while (Actors[Index] == null);
+		}
+
+		private void GoToNextEnemy()
+		{
+			do
+			{
+				if (Index < Enemies.Length - 1)
+					Index++;
+				else
+					Index = 0;
+			}
+			while (Enemies[Index] == null);
 		}
 	}
 }

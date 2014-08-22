@@ -45,6 +45,9 @@ namespace FantasyEngineData.Battles
 			Feet = character.Feet;
 
 			Skills.AddRange(character.Skills);
+
+			OnDead += Battler_OnDead;
+			OnRevive += Battler_OnRevive;
 		}
 
 		public Battler(Monster monster, int level)
@@ -53,6 +56,9 @@ namespace FantasyEngineData.Battles
 			Jobs[0] = new Job((BaseJob)monster.Clone(), level);
 
 			monster.Drop.GetDrop(CurrentJob, ref GoldToGive, ref Treasure);
+
+			OnDead += Battler_OnDead;
+			OnRevive += Battler_OnRevive;
 		}
 
 		public int getTickSpeed()
@@ -119,6 +125,9 @@ namespace FantasyEngineData.Battles
 			return 0;
 		}
 
+		/// <summary>
+		/// Calculate the Initial Counter Value for the CTB system.
+		/// </summary>
 		public void CalculateICV()
 		{
 			int TS = getTickSpeed();
@@ -161,6 +170,7 @@ namespace FantasyEngineData.Battles
 
 			if (item.Effect != null)
 				item.Effect.CalculateDamage(attacker, this, out damageR, nbTarget);
+			//TODO: Faire le drop ici ?
 		}
 
 		public void Used(Battler attacker, Skill skill, int skillLevel, int nbTarget)
@@ -182,6 +192,16 @@ namespace FantasyEngineData.Battles
 		{
 			return (int)(((CurrentJob.BaseJob.MaxHp / 4) + (CurrentJob.BaseJob.MaxMp / 2)
 				+ Strength + Vitality + Accuracy + Agility + Intelligence + Wisdom + Math.Pow(Level, 2)) / 6);
+		}
+
+		private void Battler_OnDead(object sender, EventArgs e)
+		{
+			Counter = 0; // CTB system in Battle will clean itself.
+		}
+
+		private void Battler_OnRevive(object sender, EventArgs e)
+		{
+			Counter = getCounterValue(CTBTurn.RANK_DEFAULT); // Supposed to be : Reviving is rank=3*tickSpeed without Haste/Slow even with Auto-Haste.
 		}
 	}
 }

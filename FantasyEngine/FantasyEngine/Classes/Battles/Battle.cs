@@ -38,7 +38,6 @@ namespace FantasyEngine.Classes.Battles
 		}
 	}
 
-	//TODO: Enemy mort attaque encore et encore targetable.
 	public class BattleScene : Scene
 	{
 		private readonly string[] playerCommands = { "Attack", "Magic", "Item", "Guard", "Run" };
@@ -398,10 +397,11 @@ namespace FantasyEngine.Classes.Battles
 
 			for (int i = 0; i < BattleData.MAX_ACTOR; i++)
 			{
-				if (_Battle.Actors[i] == null || _Battle.Actors[i].IsDead)
+				if (_Battle.Actors[i] == null)
 					continue;
 
 				Color color = _Battle.Actors[i] == _TargetBattler[i] ? new Color(0xFF, 0, 0, 0xFF) : Color.White;
+				if (_Battle.Actors[i].IsDead) { color.R /= 4; color.G /= 4; color.B /= 4; color.A /= 4; } //TODO: Mettre le sprite pour l'état mort.
 				if (_Battle.Actors[i].BattlerSprite is Tileset)
 					spriteBatch.Draw(_Battle.Actors[i].BattlerSprite.texture, _Battle.Actors[i].GetRectangle(), _Battle.Actors[i].BattlerSprite.GetSourceRectangle(0), color);
 				else
@@ -410,10 +410,11 @@ namespace FantasyEngine.Classes.Battles
 
 			for (int i = 0; i < BattleData.MAX_ENEMY; i++)
 			{
-				if (_Battle.Enemies[i] == null || _Battle.Enemies[i].IsDead)
+				if (_Battle.Enemies[i] == null)
 					continue;
 
 				Color color = _Battle.Enemies[i] == _TargetBattler[BattleData.MAX_ACTOR + i] ? new Color(0xFF, 0, 0, 0xFF) : Color.White;
+				if (_Battle.Enemies[i].IsDead) { color.R /= 4; color.G /= 4; color.B /= 4; color.A /= 4; } //TODO: Mettre le sprite pour l'état mort.
 				if (_Battle.Enemies[i].BattlerSprite is Tileset)
 					spriteBatch.Draw(_Battle.Enemies[i].BattlerSprite.texture, _Battle.Enemies[i].BattlerPosition, _Battle.Enemies[i].BattlerSprite.GetSourceRectangle(0), color);
 				else
