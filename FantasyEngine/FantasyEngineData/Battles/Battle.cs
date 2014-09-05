@@ -78,6 +78,14 @@ namespace FantasyEngineData.Battles
 			END_BATTLE
 		}
 
+		public enum eBattleResult
+		{
+			NONE,
+			WIN,
+			LOSE,
+			ESCAPE
+		}
+
 		public static int MAX_ACTOR;
 		public static int MAX_ENEMY;
 		public const int MAX_CTB = 16;
@@ -137,12 +145,25 @@ namespace FantasyEngineData.Battles
 		public bool CanEscape { get; set; }
 		public bool CanLose { get; set; }
 
+		private eBattleResult _Result;
+		public eBattleResult Result
+		{
+			get { return _Result; }
+			private set
+			{
+				_Result = value;
+				if (_Result != eBattleResult.NONE)
+					StartPostBattlePhase();
+			}
+		}
+
 		public Battle()
 		{
 			CanEscape = true;
 			CanLose = true;
 			BattleTurn = 0;
 			Phase = ePhases.NONE;
+			Result = eBattleResult.NONE;
 		}
 
 		/// <summary>
@@ -246,10 +267,8 @@ namespace FantasyEngineData.Battles
 
 			// Determine win/loss situation
 			if (Judge())
-			{
 				// If won or lost: end method
 				return;
-			}
 
 			if (OnBeginTurn != null) OnBeginTurn(this, EventArgs.Empty);
 
@@ -278,28 +297,21 @@ namespace FantasyEngineData.Battles
 		/// <returns></returns>
 		private bool Judge()
 		{
-			//TODO: Repenser le BattleEnd/Phase5.
-			foreach (Battler actor in _Actors)
+			int nbBattlerAlive = _Actors.Count(b => !Character.IsNullOrDead(b));
+			if (nbBattlerAlive == 0)
 			{
-				//TODO: Pas sur, mais je ne pense pas que ca marche pour plus qu'un actor.
-				if (actor != null && actor.IsDead)
-				{
-					BattleEnd(CanLose ? 1 : 2);
-					return true;
-				}
+				Result = CanLose ? eBattleResult.LOSE : eBattleResult.ESCAPE;
+				return true;
 			}
 
-			foreach (Battler enemy in _Enemies)
+			nbBattlerAlive = _Enemies.Count(b => !Character.IsNullOrDead(b));
+			if (nbBattlerAlive == 0)
 			{
-				if (enemy != null && !enemy.IsDead)
-				{
-					return false;
-				}
+				Result = eBattleResult.WIN;
+				return true;
 			}
 
-			// Start after battle phase (win)
-			StartPostBattlePhase();
-			return true;
+			return false;
 		}
 
 		/// <summary>
@@ -307,6 +319,9 @@ namespace FantasyEngineData.Battles
 		/// </summary>
 		public void StartActionPhase()
 		{
+			if (Phase != ePhases.ACTOR_COMMAND)
+				return;
+
 			Phase = ePhases.ACTION;
 
 			if (OnActionPhase != null) OnActionPhase(this, EventArgs.Empty);
@@ -335,6 +350,9 @@ namespace FantasyEngineData.Battles
 
 		public void NextTurn()
 		{
+			if (Phase != ePhases.ACTOR_COMMAND && Phase != ePhases.ACTION)
+				return;
+
 			// Update CTB and change the active battler for the next one.
 			CalculateCTB();
 
@@ -353,25 +371,23 @@ namespace FantasyEngineData.Battles
 
 		public event EventHandler OnPostBattlePhase;
 
-		public void EndBattle()
-		{
-			//TODO: Trouver meilleure façon.
-			BattleEnd(0);
-		}
-
 		/// <summary>
 		/// Battle Ends.
 		/// </summary>
-		/// <param name="result">Results (0:Win 1:Lose 2:Escape)</param>
-		private void BattleEnd(int result)
+		/// <param name="result">Results</param>
+		public void BattleEnd()
 		{
-			switch (result)
+			if (Phase != ePhases.POST_BATTLE || Result == eBattleResult.NONE)
+				return;
+
+			switch (Result)
 			{
-				case 0: // Win
+				case eBattleResult.WIN:
+				case eBattleResult.ESCAPE:
 					if (OnWinning != null) OnWinning(this, EventArgs.Empty);
 					break;
 
-				case 1: // Lose
+				case eBattleResult.LOSE:
 					if (OnLosing != null) OnLosing(this, EventArgs.Empty);
 					// Gameover screen
 					// Wakeup in the inn.
@@ -447,7 +463,7 @@ namespace FantasyEngineData.Battles
 
 			if (success)
 			{
-				BattleEnd(2);
+				Result = eBattleResult.ESCAPE;
 			}
 			else
 			{

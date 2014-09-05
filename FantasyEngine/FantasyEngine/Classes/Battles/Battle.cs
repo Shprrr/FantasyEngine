@@ -73,6 +73,7 @@ namespace FantasyEngine.Classes.Battles
 		private int _PhaseStep;
 		private int _AnimationWait = 0;
 
+		private bool _HasResult = false;
 		private int _Exp = 0;
 		private int _Gold = 0;
 		private List<BaseItem> _Treasure = new List<BaseItem>();
@@ -335,11 +336,14 @@ namespace FantasyEngine.Classes.Battles
 		{
 			_PhaseStep = 1;
 
-			// Play the victory song.
-			Song victory = Game.Content.Load<Song>(@"Audios\Musics\Victory");
-			MediaPlayer.Stop();
-			MediaPlayer.Play(victory);
-			MediaPlayer.IsRepeating = false;
+			if (_Battle.Result == BattleData.eBattleResult.WIN)
+			{
+				// Play the victory song.
+				Song victory = Game.Content.Load<Song>(@"Audios\Musics\Victory");
+				MediaPlayer.Stop();
+				MediaPlayer.Play(victory);
+				MediaPlayer.IsRepeating = false;
+			}
 
 			// Get Exp, Gold and Items from dead enemies.
 			foreach (Battler enemy in _Battle.Enemies)
@@ -347,29 +351,31 @@ namespace FantasyEngine.Classes.Battles
 				if (enemy == null)
 					continue;
 
-				_Exp += enemy.ExpToGive();
-				_Gold += enemy.GoldToGive;
-				_Treasure.AddRange(enemy.Treasure);
+				if (enemy.IsDead)
+				{
+					_Exp += enemy.ExpToGive();
+					_Gold += enemy.GoldToGive;
+					_Treasure.AddRange(enemy.Treasure);
+					_HasResult = true;
+				}
 			}
 
-			// Wait 100 frames.
-			_AnimationWait = 30;
-
-			// Show the result.
+			if (_HasResult)
+			{
+				// Wait 100 frames.
+				_AnimationWait = 30;
+			}
+			else
+				_Battle.BattleEnd();
 		}
 
 		private void Battle_OnWinning(object sender, EventArgs e)
 		{
-			int nbActorAlive = 0;
-			foreach (Battler actor in _Battle.Actors)
-			{
-				if (actor != null && !actor.IsDead)
-					nbActorAlive++;
-			}
+			int nbActorAlive = _Battle.Actors.Count(b => !Character.IsNullOrDead(b));
 
 			foreach (Battler actor in _Battle.Actors)
 			{
-				if (actor != null && !actor.IsDead)
+				if (!Character.IsNullOrDead(actor))
 				{
 					int oldLevel = actor.Level;
 					actor.Exp += _Exp / nbActorAlive;
@@ -544,7 +550,7 @@ namespace FantasyEngine.Classes.Battles
 
 			if (_Battle.Phase == BattleData.ePhases.POST_BATTLE)
 			{
-				if (_PhaseStep == 1)
+				if (_PhaseStep == 1 && _HasResult)
 				{
 					_AnimationWait--;
 					if (_AnimationWait < 0)
@@ -584,10 +590,11 @@ namespace FantasyEngine.Classes.Battles
 #if ENGINE
 			if (Player.GamePlayer.ShowDebug)
 			{
+				GameMain.spriteBatchGUI.DrawString(GameMain.font8, "Turn: " + _Battle.BattleTurn, new Vector2(8, 120), Color.White);
 				for (int i = 0; i < _Battle.Enemies.Length; i++)
 				{
 					if (_Battle.Enemies[i] != null)
-						GameMain.spriteBatchGUI.DrawString(GameMain.font8, "HP: " + _Battle.Enemies[i].Hp + "/" + _Battle.Enemies[i].MaxHp, new Vector2(8, 120 + i * 12), Color.White);
+						GameMain.spriteBatchGUI.DrawString(GameMain.font8, "HP: " + _Battle.Enemies[i].Hp + "/" + _Battle.Enemies[i].MaxHp, new Vector2(8, 132 + i * 12), Color.White);
 				}
 			}
 #endif
@@ -827,7 +834,7 @@ namespace FantasyEngine.Classes.Battles
 						break;
 
 					case BattleData.ePhases.POST_BATTLE:
-						_Battle.EndBattle();
+						_Battle.BattleEnd();
 						break;
 				} // switch (_Phase)
 			} // if (Input.keyStateDown.IsKeyDown(Keys.Enter))
@@ -872,7 +879,7 @@ namespace FantasyEngine.Classes.Battles
 						break;
 
 					case BattleData.ePhases.POST_BATTLE:
-						_Battle.EndBattle();
+						_Battle.BattleEnd();
 						break;
 				}
 			}
