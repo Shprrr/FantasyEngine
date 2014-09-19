@@ -134,9 +134,9 @@ namespace FantasyEngine.Classes.Battles
 
 			/*
 			 * S'il n'y pas de skill utile,
-			 * Kind = Guard
+			 * Kind = Defend
 			*/
-			action.Kind = BattleAction.eKind.GUARD;
+			action.Kind = BattleAction.eKind.DEFEND;
 
 			return action;
 		}

@@ -15,13 +15,18 @@ namespace FantasyEngine.Classes.Battles
 {
 	public struct BattleAction
 	{
+		public const int RANK_ATTACK = 3;
+		public const int RANK_ITEM = 2;
+		public const int RANK_DEFEND = 2;
+		public const int RANK_ESCAPE = 1;
+
 		public enum eKind
 		{
 			WAIT,
 			ATTACK,
 			MAGIC,
 			ITEM,
-			GUARD
+			DEFEND
 		}
 
 		public eKind Kind;
@@ -40,13 +45,13 @@ namespace FantasyEngine.Classes.Battles
 
 	public class BattleScene : Scene
 	{
-		private readonly string[] playerCommands = { "Attack", "Magic", "Item", "Guard", "Run" };
+		private readonly string[] playerCommands = { "Attack", "Magic", "Item", "Defend", "Run" };
 		private enum ePlayerCommand
 		{
 			Attack,
 			Magic,
 			Item,
-			Guard,
+			Defend,
 			Run
 		}
 
@@ -96,6 +101,7 @@ namespace FantasyEngine.Classes.Battles
 			_PlayerCommand.ChangeOffset(640 - 160, 320);
 			_PlayerCommand.Enabled = false;
 			_PlayerCommand.Visible = false;
+			_PlayerCommand.OnIndexChanged += PlayerCommand_OnIndexChanged;
 
 			_HelpWindow = new Window(Game, 0, 0, 640, 48);
 			_HelpWindow.Visible = false;
@@ -117,6 +123,7 @@ namespace FantasyEngine.Classes.Battles
 			_SkillSelection.ChangeOffset(80, 320);
 			_SkillSelection.Enabled = false;
 			_SkillSelection.Visible = false;
+			_SkillSelection.OnIndexChanged += SkillSelection_OnIndexChanged;
 
 			_ResultWindow = new Window(Game, 0, 0, 640, 480);
 			_ResultWindow.Visible = false;
@@ -125,7 +132,7 @@ namespace FantasyEngine.Classes.Battles
 
 			spriteBatch.cameraMatrix = Matrix.Identity;
 
-			_Battle.OnBeginTurn += _Battle_OnBeginTurn;
+			_Battle.OnBeginTurn += Battle_OnBeginTurn;
 			_Battle.OnSetupCommandWindow += Battle_OnSetupCommandWindow;
 			_Battle.OnAIChooseAction += Battle_OnAIChooseAction;
 			_Battle.OnActionPhase += Battle_OnActionPhase;
@@ -134,12 +141,13 @@ namespace FantasyEngine.Classes.Battles
 			_Battle.OnWinning += Battle_OnWinning;
 		}
 
-		void _Battle_OnBeginTurn(object sender, EventArgs e)
+		private void Battle_OnBeginTurn(object sender, EventArgs e)
 		{
 			for (int i = 0; i < _TargetBattler.Length; i++)
 			{
 				_TargetBattler[i] = null;
 			}
+			_SkillSelection.Actor = _Battle.getActiveBattler();
 		}
 
 		private void Battle_OnSetupCommandWindow(object sender, EventArgs e)
@@ -150,6 +158,32 @@ namespace FantasyEngine.Classes.Battles
 			// Set index to 0
 			// Note: They may want to keep position of the last action.
 			_PlayerCommand.CursorPosition = 0;
+		}
+
+		private void PlayerCommand_OnIndexChanged(object sender, EventArgs e)
+		{
+			switch (_PlayerCommand.CursorPosition)
+			{
+				case (int)ePlayerCommand.Attack:
+					_Battle.ChangeActiveRank(BattleAction.RANK_ATTACK);
+					break;
+
+				case (int)ePlayerCommand.Magic:
+					// Change active rank when selecting a magic.
+					break;
+
+				case (int)ePlayerCommand.Item:
+					_Battle.ChangeActiveRank(BattleAction.RANK_ITEM);
+					break;
+
+				case (int)ePlayerCommand.Defend:
+					_Battle.ChangeActiveRank(BattleAction.RANK_DEFEND);
+					break;
+
+				case (int)ePlayerCommand.Run:
+					_Battle.ChangeActiveRank(BattleAction.RANK_ESCAPE);
+					break;
+			}
 		}
 
 		/// <summary>
@@ -191,9 +225,14 @@ namespace FantasyEngine.Classes.Battles
 		{
 			_SkillSelection.Enabled = true;
 			_SkillSelection.Visible = true;
-			_SkillSelection.Actor = _Battle.getActiveBattler();
+			SkillSelection_OnIndexChanged(_SkillSelection, EventArgs.Empty);
 
 			_PlayerCommand.Enabled = false;
+		}
+
+		private void SkillSelection_OnIndexChanged(object sender, EventArgs e)
+		{
+			_Battle.ChangeActiveRank(_SkillSelection.SkillSelected.Rank);
 		}
 
 		private void EndSkillSelection()
@@ -280,7 +319,7 @@ namespace FantasyEngine.Classes.Battles
 					}
 					break;
 
-				case BattleAction.eKind.GUARD:
+				case BattleAction.eKind.DEFEND:
 					break;
 
 				case BattleAction.eKind.WAIT:
@@ -452,7 +491,7 @@ namespace FantasyEngine.Classes.Battles
 						spriteBatch.DrawString(GameMain.font, _CurrentAction.Item.Name + " is used !", new Vector2(0, 200), Color.White);
 						break;
 
-					case BattleAction.eKind.GUARD:
+					case BattleAction.eKind.DEFEND:
 						break;
 
 					case BattleAction.eKind.WAIT:
@@ -491,7 +530,7 @@ namespace FantasyEngine.Classes.Battles
 						spriteBatch.DrawString(GameMain.font, _CurrentAction.Item.Name + " hitted !", new Vector2(0, 200), Color.White);
 						break;
 
-					case BattleAction.eKind.GUARD:
+					case BattleAction.eKind.DEFEND:
 						break;
 
 					case BattleAction.eKind.WAIT:
@@ -528,7 +567,7 @@ namespace FantasyEngine.Classes.Battles
 							}
 						break;
 
-					case BattleAction.eKind.GUARD:
+					case BattleAction.eKind.DEFEND:
 						break;
 
 					case BattleAction.eKind.WAIT:
@@ -797,8 +836,8 @@ namespace FantasyEngine.Classes.Battles
 									StartItemSelection();
 									return;
 
-								case (int)ePlayerCommand.Guard:
-									_CurrentAction = new BattleAction(BattleAction.eKind.GUARD);
+								case (int)ePlayerCommand.Defend:
+									_CurrentAction = new BattleAction(BattleAction.eKind.DEFEND);
 									//TODO: Implémenter le guard.
 
 									//Confirm the target
@@ -851,6 +890,7 @@ namespace FantasyEngine.Classes.Battles
 							switch (_PlayerCommand.CursorPosition)
 							{
 								case (int)ePlayerCommand.Attack:
+								case (int)ePlayerCommand.Defend:
 									_PlayerCommand.Enabled = true;
 									break;
 								case (int)ePlayerCommand.Magic:

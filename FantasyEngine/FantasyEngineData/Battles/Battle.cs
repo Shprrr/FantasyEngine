@@ -26,6 +26,12 @@ namespace FantasyEngineData.Battles
 		public int tickSpeed;
 		public Battler battler;
 
+		public void SetCounter()
+		{
+			counter += (int)(tickSpeed * rank * battler.HasteStatus);
+			rank = RANK_DEFAULT;
+		}
+
 		public override int GetHashCode() { return base.GetHashCode(); }
 
 		public override bool Equals(object obj)
@@ -188,11 +194,10 @@ namespace FantasyEngineData.Battles
 
 		private void CalculateCTB()
 		{
+			CTBTurn? firstTurn = null;
 			if (BattleTurn > 0)
 			{
-				// Keep the CV of the next turn of the current battler
-				_OrderBattle[0].battler.Counter += _OrderBattle[0].battler.getCounterValue(_OrderBattle[0].rank); //TODO: Take rank of the current action
-
+				firstTurn = _OrderBattle[0];
 				// Empty the OrderBattle to recalculate TickSpeed changes and Dead/Alive changes.
 				_OrderBattle.Clear();
 			}
@@ -208,12 +213,17 @@ namespace FantasyEngineData.Battles
 
 				if (BattleTurn == 0)
 					_Actors[i].CalculateICV();
-				CTBTurn turn = new CTBTurn();
-				turn.battler = _Actors[i];
-				turn.rank = CTBTurn.RANK_DEFAULT;
-				turn.counter = turn.battler.Counter;
-				turn.tickSpeed = turn.battler.getTickSpeed();
-				tempCTB.Add(turn);
+				if (firstTurn.HasValue && _Actors[i] == firstTurn.Value.battler)
+					tempCTB.Add(firstTurn.Value);
+				else
+				{
+					CTBTurn turn = new CTBTurn();
+					turn.battler = _Actors[i];
+					turn.rank = CTBTurn.RANK_DEFAULT;
+					turn.counter = turn.battler.Counter;
+					turn.tickSpeed = turn.battler.getTickSpeed();
+					tempCTB.Add(turn);
+				}
 			}
 
 			for (int i = 0; i < MAX_ENEMY; i++)
@@ -223,12 +233,17 @@ namespace FantasyEngineData.Battles
 
 				if (BattleTurn == 0)
 					_Enemies[i].CalculateICV();
-				CTBTurn turn = new CTBTurn();
-				turn.battler = _Enemies[i];
-				turn.rank = CTBTurn.RANK_DEFAULT;
-				turn.counter = turn.battler.Counter;
-				turn.tickSpeed = turn.battler.getTickSpeed();
-				tempCTB.Add(turn);
+				if (firstTurn.HasValue && _Enemies[i] == firstTurn.Value.battler)
+					tempCTB.Add(firstTurn.Value);
+				else
+				{
+					CTBTurn turn = new CTBTurn();
+					turn.battler = _Enemies[i];
+					turn.rank = CTBTurn.RANK_DEFAULT;
+					turn.counter = turn.battler.Counter;
+					turn.tickSpeed = turn.battler.getTickSpeed();
+					tempCTB.Add(turn);
+				}
 			}
 
 			//Sort ICVs
@@ -242,7 +257,7 @@ namespace FantasyEngineData.Battles
 			{
 				//Get Next CV
 				CTBTurn turn = tempCTB[0];
-				turn.counter += turn.battler.getCounterValue(turn.rank);
+				turn.SetCounter();
 				tempCTB[0] = turn;
 
 				//Sort CVs
@@ -315,6 +330,18 @@ namespace FantasyEngineData.Battles
 		}
 
 		/// <summary>
+		/// Change the rank of the turn for the active battler.
+		/// </summary>
+		/// <param name="rank">rank of this turn</param>
+		public void ChangeActiveRank(int rank)
+		{
+			var firstTurn = _OrderBattle[0];
+			firstTurn.rank = rank;
+			_OrderBattle[0] = firstTurn;
+			CalculateCTB();
+		}
+
+		/// <summary>
 		/// Start Main phase.
 		/// </summary>
 		public void StartActionPhase()
@@ -352,6 +379,12 @@ namespace FantasyEngineData.Battles
 		{
 			if (Phase != ePhases.ACTOR_COMMAND && Phase != ePhases.ACTION)
 				return;
+
+			// Keep the CV of the next turn of the current battler
+			CTBTurn turn = _OrderBattle[0];
+			turn.SetCounter();
+			_OrderBattle[0] = turn;
+			_OrderBattle[0].battler.Counter = _OrderBattle[0].counter;
 
 			// Update CTB and change the active battler for the next one.
 			CalculateCTB();
