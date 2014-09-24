@@ -230,10 +230,9 @@ namespace FantasyEngine.Classes.Menus
 			if (job != null)
 			{
 				int i = 0;
-				BaseJob[] baseJobs = JobManager.GetAllBaseJob();
 				foreach (var jobPrerequisite in job.BaseJob.PrerequisiteJobs)
 				{
-					int indexJob = Array.IndexOf<BaseJob>(baseJobs, jobPrerequisite.Job);
+					int indexJob = Array.IndexOf<BaseJob>(CurrentActor.BaseJobs, jobPrerequisite.Job);
 					if (CurrentActor.Jobs[indexJob].Level < jobPrerequisite.Level)
 					{
 						spriteBatchGUI.DrawString(GameMain.font, jobPrerequisite.Job.JobAbbreviation + " Level " + jobPrerequisite.Level,

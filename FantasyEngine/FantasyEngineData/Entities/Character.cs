@@ -21,6 +21,7 @@ namespace FantasyEngineData.Entities
 		#endregion Fields
 
 		#region Properties
+		public BaseJob[] BaseJobs { get { return _Jobs.Select(j => j != null ? j.BaseJob : null).ToArray(); } }
 		public Job[] Jobs { get { return _Jobs; } }
 
 		/// <summary>
@@ -336,10 +337,7 @@ namespace FantasyEngineData.Entities
 				{
 					if (x == null)
 					{
-						if (y == null)
-							return 0;
-						else
-							return 1;
+						return y == null ? 0 : 1;
 					}
 					else
 					{

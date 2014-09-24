@@ -286,10 +286,9 @@ namespace FantasyEngine.Classes.Menus
 			if (skill != null)
 			{
 				int i = 0;
-				BaseJob[] baseJobs = JobManager.GetAllBaseJob();
 				foreach (var jobAllowed in skill.AllowableJobs)
 				{
-					int indexJob = Array.IndexOf<BaseJob>(baseJobs, jobAllowed.Job);
+					int indexJob = Array.IndexOf<BaseJob>(CurrentActor.BaseJobs, jobAllowed.Job);
 					if (jobAllowed.Level > 0 && CurrentActor.Jobs[indexJob].Level < jobAllowed.Level)
 						spriteBatchGUI.DrawString(GameMain.font8, jobAllowed.Job.JobAbbreviation + " Level " + jobAllowed.Level,
 							new Vector2(468, 230 + i * 14) + spriteBatchGUI.CameraOffset, Color.White);
