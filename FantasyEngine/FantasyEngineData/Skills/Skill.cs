@@ -142,12 +142,10 @@ namespace FantasyEngineData.Skills
 		{
 			skillLevel = Level;
 			var jobAllowed = IsAllowed(user.CurrentJob.BaseJob);
-			if (jobAllowed == null || (jobAllowed.Level != 0 && user.Level < jobAllowed.Level)
-				|| (jobAllowed.Skill.Name != null && user.Skills.Find(s => s.Name == jobAllowed.Skill.Name).Level < jobAllowed.Skill.Level))
-				return false;
-			else if (jobAllowed.MaxLevel != 0 && Level >= jobAllowed.MaxLevel)
+			if (jobAllowed != null && jobAllowed.MaxLevel != 0 && Level >= jobAllowed.MaxLevel)
 				skillLevel = jobAllowed.MaxLevel;
-			return true;
+			return !(jobAllowed == null || (jobAllowed.Level != 0 && user.Level < jobAllowed.Level)
+				|| (jobAllowed.Skill.Name != null && user.Skills.Find(s => s.Name == jobAllowed.Skill.Name).Level < jobAllowed.Skill.Level));
 		}
 
 		public bool Casting(Character attacker, out int skillLevel)

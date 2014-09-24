@@ -84,14 +84,12 @@ namespace FantasyEngine.Classes.Menus
 			{
 				SkillDraw skillDraw = new SkillDraw();
 
-				var jobAllowed = skill.IsAllowed(CurrentActor.CurrentJob.BaseJob);
-				skillDraw.color = jobAllowed != null ? COLOR_NORMAL : COLOR_UNUSUABLE;
-				if (jobAllowed != null)
-					if ((jobAllowed.Level != 0 && CurrentActor.Level < jobAllowed.Level)
-						|| (jobAllowed.Skill.Name != null && CurrentActor.Skills.Find(s => s.Name == jobAllowed.Skill.Name).Level < jobAllowed.Skill.Level))
-						skillDraw.color = COLOR_UNUSUABLE;
-					else if (jobAllowed.MaxLevel != 0 && skill.Level >= jobAllowed.MaxLevel)
-						skillDraw.color = COLOR_OVERLEVEL;
+				int skillLevel;
+				if (skill.IsUsable(CurrentActor, out skillLevel))
+					if (skillLevel != skill.Level) skillDraw.color = COLOR_OVERLEVEL;
+					else skillDraw.color = COLOR_NORMAL;
+				else
+					skillDraw.color = COLOR_UNUSUABLE;
 
 				skillDraw.name = skill.Name;
 				skillDraw.level = "L" + skill.Level.ToString().PadLeft(2, '');
@@ -103,10 +101,7 @@ namespace FantasyEngine.Classes.Menus
 				skillDraw.exp = skillExp.ToString().PadLeft(5, '') + "/" + skillExpForLevel.ToString().PadLeft(5, '');
 
 				if (skill.Level != 0)
-					if (jobAllowed != null && jobAllowed.MaxLevel != 0 && skill.Level >= jobAllowed.MaxLevel)
-						skillDraw.mpCost = skill.MPCostForLevel(jobAllowed.MaxLevel).ToString().PadLeft(3, '');
-					else
-						skillDraw.mpCost = skill.MPCost.ToString().PadLeft(3, '');
+					skillDraw.mpCost = skill.MPCostForLevel(skillLevel).ToString().PadLeft(3, '');
 				else
 					skillDraw.mpCost = string.Empty;
 
