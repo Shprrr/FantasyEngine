@@ -232,7 +232,8 @@ namespace FantasyEngine.Classes.Battles
 
 		private void SkillSelection_OnIndexChanged(object sender, EventArgs e)
 		{
-			_Battle.ChangeActiveRank(_SkillSelection.SkillSelected.Rank);
+			if (_SkillSelection.SkillSelected != null)
+				_Battle.ChangeActiveRank(_SkillSelection.SkillSelected.Rank);
 		}
 
 		private void EndSkillSelection()
