@@ -123,6 +123,7 @@
     <Compile Include="Skills\JobAllowed.cs" />
     <Compile Include="Skills\Skill.cs" />
     <Compile Include="Skills\SkillManager.cs" />
+    <Compile Include="Effects\Status.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />

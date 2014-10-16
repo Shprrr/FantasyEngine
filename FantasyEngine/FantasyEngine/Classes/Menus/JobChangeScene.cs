@@ -290,9 +290,9 @@ namespace FantasyEngine.Classes.Menus
 					switch (_UseCommand.CursorPosition)
 					{
 						case 0: // Change
+							//TODO: À tester...
 							CurrentActor.Hp = CurrentActor.MaxHp;
 							CurrentActor.Mp = CurrentActor.MaxMp;
-							CurrentActor.Statut = Status.Normal;
 
 							for (int i = 0; i < Character.MAX_JOB; i++)
 							{

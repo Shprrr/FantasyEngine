@@ -15,7 +15,7 @@ namespace FantasyEngineData.Effects
 			ImbueThunder,
 			ImbueWater,
 			ImbueAero,
-			ImbueQuake,
+			ImbueEarth,
 			ImbueLight,
 			ImbueDark,
 			//Recovery
@@ -24,19 +24,20 @@ namespace FantasyEngineData.Effects
 			Life,
 			Esuna,
 			Poisona,
-			Confusena,
 			Blindna,
 			Silencena,
 			WakeUp,
+			Confusena,
 			HolyWater,
 			Soft,
+			Dispel,
 			//Offense
 			Fire,
 			Ice,
 			Thunder,
 			Water,
 			Aero,
-			Quake,
+			Earth,
 			Holy,
 			Dark,
 			Flare,
@@ -46,27 +47,26 @@ namespace FantasyEngineData.Effects
 			Reflect,
 			Haste,
 			Regen,
-			NullAll,
-			NullFire,
-			NullIce,
-			NullThunder,
-			NullWater,
-			NullAero,
-			NullQuake,
-			NullLight,
-			NullDark,
+			NulAll,
+			NulFire,
+			NulIce,
+			NulThunder,
+			NulWater,
+			NulAero,
+			NulEarth,
+			NulLight,
+			NulDark,
 			//Status
+			Death,
 			Poison,
-			Confuse,
 			Blind,
 			Silence,
 			Sleep,
+			Confuse,
 			Berserk,
 			Zombie,
 			Slow,
-			Dispel,
-			Stone,
-			KO
+			Stone
 		}
 
 		public eType Type { get; set; }
@@ -155,7 +155,7 @@ namespace FantasyEngineData.Effects
 					break;
 				case eType.ImbueAero:
 					break;
-				case eType.ImbueQuake:
+				case eType.ImbueEarth:
 					break;
 				case eType.ImbueLight:
 					break;
@@ -212,17 +212,19 @@ namespace FantasyEngineData.Effects
 					break;
 				case eType.Poisona:
 					break;
-				case eType.Confusena:
-					break;
 				case eType.Blindna:
 					break;
 				case eType.Silencena:
 					break;
 				case eType.WakeUp:
 					break;
+				case eType.Confusena:
+					break;
 				case eType.HolyWater:
 					break;
 				case eType.Soft:
+					break;
+				case eType.Dispel:
 					break;
 				case eType.Fire:
 					damage.Multiplier = (int)Multiplier;
@@ -244,7 +246,7 @@ namespace FantasyEngineData.Effects
 					damage.Multiplier = (int)Multiplier;
 					target.CalculateMagicalDamage(user, eMagicalDamageOption.BLACK, Value, HitPourc, nbTarget, ref damage);
 					return true;
-				case eType.Quake:
+				case eType.Earth:
 					damage.Multiplier = (int)Multiplier;
 					target.CalculateMagicalDamage(user, eMagicalDamageOption.BLACK, Value, HitPourc, nbTarget, ref damage);
 					return true;
@@ -270,27 +272,27 @@ namespace FantasyEngineData.Effects
 					break;
 				case eType.Regen:
 					break;
-				case eType.NullAll:
+				case eType.NulAll:
 					break;
-				case eType.NullFire:
+				case eType.NulFire:
 					break;
-				case eType.NullIce:
+				case eType.NulIce:
 					break;
-				case eType.NullThunder:
+				case eType.NulThunder:
 					break;
-				case eType.NullWater:
+				case eType.NulWater:
 					break;
-				case eType.NullAero:
+				case eType.NulAero:
 					break;
-				case eType.NullQuake:
+				case eType.NulEarth:
 					break;
-				case eType.NullLight:
+				case eType.NulLight:
 					break;
-				case eType.NullDark:
+				case eType.NulDark:
+					break;
+				case eType.Death:
 					break;
 				case eType.Poison:
-					break;
-				case eType.Confuse:
 					break;
 				case eType.Blind:
 					break;
@@ -298,17 +300,15 @@ namespace FantasyEngineData.Effects
 					break;
 				case eType.Sleep:
 					break;
+				case eType.Confuse:
+					break;
 				case eType.Berserk:
 					break;
 				case eType.Zombie:
 					break;
 				case eType.Slow:
 					break;
-				case eType.Dispel:
-					break;
 				case eType.Stone:
-					break;
-				case eType.KO:
 					break;
 			}
 
@@ -333,7 +333,7 @@ namespace FantasyEngineData.Effects
 					return "";
 				case eType.ImbueAero:
 					return "";
-				case eType.ImbueQuake:
+				case eType.ImbueEarth:
 					return "";
 				case eType.ImbueLight:
 					return "";
@@ -349,17 +349,19 @@ namespace FantasyEngineData.Effects
 					return "";
 				case eType.Poisona:
 					return "";
-				case eType.Confusena:
-					return "";
 				case eType.Blindna:
 					return "";
 				case eType.Silencena:
 					return "";
 				case eType.WakeUp:
 					return "";
+				case eType.Confusena:
+					return "";
 				case eType.HolyWater:
 					return "";
 				case eType.Soft:
+					return "";
+				case eType.Dispel:
 					return "";
 				case eType.Fire:
 					return "Casts Fire";
@@ -371,7 +373,7 @@ namespace FantasyEngineData.Effects
 					return "Casts Water";
 				case eType.Aero:
 					return "Casts Aero";
-				case eType.Quake:
+				case eType.Earth:
 					return "Casts Quake";
 				case eType.Holy:
 					return "Casts Holy";
@@ -389,46 +391,44 @@ namespace FantasyEngineData.Effects
 					return "Casts Haste";
 				case eType.Regen:
 					return "Casts Regen";
-				case eType.NullAll:
+				case eType.NulAll:
 					return "";
-				case eType.NullFire:
+				case eType.NulFire:
 					return "";
-				case eType.NullIce:
+				case eType.NulIce:
 					return "";
-				case eType.NullThunder:
+				case eType.NulThunder:
 					return "";
-				case eType.NullWater:
+				case eType.NulWater:
 					return "";
-				case eType.NullAero:
+				case eType.NulAero:
 					return "";
-				case eType.NullQuake:
+				case eType.NulEarth:
 					return "";
-				case eType.NullLight:
+				case eType.NulLight:
 					return "";
-				case eType.NullDark:
+				case eType.NulDark:
 					return "";
+				case eType.Death:
+					return "Inflicts Death";
 				case eType.Poison:
-					return "";
-				case eType.Confuse:
-					return "";
+					return "Inflicts Poison";
 				case eType.Blind:
-					return "";
+					return "Inflicts Blind";
 				case eType.Silence:
-					return "";
+					return "Inflicts Silence";
 				case eType.Sleep:
-					return "";
+					return "Inflicts Sleep";
+				case eType.Confuse:
+					return "Inflicts Confuse";
 				case eType.Berserk:
-					return "";
+					return "Inflicts Berserk";
 				case eType.Zombie:
-					return "";
+					return "Inflicts Zombie";
 				case eType.Slow:
-					return "";
-				case eType.Dispel:
-					return "";
+					return "Inflicts Slow";
 				case eType.Stone:
-					return "";
-				case eType.KO:
-					return "";
+					return "Inflicts Stone";
 				default:
 					return string.Empty;
 			}

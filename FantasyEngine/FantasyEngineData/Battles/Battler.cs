@@ -10,6 +10,8 @@ namespace FantasyEngineData.Battles
 {
 	public class Battler : Character
 	{
+		private SortedList<Status.eStatus, Status> _Statuses = new SortedList<Status.eStatus, Status>();
+
 		/// <summary>
 		/// Counter for CTB.  Tell the number of tick to wait for the next action.
 		/// </summary>
@@ -23,6 +25,18 @@ namespace FantasyEngineData.Battles
 		public Damage damageR, damageL;
 
 		public bool IsActor { get; set; }
+
+		public SortedList<Status.eStatus, Status> Statuses
+		{
+			get { return _Statuses; }
+		}
+
+		public string GetPrimaryStatus()
+		{
+			if (Statuses.Count > 0)
+				return Statuses.First().Value.ToString();
+			return "Normal";
+		}
 
 		public Battler(Character character, bool isActor)
 			: base(character.Name)

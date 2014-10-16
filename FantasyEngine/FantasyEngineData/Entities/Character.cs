@@ -145,12 +145,6 @@ namespace FantasyEngineData.Entities
 		}
 		#endregion Stats
 
-		public Status Statut
-		{
-			get { return CurrentJob != null ? CurrentJob.Statut : Status.Normal; }
-			set { if (CurrentJob != null) CurrentJob.Statut = value; }
-		}
-
 		public bool IsDead { get { return Hp == 0; } }
 
 		#region Equipments

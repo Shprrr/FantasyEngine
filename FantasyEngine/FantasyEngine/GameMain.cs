@@ -130,6 +130,7 @@ namespace FantasyEngine
 			// Load all skills in the SkillManager
 			SkillManager.Load(Content.Load<BaseSkill[]>(@"Skills\White Magics"));
 			SkillManager.Load(Content.Load<BaseSkill[]>(@"Skills\Black Magics"));
+			SkillManager.Load(Content.Load<BaseSkill[]>(@"Skills\Green Magics"));
 		}
 
 		/// <summary>

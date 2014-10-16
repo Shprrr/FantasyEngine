@@ -93,6 +93,8 @@ namespace FantasyEngine.Classes
 			Player.GamePlayer.Actors[0].Skills[5].Exp += 70;
 			Player.GamePlayer.Actors[0].Skills.Add(new Skill(SkillManager.GetBaseSkill("Osmose")));
 			Player.GamePlayer.Actors[0].Skills[6].Exp += 156;
+			Player.GamePlayer.Actors[0].Skills.Add(new Skill(SkillManager.GetBaseSkill("Poison")));
+			Player.GamePlayer.Actors[0].Skills[7].Exp += 39;
 #endif
 			Player.GamePlayer.StepToBattle = FantasyEngineData.Extensions.rand.Next(Overworld.Overworld.STEP_TO_BATTLE_MIN, Overworld.Overworld.STEP_TO_BATTLE_MAX);
 

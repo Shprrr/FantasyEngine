@@ -198,7 +198,7 @@ namespace FantasyEngine.Classes.Menus
 			_EffectWindow.Draw(gameTime);
 			spriteBatchGUI.Scissor(_EffectWindow.InsideBound);
 
-			if (skill != null && skill.Level != 0)
+			if (skill != null)
 			{
 				int level = skill.Level;
 
@@ -207,10 +207,13 @@ namespace FantasyEngine.Classes.Menus
 				{
 					if (jobAllowed.MaxLevel != 0 && jobAllowed.MaxLevel <= skill.Level)
 						level = jobAllowed.MaxLevel;
+				}
 
-					spriteBatchGUI.DrawString(GameMain.font8, skill.Effect.EffectForLevel(level).TypeToString(),
-						new Vector2(468, 62) + spriteBatchGUI.CameraOffset, Color.White);
+				spriteBatchGUI.DrawString(GameMain.font8, skill.Effect.EffectForLevel(level).TypeToString(),
+					new Vector2(468, 62) + spriteBatchGUI.CameraOffset, Color.White);
 
+				if (level > 0 && jobAllowed != null)
+				{
 					spriteBatchGUI.DrawString(GameMain.font8, "Power:",
 						new Vector2(468, 76) + spriteBatchGUI.CameraOffset, Color.White);
 					spriteBatchGUI.DrawString(GameMain.font8, skill.Effect.EffectForLevel(level).Value.ToString().PadLeft(3, ''),
@@ -323,7 +326,7 @@ namespace FantasyEngine.Classes.Menus
 				spriteBatchGUI.DrawString(GameMain.font8, actor.Hp + "/" + actor.MaxHp, new Vector2(42, 424) + spriteBatchGUI.CameraOffset, Color.White);
 				spriteBatchGUI.DrawString(GameMain.font8, "MP", new Vector2(14, 438) + spriteBatchGUI.CameraOffset, Color.White);
 				spriteBatchGUI.DrawString(GameMain.font8, actor.Mp + "/" + actor.MaxMp, new Vector2(42, 438) + spriteBatchGUI.CameraOffset, Color.White);
-				spriteBatchGUI.DrawString(GameMain.font8, actor.Statut.ToString(), new Vector2(14, 452) + spriteBatchGUI.CameraOffset, Color.White);
+				//spriteBatchGUI.DrawString(GameMain.font8, actor.Statut.ToString(), new Vector2(14, 452) + spriteBatchGUI.CameraOffset, Color.White);
 			}
 
 			spriteBatchGUI.ScissorReset();

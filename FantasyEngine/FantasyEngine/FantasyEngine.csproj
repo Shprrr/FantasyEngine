@@ -120,6 +120,7 @@
     <Compile Include="Classes\Battles\Battle.cs" />
     <Compile Include="Classes\Battles\Battler.cs" />
     <Compile Include="Classes\Battles\Cursor.cs" />
+    <Compile Include="Classes\Battles\DamageIndicator.cs" />
     <Compile Include="Classes\Battles\ItemSelection.cs" />
     <Compile Include="Classes\Battles\SkillSelection.cs" />
     <Compile Include="Classes\Command.cs" />

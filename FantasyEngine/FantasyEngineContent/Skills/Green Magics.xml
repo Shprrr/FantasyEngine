@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+	<Asset Type="FantasyEngineData.Skills.BaseSkill[]">
+		<Item>
+			<Name>Poison</Name>
+			<Description>Inflicts Poison on a target.</Description>
+			<Rank>3</Rank>
+			<BaseCostMP>4</BaseCostMP>
+			<AddByLevelCostMP>0.5</AddByLevelCostMP>
+			<QuadraticCoefficientLevelCostMP>0.05</QuadraticCoefficientLevelCostMP>
+			<AllowableJobs>
+				<Item>
+					<Job>OK</Job>
+					<Level>2</Level>
+					<MaxLevel>10</MaxLevel>
+				</Item>
+				<Item>
+					<Job>BM</Job>
+				</Item>
+			</AllowableJobs>
+			<Effect>
+				<Type>Poison</Type>
+				<HitPourc>74</HitPourc>
+				<AddHitPourcByLevel>1</AddHitPourcByLevel>
+			</Effect>
+			<DefaultTarget>SINGLE_ENEMY</DefaultTarget>
+			<MenuUsable>false</MenuUsable>
+			<ExpToLearn>39</ExpToLearn>
+		</Item>
+	</Asset>
+</XnaContent>

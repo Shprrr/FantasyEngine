@@ -55,8 +55,6 @@ namespace FantasyEngine.Classes.Battles
 			Run
 		}
 
-		private const string MISS = "MISS";
-
 		private Battle _Battle;
 		private Texture2D _BattleBack;
 		private Song _BattleMusic;
@@ -74,6 +72,7 @@ namespace FantasyEngine.Classes.Battles
 		private BattleAction _CurrentAction;
 		private Cursor _Target = null;
 		private Battler[] _TargetBattler;
+		private List<DamageIndicator> _Damages = new List<DamageIndicator>();
 
 		private int _PhaseStep;
 		private int _AnimationWait = 0;
@@ -137,6 +136,7 @@ namespace FantasyEngine.Classes.Battles
 			_Battle.OnAIChooseAction += Battle_OnAIChooseAction;
 			_Battle.OnActionPhase += Battle_OnActionPhase;
 			_Battle.OnActionPhaseStep2 += Battle_OnActionPhaseStep2;
+			_Battle.ShowingDamage += Battle_ShowingDamage;
 			_Battle.OnPostBattlePhase += Battle_OnPostBattlePhase;
 			_Battle.OnWinning += Battle_OnWinning;
 		}
@@ -327,6 +327,16 @@ namespace FantasyEngine.Classes.Battles
 					break;
 			}
 
+			foreach (var target in _TargetBattler)
+			{
+				if (target == null)
+					continue;
+
+				DamageIndicator damage = new DamageIndicator(Game, target, target.damageR + target.damageL, _CurrentAction.Kind != BattleAction.eKind.ITEM);
+				damage.Visible = false;
+				_Damages.Add(damage);
+			}
+
 			ActionPhaseStep3();
 		}
 
@@ -358,6 +368,12 @@ namespace FantasyEngine.Classes.Battles
 			_AnimationWait = 30;
 		}
 
+		private void Battle_ShowingDamage()
+		{
+			// Wait until there's no damage left to show.
+			while (_Damages.Count(di => di.Visible) > 0) ;
+		}
+
 		/// <summary>
 		/// Damage display.
 		/// </summary>
@@ -367,9 +383,13 @@ namespace FantasyEngine.Classes.Battles
 				return;
 
 			_PhaseStep = 5;
-			//Display damage
 
-			_AnimationWait = 30;
+			foreach (var damage in _Damages)
+			{
+				damage.Visible = true;
+			}
+
+			_AnimationWait = 1; // Wait at least one frame before end turn.
 		}
 
 		private void Battle_OnPostBattlePhase(object sender, EventArgs e)
@@ -467,6 +487,9 @@ namespace FantasyEngine.Classes.Battles
 					spriteBatch.Draw(_Battle.Enemies[i].BattlerSprite.texture, _Battle.Enemies[i].BattlerPosition, color);
 			}
 
+			if (_Damages.Count(di => di.Visible) > 0)
+				return; // While still have damage to show, don't continue.
+
 			if (_Battle.Phase == BattleData.ePhases.ACTION && _PhaseStep == 3)
 			{
 				switch (_CurrentAction.Kind)
@@ -547,43 +570,30 @@ namespace FantasyEngine.Classes.Battles
 
 			if (_Battle.Phase == BattleData.ePhases.ACTION && _PhaseStep == 5)
 			{
-				switch (_CurrentAction.Kind)
-				{
-					case BattleAction.eKind.ATTACK:
-					case BattleAction.eKind.MAGIC:
-					case BattleAction.eKind.ITEM:
-						for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
-							if (_TargetBattler[i] != null)
-							{
-								int totalMultiplier = _TargetBattler[i].damageR.Multiplier + _TargetBattler[i].damageL.Multiplier;
-								int totalDamage = Math.Abs(_TargetBattler[i].damageR.Value + _TargetBattler[i].damageL.Value);
-								string damage = totalMultiplier == 0 ? MISS :
-									(_CurrentAction.Kind != BattleAction.eKind.ITEM ?
-										totalMultiplier + " hit" + (totalMultiplier > 1 ? "s" : "") : "") +
-									Environment.NewLine + totalDamage;
-								spriteBatch.DrawString(GameMain.font, damage,
-									new Vector2(_TargetBattler[i].BattlerPosition.X,
-										_TargetBattler[i].BattlerPosition.Y - 12),
-									new Color(0xFF, 0x80, 0x80, 0xFF));
-							}
-						break;
-
-					case BattleAction.eKind.DEFEND:
-						break;
-
-					case BattleAction.eKind.WAIT:
-						break;
-				}
-
 				_AnimationWait--;
 				if (_AnimationWait < 0)
 				{
+					// Temporary code for afflicting a status.
 					for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
+					{
+						if (_TargetBattler[i] != null && _TargetBattler[i].IsActor)
+						{
+							var status = new FantasyEngineData.Effects.Status(FantasyEngineData.Effects.Status.eStatus.Regen);
+							status.OnApply(_TargetBattler[i], 4);
+							status.OnDamage += status_OnDamage;
+						}
 						if (_TargetBattler[i] != null)
 						{
-							_TargetBattler[i].GiveDamage();
+							var status = new FantasyEngineData.Effects.Status(FantasyEngineData.Effects.Status.eStatus.Poison);
+							status.OnApply(_TargetBattler[i], 4);
+							status.OnDamage += status_OnDamage;
 						}
+					}
 
+					for (int i = 0; i < _TargetBattler.Length; i++)
+					{
+						_TargetBattler[i] = null;
+					}
 					_Battle.NextTurn();
 				}
 			}
@@ -600,6 +610,11 @@ namespace FantasyEngine.Classes.Battles
 					}
 				}
 			}
+		}
+
+		private void status_OnDamage(object sender, FantasyEngineData.Battles.Battler target, FantasyEngineData.Effects.Damage damage)
+		{
+			_Damages.Add(new DamageIndicator(Game, (Battler)target, damage, false));
 		}
 
 		public override void DrawGUI(GameTime gameTime)
@@ -627,6 +642,15 @@ namespace FantasyEngine.Classes.Battles
 				DrawResultWindow(gameTime);
 			}
 
+			for (int i = _Damages.Count - 1; i >= 0; i--)
+			{
+				_Damages[i].Draw(gameTime);
+
+				// Remove finished animations.
+				if (_Damages[i].AnimationWait <= TimeSpan.Zero && !_Damages[i].Visible)
+					_Damages.RemoveAt(i);
+			}
+
 #if ENGINE
 			if (Player.GamePlayer.ShowDebug)
 			{
@@ -634,7 +658,9 @@ namespace FantasyEngine.Classes.Battles
 				for (int i = 0; i < _Battle.Enemies.Length; i++)
 				{
 					if (_Battle.Enemies[i] != null)
-						GameMain.spriteBatchGUI.DrawString(GameMain.font8, "HP: " + _Battle.Enemies[i].Hp + "/" + _Battle.Enemies[i].MaxHp, new Vector2(8, 132 + i * 12), Color.White);
+						GameMain.spriteBatchGUI.DrawString(GameMain.font8, "HP: " + _Battle.Enemies[i].Hp + "/" + _Battle.Enemies[i].MaxHp +
+							(_Battle.Enemies[i].Statuses.Count > 0 ? "  " + _Battle.Enemies[i].Statuses.First().Value : ""),
+							new Vector2(8, 132 + i * 12), Color.White);
 				}
 			}
 #endif
@@ -719,7 +745,7 @@ namespace FantasyEngine.Classes.Battles
 						new Vector2(x + 24, y + 76), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 
 					spriteBatchGUI.DrawString(GameMain.font,
-						_Battle.Actors[i].Statut.ToString(),
+						_Battle.Actors[i].GetPrimaryStatus(),
 						new Vector2(x + 12, y + 96), Color.White, 0, Vector2.Zero, 0.75f, SpriteEffects.None, 0);
 				}
 

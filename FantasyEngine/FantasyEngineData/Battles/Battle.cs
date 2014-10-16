@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
+using System.Threading;
 using FantasyEngineData.Entities;
 
 namespace FantasyEngineData.Battles
@@ -106,6 +106,7 @@ namespace FantasyEngineData.Battles
 		private List<CTBTurn> _OrderBattle = new List<CTBTurn>(MAX_CTB);
 		public List<CTBTurn> OrderBattle { get { return _OrderBattle; } }
 
+		private int _CounterActiveTurn;
 		public int ActiveBattlerIndex { get; private set; }
 
 		/// <summary>
@@ -118,13 +119,13 @@ namespace FantasyEngineData.Battles
 		}
 		private void setActiveBattler()
 		{
-			int counterLastTurn = _OrderBattle[0].counter;
+			_CounterActiveTurn = _OrderBattle[0].counter;
 			for (int i = 0; i < MAX_ACTOR; i++)
 			{
 				if (Character.IsNullOrDead(_Actors[i]))
 					continue;
 
-				_Actors[i].Counter -= counterLastTurn;
+				_Actors[i].Counter -= _CounterActiveTurn;
 				if (_Actors[i] == OrderBattle[0].battler)
 					ActiveBattlerIndex = i;
 			}
@@ -134,7 +135,7 @@ namespace FantasyEngineData.Battles
 				if (Character.IsNullOrDead(_Enemies[i]))
 					continue;
 
-				_Enemies[i].Counter -= counterLastTurn;
+				_Enemies[i].Counter -= _CounterActiveTurn;
 				if (_Enemies[i] == OrderBattle[0].battler)
 					ActiveBattlerIndex = MAX_ACTOR + i;
 			}
@@ -143,7 +144,7 @@ namespace FantasyEngineData.Battles
 			for (int i = 0; i < _OrderBattle.Count; i++)
 			{
 				CTBTurn turn = _OrderBattle[i];
-				turn.counter -= counterLastTurn;
+				turn.counter -= _CounterActiveTurn;
 				_OrderBattle[i] = turn;
 			}
 		}
@@ -289,6 +290,24 @@ namespace FantasyEngineData.Battles
 
 			BattleTurn++;
 
+			foreach (var actor in _Actors)
+			{
+				if (!Character.IsNullOrDead(actor))
+					foreach (var status in actor.Statuses)
+					{
+						status.Value.OnBeginTurn(actor, _CounterActiveTurn);
+					}
+			}
+
+			foreach (var enemy in _Enemies)
+			{
+				if (!Character.IsNullOrDead(enemy))
+					foreach (var status in enemy.Statuses)
+					{
+						status.Value.OnBeginTurn(enemy, _CounterActiveTurn);
+					}
+			}
+
 			if (getActiveBattler().IsActor)
 			{
 				if (OnSetupCommandWindow != null) OnSetupCommandWindow(this, EventArgs.Empty);
@@ -375,21 +394,41 @@ namespace FantasyEngineData.Battles
 		public event EventHandler OnActionPhase;
 		public event EventHandler OnActionPhaseStep2;
 
+		public Action ShowingDamage;
+
+		private void WaitShowDamage()
+		{
+			var threadDamage = new Thread(new ThreadStart(ShowingDamage));
+			threadDamage.Start();
+			threadDamage.Join();
+		}
+
 		public void NextTurn()
 		{
 			if (Phase != ePhases.ACTOR_COMMAND && Phase != ePhases.ACTION)
 				return;
 
-			// Keep the CV of the next turn of the current battler
-			CTBTurn turn = _OrderBattle[0];
-			turn.SetCounter();
-			_OrderBattle[0] = turn;
-			_OrderBattle[0].battler.Counter = _OrderBattle[0].counter;
+			// Threading this to not blocking for the wait.
+			new Thread(new ThreadStart(delegate
+			{
+				for (int i = getActiveBattler().Statuses.Count - 1; i >= 0; i--)
+				{
+					getActiveBattler().Statuses.ElementAt(i).Value.OnEndTurn(getActiveBattler());
+				}
 
-			// Update CTB and change the active battler for the next one.
-			CalculateCTB();
+				WaitShowDamage();
 
-			BeginTurn();
+				// Keep the CV of the next turn of the current battler
+				CTBTurn turn = _OrderBattle[0];
+				turn.SetCounter();
+				_OrderBattle[0] = turn;
+				_OrderBattle[0].battler.Counter = _OrderBattle[0].counter;
+
+				// Update CTB and change the active battler for the next one.
+				CalculateCTB();
+
+				BeginTurn();
+			})).Start();
 		}
 
 		/// <summary>
