@@ -371,7 +371,7 @@ namespace FantasyEngine.Classes.Battles
 		private void Battle_ShowingDamage()
 		{
 			// Wait until there's no damage left to show.
-			while (_Damages.Count(di => di.Visible) > 0) ;
+			while (_Damages.Any(di => di.Visible)) ;
 		}
 
 		/// <summary>
@@ -411,7 +411,7 @@ namespace FantasyEngine.Classes.Battles
 				if (enemy == null)
 					continue;
 
-				if (enemy.IsDead)
+				if (Battler.IsNullDeadOrStone(enemy))
 				{
 					_Exp += enemy.ExpToGive();
 					_Gold += enemy.GoldToGive;
@@ -445,7 +445,7 @@ namespace FantasyEngine.Classes.Battles
 					if (actor.Level != oldLevel)
 						Scene.AddSubScene(new FantasyEngine.Classes.Menus.LevelUpScene(Game, actor));
 					Player.GamePlayer.Inventory.Gold += _Gold / nbActorAlive;
-					Player.GamePlayer.Inventory.AddRange(_Treasure);
+					Player.GamePlayer.Inventory.AddRange(_Treasure); //TODO: Test if multi-actor.
 				}
 			}
 		}
@@ -576,13 +576,13 @@ namespace FantasyEngine.Classes.Battles
 					// Temporary code for afflicting a status.
 					for (int i = 0; i < BattleData.MAX_ACTOR + BattleData.MAX_ENEMY; i++)
 					{
-						if (_TargetBattler[i] != null && _TargetBattler[i].IsActor)
+						if (_TargetBattler[i] != null && !_TargetBattler[i].IsActor)
 						{
-							var status = new FantasyEngineData.Effects.Status(FantasyEngineData.Effects.Status.eStatus.Regen);
-							status.OnApply(_TargetBattler[i], 4);
+							var status = new FantasyEngineData.Effects.Status(FantasyEngineData.Effects.Status.eStatus.Stone);
+							status.OnApply(_TargetBattler[i]);
 							status.OnDamage += status_OnDamage;
 						}
-						if (_TargetBattler[i] != null)
+						if (_TargetBattler[i] != null && !_TargetBattler[i].IsActor)
 						{
 							var status = new FantasyEngineData.Effects.Status(FantasyEngineData.Effects.Status.eStatus.Poison);
 							status.OnApply(_TargetBattler[i], 4);
@@ -595,6 +595,7 @@ namespace FantasyEngine.Classes.Battles
 						_TargetBattler[i] = null;
 					}
 					_Battle.NextTurn();
+					_PhaseStep = 6;
 				}
 			}
 

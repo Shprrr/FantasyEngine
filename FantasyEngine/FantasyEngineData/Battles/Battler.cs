@@ -211,11 +211,50 @@ namespace FantasyEngineData.Battles
 		private void Battler_OnDead(object sender, EventArgs e)
 		{
 			Counter = 0; // CTB system in Battle will clean itself.
+
+			for (int i = 0; i < Statuses.Count; i++)
+			{
+				Statuses.RemoveAt(i);
+			}
+			Statuses.Add(Status.eStatus.KO, new Status(Status.eStatus.KO));
 		}
 
 		private void Battler_OnRevive(object sender, EventArgs e)
 		{
 			Counter = getCounterValue(CTBTurn.RANK_DEFAULT); // Supposed to be : Reviving is rank=3*tickSpeed without Haste/Slow even with Auto-Haste.
+			Statuses[Status.eStatus.KO].OnCure(this);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+
+		public static bool IsNullDeadOrStone(Battler character)
+		{
+			return Character.IsNullOrDead(character) || character.Statuses.ContainsKey(Status.eStatus.Stone);
+		}
+
+		public static bool operator ==(Battler b1, Battler b2)
+		{
+			// Change to have breaked stone battler considered as null.
+			if ((object)b2 == null)
+				return (object)b1 == null || b1.Statuses.Any(s => s.Key == Status.eStatus.Stone && s.Value.TurnToLive <= 0);
+
+			if ((object)b1 == null)
+				return (object)b2 == null || b2.Statuses.Any(s => s.Key == Status.eStatus.Stone && s.Value.TurnToLive <= 0);
+
+			return b1.Equals(b2);
+		}
+
+		public static bool operator !=(Battler b1, Battler b2)
+		{
+			return !(b1 == b2);
 		}
 	}
 }

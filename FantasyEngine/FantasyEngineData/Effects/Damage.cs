@@ -43,10 +43,19 @@ namespace FantasyEngineData.Effects
 			{
 				case eDamageType.HP:
 				case eDamageType.DrainHP:
-					target.Hp -= Value;
-					if (Type == eDamageType.DrainHP)
-						User.Hp += Value;
+					var battler = target as FantasyEngineData.Battles.Battler;
+					if (battler != null && battler.Statuses.ContainsKey(Status.eStatus.Stone))
+					{
+						battler.Statuses[Status.eStatus.Stone].OnAppliedDamage(battler, Value);
+					}
+					else
+					{
+						target.Hp -= Value;
+						if (Type == eDamageType.DrainHP)
+							User.Hp += Value;
+					}
 					break;
+
 				case eDamageType.MP:
 				case eDamageType.DrainMP:
 					target.Mp -= Value;

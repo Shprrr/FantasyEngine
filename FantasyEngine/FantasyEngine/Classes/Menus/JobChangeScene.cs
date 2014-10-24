@@ -290,7 +290,6 @@ namespace FantasyEngine.Classes.Menus
 					switch (_UseCommand.CursorPosition)
 					{
 						case 0: // Change
-							//TODO: À tester...
 							CurrentActor.Hp = CurrentActor.MaxHp;
 							CurrentActor.Mp = CurrentActor.MaxMp;
 
@@ -326,8 +325,7 @@ namespace FantasyEngine.Classes.Menus
 					}
 			}
 
-			if (Input.keyStateDown.IsKeyDown(Keys.Escape)
-				|| Input.keyStateDown.IsKeyDown(Keys.Back))
+			if (Input.keyStateDown.IsKeyDown(Keys.Escape) || Input.keyStateDown.IsKeyDown(Keys.Back))
 			{
 				if (_UseCommand.Enabled)
 				{

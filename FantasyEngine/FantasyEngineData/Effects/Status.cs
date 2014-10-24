@@ -42,10 +42,30 @@ namespace FantasyEngineData.Effects
 			Type = type;
 		}
 
-		public bool OnApply(Battler target, int nbTurn)
+		public bool OnApply(Battler target, int nbTurn = 1)
 		{
-			if (target.Statuses.ContainsKey(Type))
+			if (target.Statuses.ContainsKey(Type) || target.Statuses.ContainsKey(eStatus.KO) || target.Statuses.ContainsKey(eStatus.Stone))
 				return false;
+
+			if (Type == eStatus.KO)
+			{
+				// Apply damage directly.
+				target.Hp = 0;
+				return true;
+			}
+
+			if (Type == eStatus.Stone)
+			{
+				// This status is alone.
+				for (int i = 0; i < target.Statuses.Count; i++)
+				{
+					target.Statuses.RemoveAt(i);
+				}
+
+				TurnToLive = target.Hp;
+				target.Statuses.Add(Type, this);
+				return true;
+			}
 
 			TurnToLive = nbTurn;
 			target.Statuses.Add(Type, this);
@@ -63,10 +83,18 @@ namespace FantasyEngineData.Effects
 			{
 				Damage damage = new Damage();
 				damage.Type = Damage.eDamageType.HP;
-				damage.Value = -(int)(counterElapsed * target.MaxHp / 256f + 100);
+				damage.Value = -(int)(counterElapsed * target.MaxHp / 256f + 10);
 				damage.Multiplier = 1;
 				damage.User = target;
 				RaiseOnDamage(target, damage);
+			}
+		}
+
+		public void OnAppliedDamage(Battler target, int damageValue)
+		{
+			if (Type == eStatus.Stone)
+			{
+				TurnToLive -= damageValue;
 			}
 		}
 
@@ -83,13 +111,20 @@ namespace FantasyEngineData.Effects
 				RaiseOnDamage(target, damage);
 			}
 
-			TurnToLive--;
-			if (TurnToLive <= 0)
-				OnCure(target);
+			// Theses statuses are infinite.
+			if (Type != eStatus.KO && Type != eStatus.Stone)
+			{
+				TurnToLive--;
+				if (TurnToLive <= 0)
+					OnCure(target);
+			}
 		}
 
 		public override string ToString()
 		{
+			if (Type == eStatus.KO || Type == eStatus.Stone)
+				return Type.ToString();
+
 			//return Type.ToString() + " for " + TurnToLive + " turn" + (TurnToLive > 1 ? "s" : "");
 			return Type.ToString() + " (" + TurnToLive + ")";
 		}

@@ -57,9 +57,6 @@ namespace FantasyEngineData.Battles
 
 		public int CompareTo(CTBTurn other)
 		{
-			if (this.battler == other.battler)
-				return 0;
-
 			if (other.battler == null)
 				return -1;
 
@@ -119,14 +116,25 @@ namespace FantasyEngineData.Battles
 		}
 		private void setActiveBattler()
 		{
-			_CounterActiveTurn = _OrderBattle[0].counter;
+			CTBTurn activeTurn = _OrderBattle[0];
+			for (int i = 0; i < _OrderBattle.Count; i++)
+			{
+				if (!Battler.IsNullDeadOrStone(_OrderBattle[i].battler))
+				{
+					activeTurn = _OrderBattle[i];
+					_CounterActiveTurn = activeTurn.counter;
+					break;
+				}
+			}
+
 			for (int i = 0; i < MAX_ACTOR; i++)
 			{
 				if (Character.IsNullOrDead(_Actors[i]))
 					continue;
 
-				_Actors[i].Counter -= _CounterActiveTurn;
-				if (_Actors[i] == OrderBattle[0].battler)
+				if (!Battler.IsNullDeadOrStone(_Actors[i]))
+					_Actors[i].Counter -= _CounterActiveTurn;
+				if (_Actors[i] == activeTurn.battler)
 					ActiveBattlerIndex = i;
 			}
 
@@ -135,18 +143,24 @@ namespace FantasyEngineData.Battles
 				if (Character.IsNullOrDead(_Enemies[i]))
 					continue;
 
-				_Enemies[i].Counter -= _CounterActiveTurn;
-				if (_Enemies[i] == OrderBattle[0].battler)
+				if (!Battler.IsNullDeadOrStone(_Enemies[i]))
+					_Enemies[i].Counter -= _CounterActiveTurn;
+				if (_Enemies[i] == activeTurn.battler)
 					ActiveBattlerIndex = MAX_ACTOR + i;
 			}
 
 			// Remove active counter on all other counters.
 			for (int i = 0; i < _OrderBattle.Count; i++)
 			{
+				if (Battler.IsNullDeadOrStone(_OrderBattle[i].battler))
+					continue;
+
 				CTBTurn turn = _OrderBattle[i];
 				turn.counter -= _CounterActiveTurn;
 				_OrderBattle[i] = turn;
 			}
+
+			_OrderBattle.Sort(); // Some battlers can't move so this could change the order.
 		}
 
 		public bool CanEscape { get; set; }
@@ -308,16 +322,21 @@ namespace FantasyEngineData.Battles
 					}
 			}
 
-			if (getActiveBattler().IsActor)
-			{
-				if (OnSetupCommandWindow != null) OnSetupCommandWindow(this, EventArgs.Empty);
-				return;
-			}
+			if (!Battler.IsNullDeadOrStone(getActiveBattler()))
+				if (getActiveBattler().IsActor)
+				{
+					if (OnSetupCommandWindow != null) OnSetupCommandWindow(this, EventArgs.Empty);
+				}
+				else
+				{
+					if (OnAIChooseAction != null) OnAIChooseAction(this, EventArgs.Empty);
+					StartActionPhase();
+				}
 			else
 			{
-				if (OnAIChooseAction != null) OnAIChooseAction(this, EventArgs.Empty);
-				StartActionPhase();
-				return;
+				// Active battler can't choose an action so we jump directly to the action phase.
+				Phase = ePhases.ACTION;
+				NextTurn();
 			}
 		}
 
@@ -331,14 +350,14 @@ namespace FantasyEngineData.Battles
 		/// <returns></returns>
 		private bool Judge()
 		{
-			int nbBattlerAlive = _Actors.Count(b => !Character.IsNullOrDead(b));
+			int nbBattlerAlive = _Actors.Count(b => !Battler.IsNullDeadOrStone(b));
 			if (nbBattlerAlive == 0)
 			{
 				Result = CanLose ? eBattleResult.LOSE : eBattleResult.ESCAPE;
 				return true;
 			}
 
-			nbBattlerAlive = _Enemies.Count(b => !Character.IsNullOrDead(b));
+			nbBattlerAlive = _Enemies.Count(b => !Battler.IsNullDeadOrStone(b));
 			if (nbBattlerAlive == 0)
 			{
 				Result = eBattleResult.WIN;
@@ -398,18 +417,17 @@ namespace FantasyEngineData.Battles
 
 		private void WaitShowDamage()
 		{
-			var threadDamage = new Thread(new ThreadStart(ShowingDamage));
-			threadDamage.Start();
-			threadDamage.Join();
+			if (ShowingDamage != null)
+				ShowingDamage();
 		}
 
 		public void NextTurn()
 		{
-			if (Phase != ePhases.ACTOR_COMMAND && Phase != ePhases.ACTION)
+			if (Phase != ePhases.ACTION)
 				return;
 
 			// Threading this to not blocking for the wait.
-			new Thread(new ThreadStart(delegate
+			var thread = new Thread(new ThreadStart(delegate
 			{
 				for (int i = getActiveBattler().Statuses.Count - 1; i >= 0; i--)
 				{
@@ -428,7 +446,9 @@ namespace FantasyEngineData.Battles
 				CalculateCTB();
 
 				BeginTurn();
-			})).Start();
+			}));
+			thread.Name = System.Reflection.MethodInfo.GetCurrentMethod().Name;
+			thread.Start();
 		}
 
 		/// <summary>
